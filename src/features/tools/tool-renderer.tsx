@@ -78,10 +78,6 @@ export function ToolRenderer({ tool }: { tool: ToolDef }) {
       <ToolNotImplemented tool={tool} suggestions={getSuggestions(tool, 6)} />
     );
   }
-  console.log(
-    `Rendering tool: ${tool.name} (${tool.slug}) with component`,
-    tool,
-  );
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       {/* Breadcrumb */}

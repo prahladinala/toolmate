@@ -14,7 +14,6 @@ type QuickTool = {
 
 function buildQuickList(max = 2): QuickTool[] {
   const recent = getRecentTools();
-  console.log("Recent tools:", recent);
   // Skip most recent (index 0) because CTA button uses it.
   // Take only next two: 2nd and 3rd most recent.
   const recentPicks: QuickTool[] = (recent ?? []).slice(1, 3).map((r) => ({
@@ -48,7 +47,7 @@ export function QuickActionsCard() {
   const refresh = React.useCallback(() => {
     setItems(buildQuickList(2));
   }, []);
-  console.log("QuickActionsCard rendered with items:", items);
+
   React.useEffect(() => {
     refresh();
 
