@@ -41,6 +41,7 @@ export default async function ToolPage({ params }: Props) {
         slug={tool.slug}
         name={tool.name}
         category={tool.category}
+        shortDescription={tool.shortDescription}
       />
       <ToolRenderer tool={tool} />
     </>
