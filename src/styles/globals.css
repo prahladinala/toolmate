@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+/* We’ll use data attributes for theming */
+html[data-mode="dark"] {
+  color-scheme: dark;
+}

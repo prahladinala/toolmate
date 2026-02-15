@@ -1,26 +1,302 @@
 @import "tailwindcss";
 
+/* -----------------------------
+   Base tokens (Light mode)
+------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --bg: 255 255 255;
+  --fg: 17 24 39; /* slate-900 */
+  --muted: 107 114 128; /* gray-500 */
+  --card: 255 255 255;
+  --card-2: 248 250 252; /* slate-50 */
+  --border: 229 231 235; /* gray-200 */
+
+  /* Accent (overridden by palette) */
+  --accent: 59 130 246; /* blue-500 */
+  --accent-2: 37 99 235; /* blue-600 */
+  --on-accent: 255 255 255;
+
+  /* Status */
+  --danger: 220 38 38; /* red-600 */
+  --warning: 245 158 11; /* amber-500 */
+  --success: 16 185 129; /* emerald-500 */
+
+  /* Layout tokens (overridden by look) */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 18px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.18);
+
+  /* Focus ring */
+  --ring: 59 130 246;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* -----------------------------
+   Dark mode overrides
+------------------------------ */
+html.dark {
+  --bg: 10 10 10;
+  --fg: 245 245 245;
+  --muted: 163 163 163; /* neutral-400 */
+  --card: 18 18 18;
+  --card-2: 24 24 24;
+  --border: 64 64 64;
+
+  --on-accent: 10 10 10; /* good contrast on bright accent */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* -----------------------------
+   Palette overrides
+------------------------------ */
+html[data-palette="slate"] {
+  --accent: 59 130 246;
+  --accent-2: 37 99 235;
+  --ring: 59 130 246;
+}
+html[data-palette="ocean"] {
+  --accent: 6 182 212;
+  --accent-2: 8 145 178;
+  --ring: 6 182 212;
+}
+html[data-palette="forest"] {
+  --accent: 34 197 94;
+  --accent-2: 22 163 74;
+  --ring: 34 197 94;
+}
+html[data-palette="sunset"] {
+  --accent: 249 115 22;
+  --accent-2: 234 88 12;
+  --ring: 249 115 22;
+}
+html[data-palette="rose"] {
+  --accent: 244 63 94;
+  --accent-2: 225 29 72;
+  --ring: 244 63 94;
+}
+html[data-palette="grape"] {
+  --accent: 139 92 246;
+  --accent-2: 124 58 237;
+  --ring: 139 92 246;
+}
+html[data-palette="lime"] {
+  --accent: 132 204 22;
+  --accent-2: 101 163 13;
+  --ring: 132 204 22;
+}
+html[data-palette="mono"] {
+  --accent: 255 255 255;
+  --accent-2: 229 231 235;
+  --ring: 255 255 255;
+  --on-accent: 0 0 0;
+}
+
+/* -----------------------------
+   Look overrides
+------------------------------ */
+html[data-look="modern"] {
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.18);
+}
+
+html[data-look="retro"] {
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 0 0 rgba(0, 0, 0, 0);
+  --shadow-md: 0 0 0 rgba(0, 0, 0, 0);
+  --shadow-lg: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* Neomorphism needs different shadows for light vs dark */
+html[data-look="neomorphism"] {
+  --radius: 20px;
+  --radius-sm: 14px;
+  --radius-lg: 28px;
+}
+
+/* Light neo */
+html[data-look="neomorphism"]:not(.dark) {
+  --card: 244 246 250;
+  --card-2: 238 241 246;
+  --border: 230 233 240;
+
+  --shadow-sm:
+    6px 6px 14px rgba(17, 24, 39, 0.1), -6px -6px 14px rgba(255, 255, 255, 0.9);
+  --shadow-md:
+    10px 10px 22px rgba(17, 24, 39, 0.12),
+    -10px -10px 22px rgba(255, 255, 255, 0.95);
+  --shadow-lg:
+    16px 16px 34px rgba(17, 24, 39, 0.14),
+    -16px -16px 34px rgba(255, 255, 255, 0.98);
+}
+
+/* Dark neo (must be subtle, otherwise it looks muddy) */
+html[data-look="neomorphism"].dark {
+  --card: 20 20 20;
+  --card-2: 26 26 26;
+  --border: 45 45 45;
+
+  --shadow-sm:
+    6px 6px 14px rgba(0, 0, 0, 0.55), -6px -6px 14px rgba(255, 255, 255, 0.05);
+  --shadow-md:
+    10px 10px 22px rgba(0, 0, 0, 0.58),
+    -10px -10px 22px rgba(255, 255, 255, 0.06);
+  --shadow-lg:
+    16px 16px 34px rgba(0, 0, 0, 0.62),
+    -16px -16px 34px rgba(255, 255, 255, 0.07);
+}
+
+/* Optional: inset look (use on inputs/buttons in neo) */
+.neo-inset {
+  box-shadow:
+    inset 6px 6px 14px rgba(0, 0, 0, 0.1),
+    inset -6px -6px 14px rgba(255, 255, 255, 0.7);
+}
+html.dark .neo-inset {
+  box-shadow:
+    inset 6px 6px 14px rgba(0, 0, 0, 0.55),
+    inset -6px -6px 14px rgba(255, 255, 255, 0.06);
+}
+
+/* -----------------------------
+   Global base styles
+------------------------------ */
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+/* Utility: subtle grid background (optional) */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(var(--fg), 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(var(--fg), 0.06) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* Smooth theme transitions */
+html {
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
+}
+body,
+header,
+footer,
+main,
+section,
+div {
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  header,
+  footer,
+  main,
+  section,
+  div {
+    transition: none !important;
+  }
+}
+/* =========================================
+   GLOBAL SELECTION STYLING (PALETTE AWARE)
+========================================= */
+
+/* Default */
+::selection {
+  background-color: rgb(var(--accent));
+  color: rgb(var(--on-accent));
+}
+
+/* Firefox */
+::-moz-selection {
+  background-color: rgb(var(--accent));
+  color: rgb(var(--on-accent));
+}
+
+/* Inputs + textareas */
+input::selection,
+textarea::selection {
+  background-color: rgb(var(--accent));
+  color: rgb(var(--on-accent));
+}
+
+input::-moz-selection,
+textarea::-moz-selection {
+  background-color: rgb(var(--accent));
+  color: rgb(var(--on-accent));
+}
+
+/* ===========================
+   PREMIUM THEME RANGE SLIDER
+=========================== */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(var(--card-2));
+  outline: none;
+  cursor: pointer;
+}
+
+/* WebKit Track */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(var(--card-2));
+}
+
+/* WebKit Thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  border: 3px solid rgb(var(--bg));
+  margin-top: -6px;
+  transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Firefox Track */
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(var(--card-2));
+}
+
+/* Firefox Thumb */
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  border: 3px solid rgb(var(--bg));
+  transition: transform 0.15s ease;
 }
