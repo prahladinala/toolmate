@@ -127,13 +127,13 @@ export default function Base64Tool() {
       <Card className="mt-6 p-4">
         <div className="flex gap-3">
           <Button
-            variant={mode === "encode" ? "default" : "secondary"}
+            variant={mode === "encode" ? "primary" : "secondary"}
             onClick={() => setMode("encode")}
           >
             Encode
           </Button>
           <Button
-            variant={mode === "decode" ? "default" : "secondary"}
+            variant={mode === "encode" ? "primary" : "secondary"}
             onClick={() => setMode("decode")}
           >
             Decode
