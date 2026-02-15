@@ -18,16 +18,16 @@ export function DeveloperSection() {
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="flex flex-col gap-4">
               {/* Square image / placeholder */}
-              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] shadow-[var(--shadow-sm)]">
-                {/* Option A: use an actual image if you set DEVELOPER.avatar */}
-
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] shadow-[var(--shadow-sm)]">
                 {avatarSrc ? (
                   <Image
                     src={avatarSrc}
                     alt={`${DEVELOPER.name} avatar`}
-                    width={64}
-                    height={64}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                    quality={100}
+                    priority
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
