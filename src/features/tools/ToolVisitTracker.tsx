@@ -3,18 +3,27 @@
 import React from "react";
 import { addRecentTool } from "./recent";
 
+type Props = {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  category: string;
+};
+
 export function ToolVisitTracker({
   slug,
   name,
+  shortDescription,
   category,
-}: {
-  slug: string;
-  name: string;
-  category: string;
-}) {
+}: Props) {
   React.useEffect(() => {
-    addRecentTool({ slug, name, category });
-  }, [slug, name, category]);
+    addRecentTool({
+      slug,
+      name,
+      shortDescription,
+      category,
+    });
+  }, [slug, name, shortDescription, category]);
 
   return null;
 }
