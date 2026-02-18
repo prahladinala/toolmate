@@ -6,6 +6,7 @@ export type RuleCategory =
   | "structure"
   | "keyboard"
   | "aria"
+  | "interactive"
   | "performance";
 
 export type Issue = {

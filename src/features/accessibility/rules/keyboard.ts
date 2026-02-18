@@ -1,8 +1,5 @@
 import { AccessibilityRule, Issue } from "../types";
 
-/* =========================
-   Clickable non-interactive
-========================= */
 export const clickableNonInteractiveRule: AccessibilityRule = {
   id: "clickable-non-interactive",
   category: "keyboard",
@@ -30,16 +27,13 @@ export const clickableNonInteractiveRule: AccessibilityRule = {
   },
 };
 
-/* =========================
-   Missing keyboard support
-========================= */
 export const missingKeyboardHandlerRule: AccessibilityRule = {
   id: "missing-keyboard-handler",
   category: "keyboard",
   severity: "moderate",
 
   check(doc) {
-    const issues = [];
+    const issues: Issue[] = [];
 
     doc.querySelectorAll("[onclick]").forEach((el) => {
       if (!el.hasAttribute("onkeydown") && !el.hasAttribute("onkeyup")) {
@@ -57,16 +51,13 @@ export const missingKeyboardHandlerRule: AccessibilityRule = {
   },
 };
 
-/* =========================
-   Tabindex misuse
-========================= */
 export const tabindexRule: AccessibilityRule = {
   id: "tabindex-positive",
   category: "keyboard",
   severity: "moderate",
 
   check(doc) {
-    const issues = [];
+    const issues: Issue[] = [];
 
     doc.querySelectorAll("[tabindex]").forEach((el) => {
       const val = parseInt(el.getAttribute("tabindex") || "0");
