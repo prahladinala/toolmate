@@ -1,8 +1,5 @@
 import { AccessibilityRule, Issue } from "../types";
 
-/* =========================
-   Anchor without href
-========================= */
 export const anchorNoHrefRule: AccessibilityRule = {
   id: "anchor-no-href",
   category: "interactive",

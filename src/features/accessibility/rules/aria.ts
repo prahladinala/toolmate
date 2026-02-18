@@ -1,8 +1,5 @@
 import { AccessibilityRule, Issue } from "../types";
 
-/* =========================
-   aria-hidden on focusable
-========================= */
 export const ariaHiddenFocusableRule: AccessibilityRule = {
   id: "aria-hidden-focusable",
   category: "aria",
@@ -30,16 +27,13 @@ export const ariaHiddenFocusableRule: AccessibilityRule = {
   },
 };
 
-/* =========================
-   role misuse
-========================= */
 export const roleConflictRule: AccessibilityRule = {
   id: "role-conflict",
   category: "aria",
   severity: "moderate",
 
   check(doc) {
-    const issues = [];
+    const issues: Issue[] = [];
 
     doc.querySelectorAll("[role]").forEach((el) => {
       const role = el.getAttribute("role");
@@ -60,16 +54,13 @@ export const roleConflictRule: AccessibilityRule = {
   },
 };
 
-/* =========================
-   Missing aria-label for icon button
-========================= */
 export const iconButtonLabelRule: AccessibilityRule = {
   id: "icon-button-no-label",
   category: "aria",
   severity: "critical",
 
   check(doc) {
-    const issues = [];
+    const issues: Issue[] = [];
 
     doc.querySelectorAll("button").forEach((btn) => {
       if (!btn.textContent?.trim() && !btn.getAttribute("aria-label")) {
