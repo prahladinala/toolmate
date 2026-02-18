@@ -18,6 +18,7 @@ import UrlEncoderDecoderTool from "./tools/url-encoder-decoder";
 import PasswordGeneratorTool from "./tools/password-generator";
 import TextDiffTool from "./tools/text-diff";
 import QrCodeGeneratorTool from "./tools/qr-code-generator";
+import DnsLookupTool from "./tools/dns-lookup";
 
 import { Badge } from "@/components/ui/badge";
 import { motion } from "@/components/motion/motion";
@@ -39,6 +40,7 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "password-generator": PasswordGeneratorTool,
   "text-diff": TextDiffTool,
   "qr-code-generator": QrCodeGeneratorTool,
+  "dns-lookup": DnsLookupTool,
 };
 
 // Helper: pick suggestions by category first, then fallback to others.

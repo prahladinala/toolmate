@@ -292,6 +292,25 @@ export const TOOLS: ToolDef[] = [
       persistOutput: true,
     },
   },
+  {
+    slug: "dns-lookup",
+    name: "DNS Lookup Tool",
+    shortDescription:
+      "Lookup DNS records (A, AAAA, MX, TXT, NS, CNAME) instantly.",
+    category: "Developer",
+    tags: ["DNS", "Domain", "Lookup", "Network"],
+    seo: {
+      title: "DNS Lookup Tool — ToolMate",
+      description:
+        "Lookup DNS records online. Fetch A, AAAA, MX, TXT, NS and more instantly.",
+      keywords: ["dns lookup", "dns checker", "a record lookup"],
+    },
+    persistence: {
+      persistInput: true,
+      persistSettings: true,
+      persistOutput: true,
+    },
+  },
 ];
 
 export function getTool(slug: string) {
