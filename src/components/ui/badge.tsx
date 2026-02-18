@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils/cn";
 
 type Variant =
   | "default"
+  | "secondary"
   | "accent"
   | "success"
   | "warning"
@@ -33,6 +34,8 @@ export function Badge({
   const variants: Record<Variant, string> = {
     default:
       "border border-[rgb(var(--border))] bg-[rgba(var(--fg),0.04)] text-[rgb(var(--fg))]",
+    secondary:
+      "border border-[rgb(var(--border))] bg-[rgba(var(--card-2))] text-[rgb(var(--fg))]",
     accent:
       "border border-[rgba(var(--accent),0.4)] bg-[rgba(var(--accent),0.15)] text-[rgb(var(--accent))]",
     success: "border border-green-500/40 bg-green-500/10 text-green-600",

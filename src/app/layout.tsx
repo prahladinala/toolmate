@@ -33,6 +33,10 @@ export const metadata: Metadata = {
     title: "ToolMate",
     description: "Everyday tools, in one place.",
   },
+  // icons: {
+  //   icon: "/icon.png",
+  //   apple: "/apple-icon.png",
+  // },
 };
 
 export default function RootLayout({
