@@ -311,6 +311,30 @@ export const TOOLS: ToolDef[] = [
       persistOutput: true,
     },
   },
+  {
+    slug: "accessibility-refactor",
+    name: "Accessibility Refactor Assistant",
+    shortDescription:
+      "Analyze and refactor HTML/JSX to improve accessibility with rule-based fixes.",
+    category: "Developer",
+    tags: ["Accessibility", "WCAG", "Refactor", "A11y"],
+    seo: {
+      title: "Accessibility Refactor Assistant — ToolMate",
+      description:
+        "Improve accessibility of your HTML or JSX. Get score, issues, and auto-fixes instantly.",
+      keywords: [
+        "accessibility checker",
+        "wcag analyzer",
+        "html accessibility tool",
+        "jsx accessibility checker",
+      ],
+    },
+    persistence: {
+      persistInput: true,
+      persistSettings: true,
+      persistOutput: true,
+    },
+  },
 ];
 
 export function getTool(slug: string) {
