@@ -7,8 +7,8 @@ type Size = "sm" | "md" | "lg";
 type Variant = "default" | "accent" | "subtle";
 
 type CheckboxProps = {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
   label?: string;
   disabled?: boolean;
   indeterminate?: boolean;
@@ -18,7 +18,7 @@ type CheckboxProps = {
 };
 
 export function Checkbox({
-  checked,
+  checked = false,
   onChange,
   label,
   disabled = false,
@@ -48,6 +48,11 @@ export function Checkbox({
     subtle: "border border-transparent bg-[rgba(var(--fg),0.06)]",
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
+    onChange?.(e.target.checked);
+  };
+
   return (
     <label
       className={cn(
@@ -62,9 +67,9 @@ export function Checkbox({
           type="checkbox"
           checked={checked}
           disabled={disabled}
-          onChange={(e) => onChange(e.target.checked)}
+          onChange={handleChange}
           className="sr-only peer"
-          aria-checked={checked}
+          aria-checked={indeterminate ? "mixed" : checked}
         />
 
         <div
@@ -79,30 +84,32 @@ export function Checkbox({
           )}
         />
 
-        {/* Checkmark */}
-        <svg
-          className={cn(
-            "absolute opacity-0 peer-checked:opacity-100 transition duration-150",
-            "text-[rgb(var(--accent))]",
-            sizeClasses[size],
-          )}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="3"
-        >
-          <path d="M5 13l4 4L19 7" />
-        </svg>
+        {!indeterminate && (
+          <svg
+            className={cn(
+              "absolute opacity-0 peer-checked:opacity-100 transition duration-150 pointer-events-none",
+              "text-[rgb(var(--accent))]",
+              sizeClasses[size],
+            )}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            aria-hidden="true"
+          >
+            <path d="M5 13l4 4L19 7" />
+          </svg>
+        )}
 
-        {/* Indeterminate line */}
         {indeterminate && (
           <div
             className={cn(
-              "absolute h-[2px] bg-[rgb(var(--accent))]",
+              "absolute h-[2px] bg-[rgb(var(--accent))] pointer-events-none",
               size === "sm" && "w-3",
               size === "md" && "w-4",
               size === "lg" && "w-5",
             )}
+            aria-hidden="true"
           />
         )}
       </div>
