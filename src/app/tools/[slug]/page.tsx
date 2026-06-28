@@ -35,8 +35,27 @@ export default async function ToolPage({ params }: Props) {
   const tool = getTool(slug);
   if (!tool) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: tool.seo.title,
+    description: tool.seo.description,
+    url: `https://toolmate.co.in/tools/${tool.slug}`,
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "All",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD"
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ToolVisitTracker
         slug={tool.slug}
         name={tool.name}

@@ -4,6 +4,7 @@ import React from "react";
 import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
+import { CodeEditor } from "@/components/ui/code-editor";
 import { motion } from "framer-motion";
 
 type Settings = {
@@ -306,10 +307,11 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
           <div className="font-medium">Input</div>
-          <textarea
-            className="mt-3 h-[420px] w-full rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] p-3 font-mono text-sm"
+          <CodeEditor
+            className="mt-3 min-h-[420px]"
             value={input.value}
-            onChange={(e) => input.setValue(e.target.value)}
+            onChange={(value) => input.setValue(value || "")}
+            language="json"
           />
         </div>
 
@@ -338,12 +340,14 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
               </motion.span>
             </Button>
           </div>
-          <textarea
-            readOnly
-            className={`mt-3 h-[420px] w-full rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] p-3 font-mono text-sm ${
-              settings.value.wrap ? "" : "whitespace-pre"
-            }`}
+          <CodeEditor
+            className="mt-3 min-h-[420px]"
             value={output}
+            language="json"
+            options={{
+              readOnly: true,
+              wordWrap: settings.value.wrap ? "on" : "off",
+            }}
           />
         </div>
       </div>

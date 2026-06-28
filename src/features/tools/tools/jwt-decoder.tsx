@@ -4,6 +4,7 @@ import React from "react";
 import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
+import { CodeEditor } from "@/components/ui/code-editor";
 
 type Settings = {
   pretty: boolean;
@@ -136,11 +137,11 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
       {/* INPUT */}
       <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4 shadow-[var(--shadow-sm)]">
         <div className="font-medium">JWT Token</div>
-        <textarea
-          className="mt-3 h-28 w-full rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] p-3 font-mono text-sm"
-          placeholder="Paste your JWT here..."
+        <CodeEditor
           value={input.value}
-          onChange={(e) => input.setValue(e.target.value)}
+          onChange={(v) => input.setValue(v || "")}
+          className="mt-3 min-h-[120px]"
+          language="plaintext"
         />
       </div>
 

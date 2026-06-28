@@ -6,7 +6,7 @@ import { analyzeAccessibility } from "@/features/accessibility/engine";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/ui/code-editor";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function AccessibilityRefactorTool() {
@@ -46,11 +46,10 @@ export default function AccessibilityRefactorTool() {
     <main className="mx-auto max-w-6xl px-4 py-10 space-y-6">
       {/* Input */}
       <Card className="p-5 space-y-4">
-        <Textarea
+        <CodeEditor
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Paste HTML or JSX here..."
-          size="lg"
+          onChange={(v) => setInput(v || "")}
+          language="html"
         />
 
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -173,7 +172,7 @@ export default function AccessibilityRefactorTool() {
           <Card className="p-5">
             <div className="font-semibold mb-3">Accessible Output</div>
 
-            <Textarea value={result.fixedCode} readOnly size="lg" />
+            <CodeEditor value={result.fixedCode} language="html" options={{ readOnly: true }} />
           </Card>
         </div>
       )}

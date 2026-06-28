@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CodeEditor } from "@/components/ui/code-editor";
 
 type ErrorLevel = "L" | "M" | "Q" | "H";
 
@@ -76,10 +77,11 @@ export default function QrCodeGeneratorTool() {
         <Card className="p-6 space-y-5">
           <div>
             <label className="text-sm">QR Content</label>
-            <textarea
+            <CodeEditor
               value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="mt-2 w-full rounded border p-3"
+              onChange={(v) => setValue(v || "")}
+              className="mt-2 min-h-[150px]"
+              language="plaintext"
             />
           </div>
 

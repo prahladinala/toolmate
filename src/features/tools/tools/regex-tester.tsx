@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CodeEditor } from "@/components/ui/code-editor";
 
 type Flags = {
   g: boolean;
@@ -121,10 +122,11 @@ export default function RegexTesterTool() {
         {/* Test String */}
         <Card className="p-4">
           <div className="font-medium">Test String</div>
-          <textarea
+          <CodeEditor
             value={testString}
-            onChange={(e) => setTestString(e.target.value)}
-            className="mt-3 h-[350px] w-full rounded border p-3 font-mono text-sm"
+            onChange={(v) => setTestString(v || "")}
+            className="mt-3 min-h-[350px]"
+            language="plaintext"
           />
         </Card>
 

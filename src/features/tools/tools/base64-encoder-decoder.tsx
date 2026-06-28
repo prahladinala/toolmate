@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CodeEditor } from "@/components/ui/code-editor";
 
 type Mode = "encode" | "decode";
 
@@ -160,10 +161,11 @@ export default function Base64Tool() {
             </button>
           </div>
 
-          <textarea
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="mt-3 h-[300px] w-full rounded border p-3 font-mono text-sm"
+            onChange={(v) => setInput(v || "")}
+            className="mt-3 min-h-[300px]"
+            language="plaintext"
           />
 
           <div className="mt-3 text-xs text-[rgb(var(--muted))]">
@@ -227,10 +229,11 @@ export default function Base64Tool() {
               className="mt-4 h-[300px] w-full rounded"
             />
           ) : (
-            <textarea
-              readOnly
+            <CodeEditor
               value={output}
-              className="mt-3 h-[300px] w-full rounded border p-3 font-mono text-sm"
+              options={{ readOnly: true }}
+              className="mt-3 min-h-[300px]"
+              language="plaintext"
             />
           )}
 
