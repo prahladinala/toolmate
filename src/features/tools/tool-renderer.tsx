@@ -206,7 +206,7 @@ export function ToolRenderer({ tool }: { tool: ToolDef }) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       {/* Breadcrumb */}
-      <div className="mb-4 text-s text-[rgb(var(--muted))]">
+      <nav aria-label="Breadcrumb" className="mb-4 text-s text-[rgb(var(--muted))]">
         <Link
           href="/tools"
           className="
@@ -217,8 +217,8 @@ export function ToolRenderer({ tool }: { tool: ToolDef }) {
         >
           Tools
         </Link>{" "}
-        / <span className="text-[rgb(var(--fg))]">{tool.name}</span>
-      </div>
+        / <span aria-current="page" className="text-[rgb(var(--fg))]">{tool.name}</span>
+      </nav>
 
       {/* TOOL HEADER */}
       <motion.div

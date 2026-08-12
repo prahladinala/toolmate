@@ -160,7 +160,7 @@ export function ImageResizerTool({ tool }: { tool: ToolDef }) {
           {imageSrc ? (
             <div className="max-w-full max-h-full overflow-hidden flex items-center justify-center relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={imageSrc} alt="Preview" className="max-w-full max-h-[500px] object-contain opacity-50" />
+              <img src={imageSrc} alt="Preview" className="max-w-full max-h-[500px] object-contain opacity-50" width={800} height={500} />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                  <div className="bg-black/70 text-white px-4 py-2 rounded-lg font-mono text-sm shadow-lg backdrop-blur-sm">
                    {width || "?"} × {height || "?"}

@@ -108,6 +108,8 @@ export function CssFilterGeneratorTool({ tool }: { tool: ToolDef }) {
                alt="Test" 
                className="max-w-full max-h-[400px] object-cover rounded-lg shadow-md"
                style={{ filter: filterValue }}
+               width={800}
+               height={400}
              />
           </div>
           <div className="h-40 relative border-t border-[rgb(var(--border))]">

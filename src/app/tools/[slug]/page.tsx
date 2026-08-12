@@ -50,11 +50,40 @@ export default async function ToolPage({ params }: Props) {
     }
   };
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://toolmate.co.in"
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Tools",
+        item: "https://toolmate.co.in/tools"
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: tool.name,
+        item: `https://toolmate.co.in/tools/${tool.slug}`
+      }
+    ]
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <ToolVisitTracker
         slug={tool.slug}

@@ -25,6 +25,7 @@ export function Navbar() {
               variant="secondary"
               size="sm"
               onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle theme"
             >
               Theme
             </Button>

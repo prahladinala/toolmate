@@ -193,7 +193,7 @@ export const TOOLS: ToolDef[] = [
     category: "Developer",
     tags: ["JWT", "Decode", "Validate"],
     seo: {
-      title: "JWT Decoder — ToolMate",
+      title: "JWT Decoder & Validator — ToolMate",
       description: "Decode and validate JWT tokens. Great for debugging.",
       keywords: ["jwt decoder", "jwt validate", "jwt decode"],
     },
@@ -235,7 +235,7 @@ export const TOOLS: ToolDef[] = [
     category: "Developer",
     tags: ["Regex", "Pattern", "Tester", "Validation"],
     seo: {
-      title: "Regex Tester — ToolMate",
+      title: "Regex Tester & Debugger — ToolMate",
       description:
         "Test and debug regular expressions live. Supports flags, match highlighting and capture groups.",
       keywords: [
@@ -258,7 +258,7 @@ export const TOOLS: ToolDef[] = [
     category: "Developer",
     tags: ["Diff", "Compare", "Text", "Changes"],
     seo: {
-      title: "Text Diff Tool — ToolMate",
+      title: "Text Diff Checker Tool — ToolMate",
       description:
         "Compare two texts side by side and highlight differences instantly.",
       keywords: [
@@ -368,7 +368,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Format and beautify SQL queries.",
     category: "Developer",
     tags: ["SQL", "Database", "Format"],
-    seo: { title: "SQL Formatter — ToolMate", description: "Format and beautify SQL queries.", keywords: ["sql formatter", "format sql", "beautify sql"] },
+    seo: { title: "SQL Formatter & Beautifier — ToolMate", description: "Format and beautify SQL queries.", keywords: ["sql formatter", "format sql", "beautify sql"] },
     persistence: { persistInput: true, persistSettings: true, persistOutput: true },
   },
   {
@@ -377,7 +377,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Format and beautify XML data.",
     category: "Developer",
     tags: ["XML", "Format"],
-    seo: { title: "XML Formatter — ToolMate", description: "Format and beautify XML data instantly.", keywords: ["xml formatter", "format xml", "beautify xml"] },
+    seo: { title: "XML Formatter & Beautifier — ToolMate", description: "Format and beautify XML data instantly.", keywords: ["xml formatter", "format xml", "beautify xml"] },
     persistence: { persistInput: true, persistSettings: true, persistOutput: true },
   },
   {
@@ -467,7 +467,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Convert numbers between Decimal, Hex, Binary, and Octal.",
     category: "Converters",
     tags: ["Base", "Hex", "Binary", "Converter"],
-    seo: { title: "Base Converter — ToolMate", description: "Convert numbers between Decimal, Hex, Binary, and Octal.", keywords: ["base converter", "hex to decimal", "binary to decimal"] },
+    seo: { title: "Number Base Converter — ToolMate", description: "Convert numbers between Decimal, Hex, Binary, and Octal.", keywords: ["base converter", "hex to decimal", "binary to decimal"] },
     persistence: { persistInput: true, persistSettings: true, persistOutput: true },
   },
   {
@@ -485,7 +485,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Convert colors between HEX, RGB, and HSL.",
     category: "Design",
     tags: ["Color", "HEX", "RGB", "HSL", "Converter"],
-    seo: { title: "Color Converter — ToolMate", description: "Convert colors between HEX, RGB, and HSL.", keywords: ["color converter", "hex to rgb", "rgb to hsl"] },
+    seo: { title: "Color HEX RGB HSL Converter — ToolMate", description: "Convert colors between HEX, RGB, and HSL.", keywords: ["color converter", "hex to rgb", "rgb to hsl"] },
     persistence: { persistInput: true, persistSettings: true, persistOutput: true },
   },
   {
@@ -494,7 +494,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Convert text to Camel Case, Snake Case, etc.",
     category: "Converters",
     tags: ["Text", "Case", "Converter"],
-    seo: { title: "Text Case Converter — ToolMate", description: "Convert text to Camel Case, Snake Case, Kebab Case, and more.", keywords: ["text case converter", "camel case converter", "snake case converter"] },
+    seo: { title: "Text Case Converter Tool — ToolMate", description: "Convert text to Camel Case, Snake Case, Kebab Case, and more.", keywords: ["text case converter", "camel case converter", "snake case converter"] },
     persistence: { persistInput: true, persistSettings: true, persistOutput: true },
   },
   {
@@ -503,7 +503,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Count words, characters, lines, and bytes in text.",
     category: "Information",
     tags: ["Word", "Character", "Count", "Text"],
-    seo: { title: "Word Counter — ToolMate", description: "Count words, characters, lines, and bytes in any text.", keywords: ["word counter", "character counter", "text length"] },
+    seo: { title: "Word & Character Counter — ToolMate", description: "Count words, characters, lines, and bytes in any text.", keywords: ["word counter", "character counter", "text length"] },
     persistence: { persistInput: true, persistSettings: true, persistOutput: true },
   },
   {
@@ -512,7 +512,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Parse URLs to extract protocol, host, path, and query params.",
     category: "Developer",
     tags: ["URL", "Parser", "Query"],
-    seo: { title: "URL Parser — ToolMate", description: "Parse URLs to extract protocol, host, path, and query params.", keywords: ["url parser", "parse url", "query string parser"] },
+    seo: { title: "URL & Query String Parser — ToolMate", description: "Parse URLs to extract protocol, host, path, and query params.", keywords: ["url parser", "parse url", "query string parser"] },
     persistence: { persistInput: true, persistSettings: true, persistOutput: true },
   },
   {
@@ -521,7 +521,7 @@ export const TOOLS: ToolDef[] = [
     shortDescription: "Calculate Linux chmod permissions visually.",
     category: "Developer",
     tags: ["Chmod", "Linux", "Permissions"],
-    seo: { title: "Chmod Calculator — ToolMate", description: "Calculate Linux chmod permissions visually.", keywords: ["chmod calculator", "linux permissions", "chmod 777"] },
+    seo: { title: "Linux Chmod Permissions Calculator — ToolMate", description: "Calculate Linux chmod permissions visually.", keywords: ["chmod calculator", "linux permissions", "chmod 777"] },
     persistence: { persistInput: false, persistSettings: true, persistOutput: true },
   },
   {

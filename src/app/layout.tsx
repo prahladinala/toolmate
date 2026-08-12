@@ -27,16 +27,26 @@ export const metadata: Metadata = {
     siteName: "ToolMate",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "https://toolmate.co.in/favicon.ico",
+        width: 64,
+        height: 64,
+        alt: "ToolMate Logo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "ToolMate",
     description: "Everyday tools, in one place.",
+    images: ["https://toolmate.co.in/favicon.ico"],
   },
-  // icons: {
-  //   icon: "/icon.png",
-  //   apple: "/apple-icon.png",
-  // },
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

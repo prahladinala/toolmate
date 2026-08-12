@@ -222,6 +222,8 @@ export default function Base64Tool() {
               src={`data:${mimeType};base64,${output}`}
               className="mt-4 max-h-[300px] rounded"
               alt="Preview"
+              width={800}
+              height={300}
             />
           ) : mode === "decode" && mimeType === "application/pdf" ? (
             <iframe
