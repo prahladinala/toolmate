@@ -10,7 +10,19 @@ import { CodeEditor } from "@/components/ui/code-editor";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function AccessibilityRefactorTool() {
-  const [input, setInput] = React.useState("");
+  const [input, setInput] = React.useState(
+    `<!-- Sample HTML with Accessibility Issues -->
+<div class="user-card">
+  <img src="avatar.png" />
+  <div onclick="submitForm()">Click here to submit</div>
+  
+  <form>
+    First Name: <input type="text" name="fname" />
+    <br/>
+    <button style="background: red; color: darkred;">Submit</button>
+  </form>
+</div>`
+  );
   const [autoFix, setAutoFix] = React.useState(true);
   const [result, setResult] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
@@ -43,32 +55,34 @@ export default function AccessibilityRefactorTool() {
   }, {});
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 space-y-6">
-      {/* Input */}
-      <Card className="p-5 space-y-4">
+    <div className="mx-auto max-w-6xl w-full space-y-8">
+      {/* Input Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-[13px] font-bold uppercase tracking-widest text-[rgb(var(--muted))]">Source Code (HTML / JSX)</div>
+          <div className="flex items-center gap-4">
+            <Checkbox
+              checked={autoFix}
+              onChange={setAutoFix}
+              label="Auto Apply Fixes"
+            />
+            <Button onClick={handleAnalyze} loading={loading} className="rounded-full shadow-lg hover:shadow-indigo-500/25 px-6 font-bold">
+              Analyze Code
+            </Button>
+          </div>
+        </div>
+
         <CodeEditor
           value={input}
           onChange={(v) => setInput(v || "")}
           language="html"
         />
-
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <Checkbox
-            checked={autoFix}
-            onChange={setAutoFix}
-            label="Auto Apply Fixes"
-          />
-
-          <Button onClick={handleAnalyze} loading={loading}>
-            Analyze
-          </Button>
-        </div>
-      </Card>
+      </div>
 
       {result && (
         <div className="space-y-6">
           {/* Score Section */}
-          <Card className="p-5">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="text-lg font-semibold">Accessibility Score</div>
               <Badge
@@ -103,10 +117,10 @@ export default function AccessibilityRefactorTool() {
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
 
           {/* Issues by Category */}
-          <Card className="p-5">
+          <div className="space-y-4">
             <div className="font-semibold mb-4">
               Issues ({result.issues.length})
             </div>
@@ -166,16 +180,17 @@ export default function AccessibilityRefactorTool() {
                 )}
               </div>
             )}
-          </Card>
+          </div>
 
           {/* Output */}
-          <Card className="p-5">
+          <div className="space-y-4">
             <div className="font-semibold mb-3">Accessible Output</div>
 
-            <CodeEditor value={result.fixedCode} language="html" options={{ readOnly: true }} />
-          </Card>
+            <CodeEditor value={result.fixedCode} language="html" editable={false} />
+          </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
+

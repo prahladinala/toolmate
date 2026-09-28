@@ -57,9 +57,23 @@ export function ToolsExplorer({ tools }: { tools: Tool[] }) {
 
   const [category, setCategory] = React.useState<string>(ALL);
   const [recent, setRecent] = React.useState<RecentTool[]>([]);
+  
+  const [contextMenu, setContextMenu] = React.useState<{
+    open: boolean;
+    x: number;
+    y: number;
+    tool: Tool | null;
+  }>({ open: false, x: 0, y: 0, tool: null });
 
   React.useEffect(() => {
     setRecent(getRecentTools());
+    const closeMenu = () => setContextMenu((prev) => ({ ...prev, open: false }));
+    window.addEventListener("click", closeMenu);
+    window.addEventListener("scroll", closeMenu, { passive: true });
+    return () => {
+      window.removeEventListener("click", closeMenu);
+      window.removeEventListener("scroll", closeMenu);
+    };
   }, []);
 
   const filtered = React.useMemo(() => {
@@ -162,7 +176,20 @@ export function ToolsExplorer({ tools }: { tools: Tool[] }) {
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {recent.slice(0, 3).map((r) => (
-                <Link key={r.slug} href={`/tools/${r.slug}`} className="outline-none block h-full">
+                <Link 
+                  key={r.slug} 
+                  href={`/tools/${r.slug}`} 
+                  className="outline-none block h-full"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setContextMenu({
+                      open: true,
+                      x: Math.min(e.clientX, window.innerWidth - 224),
+                      y: Math.min(e.clientY, window.innerHeight - 200),
+                      tool: r as Tool,
+                    });
+                  }}
+                >
                   <div className="group relative overflow-hidden p-6 h-full transition-all duration-500 border border-[rgba(var(--fg),0.08)] bg-[rgba(var(--card),0.4)] backdrop-blur-sm hover:border-[rgba(var(--fg),0.2)] hover:bg-[rgba(var(--fg),0.03)] rounded-3xl hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.02)]">
                     <div className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none" />
                     <div className="relative z-10 flex flex-col h-full">
@@ -228,7 +255,19 @@ export function ToolsExplorer({ tools }: { tools: Tool[] }) {
                     transition={{ duration: 0.25, ease: "easeOut" }}
                     className="h-full"
                   >
-                    <Link href={`/tools/${t.slug}`} className="block h-full outline-none">
+                    <Link 
+                      href={`/tools/${t.slug}`} 
+                      className="block h-full outline-none"
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        setContextMenu({
+                          open: true,
+                          x: Math.min(e.clientX, window.innerWidth - 224),
+                          y: Math.min(e.clientY, window.innerHeight - 200),
+                          tool: t,
+                        });
+                      }}
+                    >
                       <div className="group relative overflow-hidden p-8 h-full transition-all duration-500 border border-[rgba(var(--fg),0.08)] bg-[rgba(var(--card),0.4)] backdrop-blur-sm hover:border-[rgba(var(--fg),0.2)] hover:bg-[rgba(var(--fg),0.03)] rounded-3xl hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.02)] flex flex-col">
                         <div className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none" />
                         <div className="relative z-10 flex flex-col h-full">
@@ -266,6 +305,59 @@ export function ToolsExplorer({ tools }: { tools: Tool[] }) {
           )}
         </section>
       </div>
+      
+      {/* Custom Context Menu */}
+      <AnimatePresence>
+        {contextMenu.open && contextMenu.tool && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.1 }}
+            className="fixed z-50 w-56 bg-[rgb(var(--card))] border border-[rgba(var(--fg),0.1)] shadow-[0_12px_40px_rgba(0,0,0,0.15)] rounded-xl overflow-hidden py-1.5"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+            onClick={(e) => e.stopPropagation()}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <div className="px-3 py-2 border-b border-[rgba(var(--fg),0.05)] mb-1">
+               <div className="font-bold text-[13px] truncate">{contextMenu.tool.name}</div>
+               <div className="text-[11px] text-[rgb(var(--muted))]">{contextMenu.tool.category}</div>
+            </div>
+            
+            <button
+              onClick={() => {
+                window.open(`/tools/${contextMenu.tool?.slug}`, "_blank");
+                setContextMenu(prev => ({ ...prev, open: false }));
+              }}
+              className="w-full text-left px-3 py-2 text-[13px] font-semibold text-[rgb(var(--fg))] hover:bg-[rgba(var(--fg),0.05)] hover:text-indigo-500 transition-colors flex items-center gap-2.5 group"
+            >
+              <svg className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+              Open in New Tab
+            </button>
+            
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`https://toolmate.co.in/tools/${contextMenu.tool?.slug}`);
+                setContextMenu(prev => ({ ...prev, open: false }));
+              }}
+              className="w-full text-left px-3 py-2 text-[13px] font-semibold text-[rgb(var(--fg))] hover:bg-[rgba(var(--fg),0.05)] hover:text-indigo-500 transition-colors flex items-center gap-2.5 group"
+            >
+              <svg className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              Copy Link
+            </button>
+
+            <button
+              onClick={() => {
+                 window.location.href = `/tools/${contextMenu.tool?.slug}`;
+              }}
+              className="w-full text-left px-3 py-2 text-[13px] font-semibold text-[rgb(var(--fg))] hover:bg-[rgba(var(--fg),0.05)] hover:text-indigo-500 transition-colors flex items-center gap-2.5 group"
+            >
+              <svg className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              Launch Tool
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

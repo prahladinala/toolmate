@@ -2,10 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { safeStorage } from "@/lib/storage/safe-storage";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Tool = {
   slug: string;
@@ -15,25 +12,6 @@ type Tool = {
   tags?: string[];
 };
 
-const INTEREST_KEY = "toolmate:interest:v1";
-
-function addInterest(slug: string) {
-  const raw = safeStorage.get(INTEREST_KEY);
-  const list = raw ? (JSON.parse(raw) as string[]) : [];
-  const next = Array.from(new Set([slug, ...list])).slice(0, 50);
-  safeStorage.set(INTEREST_KEY, JSON.stringify(next));
-  return next;
-}
-
-function shimmerStyle() {
-  return {
-    background:
-      "linear-gradient(90deg, rgba(var(--accent),0.10), rgba(var(--accent),0.28), rgba(var(--accent),0.10))",
-    backgroundSize: "200% 100%",
-    animation: "toolmateShimmer 2.2s ease-in-out infinite",
-  } as React.CSSProperties;
-}
-
 export function ToolNotImplemented({
   tool,
   suggestions,
@@ -41,166 +19,123 @@ export function ToolNotImplemented({
   tool: Tool;
   suggestions: Tool[];
 }) {
-  const [saved, setSaved] = React.useState(false);
-
-  const copyRequest = async () => {
-    const text = `Tool request: ${tool.name}
-Slug: ${tool.slug}
-Category: ${tool.category}
-
-What I want:
-- Inputs:
-- Outputs:
-- Edge cases:
-- UX preferences:
-- Example:
-`;
-    await navigator.clipboard.writeText(text);
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 1800);
-  };
-
-  const notifyMe = () => {
-    addInterest(tool.slug);
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 1800);
-  };
-
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      {/* Keyframes */}
-      <style>{`
-        @keyframes toolmateShimmer {
-          0% { background-position: 0% 50%; }
-          100% { background-position: 200% 50%; }
-        }
-        @keyframes floaty {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-          100% { transform: translateY(0px); }
-        }
-      `}</style>
+    <main className="relative min-h-screen pt-32 pb-24 overflow-hidden">
+      {/* Ambient Grid Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(var(--fg),0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(var(--fg),0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
+      <div className="absolute top-0 inset-x-0 h-[600px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-[var(--shadow-lg)]">
-        {/* glow */}
-        <div
-          className="pointer-events-none absolute -top-24 left-1/2 h-64 w-[520px] -translate-x-1/2 blur-3xl opacity-60"
-          style={{
-            background:
-              "radial-gradient(closest-side, rgba(var(--accent),0.30), transparent 70%)",
-          }}
-        />
+      <div className="mx-auto max-w-6xl px-4">
+        {/* Breadcrumb */}
+        <nav aria-label="Breadcrumb" className="mb-8 flex items-center text-[13px] font-semibold text-[rgb(var(--muted))]">
+          <Link href="/tools" className="hover:text-indigo-500 transition-colors">
+            Tools
+          </Link>
+          <span className="mx-2 opacity-50">/</span>
+          <span aria-current="page" className="text-[rgb(var(--fg))]">{tool.name}</span>
+        </nav>
 
-        {/* top shimmer bar */}
-        <div className="h-1.5 w-full" style={shimmerStyle()} />
+        {/* Hero */}
+        <section className="relative overflow-hidden rounded-[2.5rem] border border-[rgba(var(--fg),0.08)] bg-[rgba(var(--card),0.4)] backdrop-blur-sm shadow-[0_8px_40px_rgba(0,0,0,0.04)] mb-20 p-8 md:p-16">
+          <div className="absolute -top-24 left-1/2 h-64 w-[520px] -translate-x-1/2 blur-3xl opacity-30 pointer-events-none bg-[radial-gradient(closest-side,rgba(99,102,241,0.30),transparent_70%)]" />
 
-        <div className="grid gap-6 p-6 md:grid-cols-[1.2fr_0.8fr] md:items-center md:p-10">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--border))] bg-[rgba(var(--fg),0.03)] px-3 py-1 text-xs">
-              <span className="font-medium">Coming soon</span>
-              <span className="opacity-60">•</span>
-              <span className="text-[rgb(var(--muted))]">{tool.category}</span>
+          <div className="relative z-10 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(var(--fg),0.05)] bg-[rgba(var(--fg),0.03)] px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-indigo-500 mb-6">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              Coming Soon
             </div>
 
-            <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
               {tool.name}
             </h1>
 
-            <p className="mt-3 text-sm text-[rgb(var(--muted))] sm:text-base">
-              This tool is on the roadmap. Meanwhile, you can request priority
-              features or jump to similar tools.
+            <p className="text-[16px] text-[rgb(var(--muted))] leading-relaxed mb-8">
+              This tool is currently on our development roadmap. In the meantime, you can explore similar utilities below or head back to the main workspace.
             </p>
 
-            <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-              {/* <Button onClick={copyRequest}>
-                {saved ? "Copied ✅" : "Request this tool"}
-              </Button>
-
-              <Button variant="secondary" onClick={notifyMe}>
-                {saved ? "Saved ✅" : "Notify me (local)"}
-              </Button> */}
-
-              <Link
-                href="/tools"
-                className="inline-flex h-10 items-center justify-center rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] px-4 text-sm font-medium hover:bg-[rgb(var(--card-2))] transition"
-              >
-                Browse tools
-              </Link>
-            </div>
+            <Link
+              href="/tools"
+              className="inline-flex items-center justify-center rounded-full bg-indigo-500 text-white px-6 py-3 text-sm font-bold shadow-lg shadow-indigo-500/20 hover:bg-indigo-600 hover:scale-105 transition-all duration-300"
+            >
+              Browse other tools
+            </Link>
 
             {tool.tags?.length ? (
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-8 flex flex-wrap gap-2">
                 {tool.tags.map((t) => (
-                  <Badge key={t} className="opacity-80">
+                  <span key={t} className="rounded-md bg-[rgba(var(--fg),0.04)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[rgb(var(--fg))] opacity-60">
                     {t}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             ) : null}
           </div>
+        </section>
 
-          {/* Illustration */}
-          {/* <div className="relative">
-            <div
-              className="mx-auto aspect-square w-full max-w-[320px] rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] shadow-[var(--shadow-md)]"
-              style={{ animation: "floaty 3.2s ease-in-out infinite" }}
+        {/* Suggestions */}
+        <section>
+          <div className="flex items-end justify-between mb-8">
+            <h2 className="text-2xl font-extrabold tracking-tight">Try these instead</h2>
+            <Link
+              href="/tools"
+              className="text-[13px] font-semibold text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors"
             >
-              <div className="p-5">
-                <div className="h-3 w-24 rounded-full bg-[rgba(var(--fg),0.10)]" />
-                <div className="mt-3 h-10 rounded-[var(--radius)] bg-[rgba(var(--fg),0.06)]" />
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div className="h-16 rounded-[var(--radius)] bg-[rgba(var(--accent),0.16)]" />
-                  <div className="h-16 rounded-[var(--radius)] bg-[rgba(var(--fg),0.06)]" />
-                </div>
-                <div className="mt-3 h-24 rounded-[var(--radius)] bg-[rgba(var(--fg),0.06)]" />
-                <div className="mt-3 h-2 w-2/3 rounded-full bg-[rgba(var(--accent),0.30)]" />
-              </div>
-            </div>
-
-            <div className="mt-4 text-center text-xs text-[rgb(var(--muted))]">
-              Theme-aware preview • works with light/dark/look/palette
-            </div>
-          </div> */}
-        </div>
-      </section>
-
-      {/* Suggestions */}
-      <section className="mt-10">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-semibold">Try these instead</h2>
-            <p className="mt-1 text-sm text-[rgb(var(--muted))]">
-              Similar tools you can use right now.
-            </p>
-          </div>
-          <Link
-            href="/tools"
-            className="text-sm underline text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] transition"
-          >
-            View all
-          </Link>
-        </div>
-
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {suggestions.map((t) => (
-            <Link key={t.slug} href={`/tools/${t.slug}`}>
-              <Card className="group p-4 transition hover:shadow-[var(--shadow-md)]">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="font-medium leading-snug">{t.name}</div>
-                  <Badge>{t.category}</Badge>
-                </div>
-                <p className="mt-2 text-sm text-[rgb(var(--muted))]">
-                  {t.shortDescription}
-                </p>
-                <div className="mt-4 text-sm underline opacity-0 transition group-hover:opacity-80">
-                  Open →
-                </div>
-              </Card>
+              View all tools →
             </Link>
-          ))}
-        </div>
-      </section>
+          </div>
+
+          <motion.div
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.05 } },
+            }}
+          >
+            <AnimatePresence mode="popLayout">
+              {suggestions.map((t) => (
+                <motion.div
+                  key={t.slug}
+                  layout
+                  initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, y: 10 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="h-full"
+                >
+                  <Link href={`/tools/${t.slug}`} className="block h-full outline-none">
+                    <div className="group relative overflow-hidden p-8 h-full transition-all duration-500 border border-[rgba(var(--fg),0.08)] bg-[rgba(var(--card),0.4)] backdrop-blur-sm hover:border-[rgba(var(--fg),0.2)] hover:bg-[rgba(var(--fg),0.03)] rounded-3xl hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.02)] flex flex-col">
+                      <div className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none" />
+                      <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="font-extrabold text-xl tracking-tight leading-snug">{t.name}</div>
+                          <span className="shrink-0 rounded-full bg-[rgba(var(--fg),0.05)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[rgb(var(--muted))]">
+                            {t.category}
+                          </span>
+                        </div>
+                        
+                        <p className="mt-4 text-[15px] text-[rgb(var(--muted))] leading-relaxed flex-1">
+                          {t.shortDescription}
+                        </p>
+
+                        <div className="mt-8 pt-6 flex items-center justify-between border-t border-[rgba(var(--fg),0.05)]">
+                          <span className="text-[13px] font-bold text-indigo-500 dark:text-indigo-400 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                            Launch <span className="ml-0.5">→</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </section>
+      </div>
     </main>
   );
 }

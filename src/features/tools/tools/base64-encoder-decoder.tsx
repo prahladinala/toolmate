@@ -123,40 +123,49 @@ export default function Base64Tool() {
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      {/* Mode Toggle */}
-      <Card className="mt-6 p-4">
-        <div className="flex gap-3">
-          <Button
-            variant={mode === "encode" ? "primary" : "secondary"}
+    <div className="w-full space-y-8">
+      {/* Sleek Mode Toggle */}
+      <div className="flex justify-center">
+        <div className="inline-flex items-center p-1 bg-[rgba(var(--fg),0.03)] rounded-full border border-[rgba(var(--fg),0.05)]">
+          <button
             onClick={() => setMode("encode")}
+            className={`px-8 py-2.5 rounded-full text-[13px] font-bold uppercase tracking-wider transition-all duration-300 ${
+              mode === "encode"
+                ? "bg-[rgb(var(--fg))] text-[rgb(var(--bg))] shadow-md"
+                : "text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+            }`}
           >
             Encode
-          </Button>
-          <Button
-            variant={mode === "encode" ? "primary" : "secondary"}
+          </button>
+          <button
             onClick={() => setMode("decode")}
+            className={`px-8 py-2.5 rounded-full text-[13px] font-bold uppercase tracking-wider transition-all duration-300 ${
+              mode === "decode"
+                ? "bg-[rgb(var(--fg))] text-[rgb(var(--bg))] shadow-md"
+                : "text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+            }`}
           >
             Decode
-          </Button>
+          </button>
         </div>
-      </Card>
+      </div>
 
       {error && (
-        <div className="mt-4 rounded border border-red-400 bg-red-100 p-3 text-sm text-red-700">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-500 flex items-center gap-3 font-medium">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
           {error}
-        </div>
+        </motion.div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2 mt-6">
-        {/* Input */}
-        <Card className="p-5">
-          <div className="flex justify-between">
-            <div className="font-medium">Input</div>
-            <button
-              onClick={() => copy(input, "input")}
-              className="text-xs underline text-[rgb(var(--accent))]"
-            >
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Input Column */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] font-bold uppercase tracking-widest text-[rgb(var(--muted))] flex items-center gap-2">
+              Input
+              <span className="px-2 py-0.5 rounded-full bg-[rgba(var(--fg),0.05)] text-[10px]">{input.length} chars</span>
+            </div>
+            <button onClick={() => copy(input, "input")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
               {copied === "input" ? "Copied ✓" : "Copy"}
             </button>
           </div>
@@ -164,88 +173,55 @@ export default function Base64Tool() {
           <CodeEditor
             value={input}
             onChange={(v) => setInput(v || "")}
-            className="mt-3 min-h-[300px]"
+            className="!min-h-[400px]"
             language="plaintext"
           />
 
-          <div className="mt-3 text-xs text-[rgb(var(--muted))]">
-            Characters: {input.length}
+          <div className="flex items-center gap-3">
+             <input ref={fileInputRef} type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
+             <button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-[rgba(var(--fg),0.1)] text-sm font-medium text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] hover:border-[rgba(var(--fg),0.3)] hover:bg-[rgba(var(--fg),0.02)] transition-all">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                Upload File Instead
+             </button>
           </div>
+        </div>
 
-          <div className="mt-4">
-            <div className="mt-4">
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                onChange={(e) =>
-                  e.target.files && handleFileUpload(e.target.files[0])
-                }
-              />
-
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                onClick={() => fileInputRef.current?.click()}
-                className="
-      w-full
-      rounded-[var(--radius)]
-      border border-[rgb(var(--border))]
-      bg-[rgb(var(--card-2))]
-      px-4 py-2 text-sm
-      transition
-      hover:border-[rgba(var(--accent),0.55)]
-      hover:bg-[rgba(var(--accent),0.08)]
-      hover:text-[rgb(var(--accent))]
-    "
-              >
-                Choose File
-              </motion.button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Output */}
-        <Card className="p-5">
-          <div className="flex justify-between">
-            <div className="font-medium">Output</div>
-            <button
-              onClick={() => copy(output, "output")}
-              className="text-xs underline text-[rgb(var(--accent))]"
-            >
+        {/* Output Column */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] font-bold uppercase tracking-widest text-[rgb(var(--muted))]">Output</div>
+            <button onClick={() => copy(output, "output")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
               {copied === "output" ? "Copied ✓" : "Copy"}
             </button>
           </div>
 
           {/* Smart Display */}
           {mode === "decode" && mimeType?.startsWith("image/") ? (
-            <img
-              src={`data:${mimeType};base64,${output}`}
-              className="mt-4 max-h-[300px] rounded"
-              alt="Preview"
-              width={800}
-              height={300}
-            />
+            <div className="min-h-[400px] flex items-center justify-center rounded-xl ring-1 ring-[rgba(var(--fg),0.06)] shadow-inner bg-[#0D1117] overflow-hidden p-8">
+              <img src={`data:${mimeType};base64,${output}`} className="max-w-full max-h-[340px] rounded object-contain shadow-2xl" alt="Decoded Preview" />
+            </div>
           ) : mode === "decode" && mimeType === "application/pdf" ? (
-            <iframe
-              src={`data:${mimeType};base64,${output}`}
-              className="mt-4 h-[300px] w-full rounded"
-            />
+            <div className="min-h-[400px] rounded-xl ring-1 ring-[rgba(var(--fg),0.06)] shadow-inner bg-[#0D1117] overflow-hidden">
+              <iframe src={`data:${mimeType};base64,${output}`} className="w-full h-full min-h-[400px]" />
+            </div>
           ) : (
             <CodeEditor
               value={output}
-              options={{ readOnly: true }}
-              className="mt-3 min-h-[300px]"
+              editable={false}
+              className="!min-h-[400px]"
               language="plaintext"
             />
           )}
 
-          {mode === "decode" && (
-            <div className="mt-4">
-              <Button onClick={downloadFile}>Download File</Button>
-            </div>
+          {mode === "decode" && output && (
+            <button onClick={downloadFile} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgb(var(--fg))] text-[rgb(var(--bg))] text-sm font-bold shadow-lg hover:shadow-[rgb(var(--fg))]/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+              Download Decoded File
+            </button>
           )}
-        </Card>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
+

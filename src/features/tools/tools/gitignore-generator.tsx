@@ -5,7 +5,7 @@ import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
   const [availableTemplates, setAvailableTemplates] = useState<string[]>([]);
@@ -107,13 +107,8 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
   );
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">.gitignore Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Instantly generate useful <code>.gitignore</code> files for your project by selecting your operating system, IDE, or programming language.
-        </p>
-      </div>
+    <div className="w-full">
+
 
       {error && (
         <div className="mb-4 rounded-[var(--radius)] border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.08)] p-4 text-sm text-red-500 whitespace-pre-wrap font-mono">
@@ -123,51 +118,86 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
 
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left Col - Selection */}
-        <Card className="p-6 lg:col-span-5 flex flex-col h-[600px]">
-          <div className="font-medium mb-3">Select Environments</div>
+        <Card className="p-6 lg:col-span-5 flex flex-col h-[600px] border-[rgba(var(--fg),0.1)] shadow-xl shadow-black/5">
+          <div className="flex items-center justify-between mb-6">
+             <div className="font-extrabold text-lg tracking-tight">Configuration</div>
+          </div>
           
-          <input
-            type="text"
-            placeholder="Search environments (e.g. node, react, macos)"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded border p-2 mb-3 bg-[rgb(var(--card-2))] text-sm focus:outline-none focus:border-[rgb(var(--accent))]"
-          />
-
-          {/* Selected Pills */}
-          <div className="mb-3 flex flex-wrap gap-2">
-            {selectedTemplates.map((t) => (
-              <span
-                key={t}
-                onClick={() => toggleTemplate(t)}
-                className="cursor-pointer rounded-full bg-[rgba(var(--accent),0.1)] px-3 py-1 text-xs font-medium text-[rgb(var(--accent))] hover:bg-[rgba(var(--danger),0.1)] hover:text-red-500 transition-colors"
-                title="Click to remove"
-              >
-                {t} &times;
-              </span>
-            ))}
+          <div className="relative mb-6">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 text-[rgb(var(--muted))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search environments (Node, React, macOS...)"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-xl border border-[rgba(var(--fg),0.1)] py-3 pl-10 pr-4 bg-[rgba(var(--fg),0.02)] text-[14px] font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 hover:bg-[rgba(var(--fg),0.04)] placeholder:text-[rgb(var(--muted))]"
+            />
           </div>
 
-          <div className="flex-1 overflow-y-auto border rounded bg-[rgb(var(--card-2))] p-2">
+          {/* Selected Pills */}
+          <AnimatePresence>
+            {selectedTemplates.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 overflow-hidden"
+              >
+                <div className="text-[11px] font-bold uppercase tracking-widest text-[rgb(var(--muted))] mb-3">Selected ({selectedTemplates.length})</div>
+                <div className="flex flex-wrap gap-2">
+                  <AnimatePresence>
+                    {selectedTemplates.map((t) => (
+                      <motion.button
+                        key={t}
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        onClick={() => toggleTemplate(t)}
+                        className="group flex items-center gap-1.5 cursor-pointer rounded-lg bg-indigo-500/10 px-3 py-1.5 text-[13px] font-bold text-indigo-500 hover:bg-red-500/10 hover:text-red-500 transition-colors border border-indigo-500/20 hover:border-red-500/20"
+                      >
+                        {t} 
+                        <svg className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </motion.button>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex-1 overflow-y-auto pr-2 relative" style={{ scrollbarWidth: "thin" }}>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-[rgb(var(--muted))] mb-3 sticky top-0 bg-[rgb(var(--card))] pb-2 z-10 pt-1">Available Environments</div>
             {loadingList ? (
-              <div className="text-sm text-[rgb(var(--muted))] p-2">Loading templates...</div>
+              <div className="flex items-center justify-center h-32">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-indigo-500 border-t-transparent"></div>
+              </div>
             ) : filteredTemplates.length === 0 ? (
-              <div className="text-sm text-[rgb(var(--muted))] p-2">No templates found.</div>
+              <div className="text-sm text-[rgb(var(--muted))] p-4 text-center border border-dashed border-[rgba(var(--fg),0.1)] rounded-xl">No environments found.</div>
             ) : (
-              <div className="flex flex-wrap gap-1">
+              <div className="grid grid-cols-2 gap-2 pb-4">
                 {filteredTemplates.map((t) => {
                   const isSelected = selectedTemplates.includes(t);
                   return (
                     <button
                       key={t}
                       onClick={() => toggleTemplate(t)}
-                      className={`rounded px-2 py-1 text-xs text-left transition-colors ${
+                      className={`group flex items-center justify-between rounded-lg px-3 py-2.5 text-[13px] font-medium text-left transition-all ${
                         isSelected
-                          ? "bg-[rgb(var(--accent))] text-white font-medium shadow-sm"
-                          : "hover:bg-[rgb(var(--card))] text-[rgb(var(--fg))] border border-transparent hover:border-[rgb(var(--border))]"
+                          ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25 ring-1 ring-indigo-500"
+                          : "bg-[rgba(var(--fg),0.02)] text-[rgb(var(--fg))] hover:bg-[rgba(var(--fg),0.06)] border border-[rgba(var(--fg),0.05)]"
                       }`}
                     >
-                      {t}
+                      <span className="truncate pr-2">{t}</span>
+                      {isSelected ? (
+                        <svg className="w-4 h-4 shrink-0 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                      ) : (
+                        <svg className="w-4 h-4 shrink-0 opacity-0 group-hover:opacity-40 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                      )}
                     </button>
                   );
                 })}
@@ -204,11 +234,14 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
               className="absolute inset-0"
               value={output}
               language="shell"
-              options={{ readOnly: true }}
+              options={{ 
+                readOnly: true,
+                padding: { top: 0, bottom: 0 }
+              }}
             />
           </div>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }

@@ -1,15 +1,23 @@
+"use client";
+
 import React, { useContext, useEffect, useState } from "react";
-import Editor, { useMonaco, EditorProps } from "@monaco-editor/react";
+import CodeMirror, { ReactCodeMirrorProps } from "@uiw/react-codemirror";
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import { html } from "@codemirror/lang-html";
+import { javascript } from "@codemirror/lang-javascript";
+import { json } from "@codemirror/lang-json";
+import { css } from "@codemirror/lang-css";
 import { ThemeContext } from "@/features/theme/theme-provider";
 
-export interface CodeEditorProps extends EditorProps {
+export interface CodeEditorProps extends Omit<ReactCodeMirrorProps, 'theme'> {
   className?: string;
+  language?: string;
+  options?: any;
 }
 
-export function CodeEditor({ className, options, ...props }: CodeEditorProps) {
+export function CodeEditor({ className, language, options, ...props }: CodeEditorProps) {
   const { theme } = useContext(ThemeContext);
   const [isDark, setIsDark] = useState(false);
-  const monaco = useMonaco();
 
   useEffect(() => {
     if (theme.mode === "system") {
@@ -19,52 +27,56 @@ export function CodeEditor({ className, options, ...props }: CodeEditorProps) {
     }
   }, [theme.mode]);
 
-  useEffect(() => {
-    if (monaco) {
-      monaco.editor.defineTheme("toolmate-dark", {
-        base: "vs-dark",
-        inherit: true,
-        rules: [],
-        colors: {
-          "editor.background": "#00000000",
-        },
-      });
-      monaco.editor.defineTheme("toolmate-light", {
-        base: "vs",
-        inherit: true,
-        rules: [],
-        colors: {
-          "editor.background": "#00000000",
-        },
-      });
+  const getLanguageExtension = () => {
+    switch (language?.toLowerCase()) {
+      case "html": return [html()];
+      case "javascript": 
+      case "typescript":
+      case "js":
+      case "ts": return [javascript({ jsx: true, typescript: true })];
+      case "json": return [json()];
+      case "css": return [css()];
+      default: return [];
     }
-  }, [monaco]);
+  };
 
   return (
     <div
-      className={`relative min-h-[420px] h-full w-full overflow-hidden rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] ${className || ""}`}
+      className={`relative min-h-[420px] h-full w-full overflow-hidden rounded-xl border border-[rgba(var(--fg),0.1)] bg-white dark:bg-[#0d1117] z-10 flex flex-col shadow-sm ${className || ""}`}
     >
-      <div className="absolute inset-0">
-        <Editor
-          theme={isDark ? "toolmate-dark" : "toolmate-light"}
-          loading={
-            <div className="flex h-full w-full items-center justify-center text-sm text-neutral-500">
-              Loading editor...
-            </div>
-          }
-          options={{
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            wordWrap: "on",
-            padding: { top: 12, bottom: 12 },
-            fontFamily: "var(--font-mono)",
-            fontSize: 14,
-            renderLineHighlight: "none",
-            ...options,
-          }}
-          {...props}
-        />
-      </div>
+      <CodeMirror
+        theme={isDark ? githubDark : githubLight}
+        extensions={getLanguageExtension()}
+        basicSetup={{
+          lineNumbers: true,
+          highlightActiveLineGutter: true,
+          highlightSpecialChars: true,
+          history: true,
+          foldGutter: true,
+          drawSelection: true,
+          dropCursor: true,
+          allowMultipleSelections: true,
+          indentOnInput: true,
+          syntaxHighlighting: true,
+          bracketMatching: true,
+          closeBrackets: true,
+          autocompletion: true,
+          rectangularSelection: true,
+          crosshairCursor: true,
+          highlightActiveLine: true,
+          highlightSelectionMatches: true,
+          closeBracketsKeymap: true,
+          defaultKeymap: true,
+          searchKeymap: true,
+          historyKeymap: true,
+          foldKeymap: true,
+          completionKeymap: true,
+          lintKeymap: true,
+        }}
+        className="flex-1 w-full h-full text-[14px] font-mono leading-relaxed [&>.cm-editor]:h-full [&_.cm-scroller]:font-mono [&_.cm-scroller]:p-4"
+        editable={options?.readOnly ? false : undefined}
+        {...props}
+      />
     </div>
   );
 }

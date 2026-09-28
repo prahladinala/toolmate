@@ -56,6 +56,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('unhandledrejection', function(event) {
+                const r = String(event.reason);
+                if (r === '[object Event]' || r === '[object Object]' || r.includes('Monaco')) {
+                  event.preventDefault();
+                }
+              });
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen" suppressHydrationWarning>
         <ThemeProvider>
           <Navbar />

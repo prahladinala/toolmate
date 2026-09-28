@@ -1,8 +1,7 @@
-"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { DEVELOPER } from "@/content/developer";
-import { motion } from "@/components/motion/motion";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 const avatarSrc =
   typeof DEVELOPER.avatar === "string" &&
@@ -20,13 +19,7 @@ export function DeveloperSection() {
         </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-3xl mx-auto"
-      >
+      <ScrollReveal className="max-w-3xl mx-auto">
         <div className="group relative overflow-hidden p-8 md:p-12 transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] rounded-[2.5rem]">
           {/* Subtle bg glow */}
           <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[300px] h-[300px] bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
@@ -101,7 +94,7 @@ export function DeveloperSection() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </ScrollReveal>
     </section>
   );
 }

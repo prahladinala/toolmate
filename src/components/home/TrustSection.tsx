@@ -1,5 +1,4 @@
-"use client";
-import { motion } from "@/components/motion/motion";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 export default function TrustSection() {
   return (
@@ -34,12 +33,9 @@ export default function TrustSection() {
             )
           },
         ].map((x, i) => (
-          <motion.div
+          <ScrollReveal
             key={x.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            delay={i * 0.1}
           >
             <div className="group relative flex flex-col h-full overflow-hidden p-8 transition-all duration-300 bg-transparent hover:bg-[rgba(var(--fg),0.02)] rounded-3xl border border-transparent hover:border-[rgba(var(--fg),0.05)]">
               <div className="flex items-center gap-4 mb-4">
@@ -52,7 +48,7 @@ export default function TrustSection() {
                 {x.desc}
               </p>
             </div>
-          </motion.div>
+          </ScrollReveal>
         ))}
       </div>
     </section>

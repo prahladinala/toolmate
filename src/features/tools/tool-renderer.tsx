@@ -195,7 +195,6 @@ function getSuggestions(current: ToolDef, limit = 6): ToolDef[] {
 }
 
 export function ToolRenderer({ tool }: { tool: ToolDef }) {
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const Comp = MAP[tool.slug];
 
   if (!Comp) {
@@ -203,87 +202,6 @@ export function ToolRenderer({ tool }: { tool: ToolDef }) {
       <ToolNotImplemented tool={tool} suggestions={getSuggestions(tool, 6)} />
     );
   }
-  return (
-    <main className="mx-auto max-w-6xl px-4 pt-24 pb-10">
-      {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="mb-4 text-s text-[rgb(var(--muted))]">
-        <Link
-          href="/tools"
-          className="
-    hover:text-[rgb(var(--accent))]
-    hover:underline
-    transition
-  "
-        >
-          Tools
-        </Link>{" "}
-        / <span aria-current="page" className="text-[rgb(var(--fg))]">{tool.name}</span>
-      </nav>
 
-      {/* TOOL HEADER */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="relative rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-6 shadow-[var(--shadow-md)]"
-      >
-        {/* Accent glow */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-50"
-          style={{
-            background:
-              "radial-gradient(70% 60% at 50% 0%, rgba(var(--accent),0.15), transparent 70%)",
-          }}
-        />
-
-        <div className="relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">
-              {tool.name}
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-[rgb(var(--muted))]">
-              {tool.seo.description}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge>{tool.category}</Badge>
-
-            {/* Future-proof actions */}
-            <button
-              onClick={() => setIsShareModalOpen(true)}
-              className="
-                rounded-[var(--radius)]
-                border border-[rgb(var(--border))]
-                bg-[rgb(var(--card-2))]
-                px-3 py-1 text-xs
-                hover:border-[rgba(var(--accent),0.55)]
-                hover:bg-[rgba(var(--accent),0.08)]
-                transition
-              "
-            >
-              Share
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* TOOL BODY */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <Comp tool={tool} />
-      </motion.div>
-
-      <ShareModal 
-        isOpen={isShareModalOpen} 
-        onClose={() => setIsShareModalOpen(false)} 
-        toolName={tool.name} 
-        toolSlug={tool.slug} 
-        shortDescription={tool.shortDescription} 
-      />
-    </main>
-  );
+  return <Comp tool={tool} />;
 }
