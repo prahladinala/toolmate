@@ -83,7 +83,7 @@ export function ToolsExplorer({ tools }: { tools: Tool[] }) {
   const showRecent = recent.length > 0 && !q.trim() && category === ALL;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
+    <main className="mx-auto max-w-6xl px-4 pt-24 pb-8">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>

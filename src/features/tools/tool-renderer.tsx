@@ -204,7 +204,7 @@ export function ToolRenderer({ tool }: { tool: ToolDef }) {
     );
   }
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <main className="mx-auto max-w-6xl px-4 pt-24 pb-10">
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-4 text-s text-[rgb(var(--muted))]">
         <Link
