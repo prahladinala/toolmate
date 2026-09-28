@@ -1,107 +1,114 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import Link from "next/link";
 import { TOOLS } from "@/features/tools/registry";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { motion } from "@/components/motion/motion";
 
 const featured = TOOLS.slice(0, 6);
 
 export default function FeaturedSection() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const isHovered = useRef(false);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let animationFrameId: number;
-    const scrollStep = 0.8;
-
-    const renderLoop = () => {
-      if (!isHovered.current) {
-        el.scrollLeft += scrollStep;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0;
-        }
-      }
-      animationFrameId = requestAnimationFrame(renderLoop);
-    };
-    animationFrameId = requestAnimationFrame(renderLoop);
-
-    return () => cancelAnimationFrame(animationFrameId);
-  }, []);
-
   return (
     <>
-      {/* FEATURED */}
-      <section className="mx-auto max-w-6xl px-4 py-10">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-semibold">Featured tools</h2>
-            <p className="mt-1 text-sm text-[rgb(var(--muted))]">
-              Polished utilities you’ll actually use.
-            </p>
-          </div>
-          <Link
-            href="/tools"
-            className="text-sm underline text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] transition"
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes infinite-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .animate-infinite-scroll {
+          animation: infinite-scroll 30s linear infinite;
+          width: max-content;
+        }
+        .animate-infinite-scroll:hover {
+          animation-play-state: paused;
+        }
+      `}} />
+      <section className="relative mx-auto max-w-6xl px-4 py-20 overflow-hidden">
+        {/* Subtle background glow for this section */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center text-center gap-4 mb-16">
+          <motion.h2 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl md:text-4xl font-extrabold tracking-tight"
           >
-            View all
-          </Link>
+            Featured Tools
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-lg text-[rgb(var(--muted))] max-w-xl"
+          >
+            Polished utilities you’ll actually use. Built for speed and reliability.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Link
+              href="/tools"
+              className="group inline-flex items-center text-sm font-semibold text-indigo-500 hover:text-indigo-400 transition-colors mt-2"
+            >
+              Explore all tools <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+            </Link>
+          </motion.div>
         </div>
 
         {/* EXTERNAL TOOLS MARQUEE */}
-        <div className="mt-8 mb-8 relative border-y border-[rgb(var(--border))] py-6 bg-[rgba(var(--card-2),0.5)]">
-          <div className="absolute inset-y-0 left-0 w-8 md:w-16 bg-gradient-to-r from-[rgb(var(--bg))] to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-8 md:w-16 bg-gradient-to-l from-[rgb(var(--bg))] to-transparent z-10 pointer-events-none" />
+        <div className="mb-20 relative py-4 flex overflow-hidden">
+          <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[rgb(var(--bg))] to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[rgb(var(--bg))] to-transparent z-10 pointer-events-none" />
           
-          <div
-            ref={scrollRef}
-            className="flex gap-6 w-full overflow-x-auto snap-x px-8 [&::-webkit-scrollbar]:hidden"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            onMouseEnter={() => (isHovered.current = true)}
-            onMouseLeave={() => (isHovered.current = false)}
-            onTouchStart={() => (isHovered.current = true)}
-            onTouchEnd={() => (isHovered.current = false)}
-          >
-            {[...Array(4)].map((_, i) => (
+          <div className="flex gap-6 animate-infinite-scroll pl-6">
+            {[...Array(6)].map((_, i) => (
               <React.Fragment key={i}>
-                <a href="https://ui.toolmate.co.in" target="_blank" rel="noopener noreferrer" className="block min-w-[320px] md:min-w-[400px] snap-center shrink-0">
-                  <Card className="p-5 h-full transition hover:shadow-[var(--shadow-md)] border-[rgba(var(--accent),0.3)] bg-[rgba(var(--accent),0.02)] group hover:border-[rgba(var(--accent),0.6)]">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="font-semibold text-lg">Toolmate UI</div>
-                      <Badge className="bg-[rgb(var(--accent))] text-white border-transparent">Featured</Badge>
+                <a href="https://ui.toolmate.co.in" target="_blank" rel="noopener noreferrer" className="block w-[320px] md:w-[400px] shrink-0 outline-none">
+                  <div className="group relative overflow-hidden p-6 h-full transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] hover:ring-[rgba(var(--fg),0.1)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] rounded-3xl">
+                    <div className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none" />
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="font-bold text-xl tracking-tight">Toolmate UI</div>
+                        <span className="rounded-full bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest">Ecosystem</span>
+                      </div>
+                      <p className="mt-3 text-[15px] text-[rgb(var(--muted))] leading-relaxed line-clamp-2">
+                        Beautifully designed, accessible, and customizable React components and templates.
+                      </p>
+                      <div className="mt-6 flex items-center text-sm font-bold text-[rgb(var(--fg))] opacity-70 group-hover:opacity-100 transition-opacity">
+                        Explore UI Library <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+                      </div>
                     </div>
-                    <p className="mt-2 text-sm text-[rgb(var(--muted))] line-clamp-2">
-                      Beautifully designed, accessible, and customizable React components and templates.
-                    </p>
-                    <div className="mt-4 flex items-center text-sm font-medium text-[rgb(var(--accent))] group-hover:underline">
-                      Explore Toolmate UI ↗
-                    </div>
-                  </Card>
+                  </div>
                 </a>
                 
-                <a href="https://resume.toolmate.co.in" target="_blank" rel="noopener noreferrer" className="block min-w-[320px] md:min-w-[400px] snap-center shrink-0">
-                  <Card className="p-5 h-full transition hover:shadow-[var(--shadow-md)] border-[rgba(var(--accent),0.3)] bg-[rgba(var(--accent),0.02)] group hover:border-[rgba(var(--accent),0.6)]">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="font-semibold text-lg">Toolmate Resume Builder</div>
-                      <Badge className="bg-[rgb(var(--accent))] text-white border-transparent">Featured</Badge>
+                <a href="https://resume.toolmate.co.in" target="_blank" rel="noopener noreferrer" className="block w-[320px] md:w-[400px] shrink-0 outline-none">
+                  <div className="group relative overflow-hidden p-6 h-full transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] hover:ring-[rgba(var(--fg),0.1)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] rounded-3xl">
+                    <div className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none" />
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="font-bold text-xl tracking-tight">Toolmate Resume</div>
+                        <span className="rounded-full bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest">Ecosystem</span>
+                      </div>
+                      <p className="mt-3 text-[15px] text-[rgb(var(--muted))] leading-relaxed line-clamp-2">
+                        Build ATS-friendly, professional resumes in minutes with our drag-and-drop builder.
+                      </p>
+                      <div className="mt-6 flex items-center text-sm font-bold text-[rgb(var(--fg))] opacity-70 group-hover:opacity-100 transition-opacity">
+                        Build Your Resume <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+                      </div>
                     </div>
-                    <p className="mt-2 text-sm text-[rgb(var(--muted))] line-clamp-2">
-                      Build ATS-friendly, professional resumes in minutes with our drag-and-drop builder.
-                    </p>
-                    <div className="mt-4 flex items-center text-sm font-medium text-[rgb(var(--accent))] group-hover:underline">
-                      Build Your Resume ↗
-                    </div>
-                  </Card>
+                  </div>
                 </a>
               </React.Fragment>
             ))}
           </div>
         </div>
 
+        {/* INTERNAL TOOLS GRID */}
         <motion.div
           initial="hidden"
           whileInView="show"
@@ -109,54 +116,51 @@ export default function FeaturedSection() {
           variants={{
             hidden: {},
             show: {
-              transition: { staggerChildren: 0.06, delayChildren: 0.05 },
+              transition: { staggerChildren: 0.08, delayChildren: 0.1 },
             },
           }}
-          className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="relative z-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
           {featured.map((t) => (
             <motion.div
               key={t.slug}
               variants={{
-                hidden: { opacity: 0, y: 14 },
+                hidden: { opacity: 0, y: 20 },
                 show: {
                   opacity: 1,
                   y: 0,
-                  transition: { duration: 0.55, ease: "easeOut" },
+                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
                 },
               }}
+              className="h-full"
             >
-              <Link href={`/tools/${t.slug}`}>
-                <Card className="group p-4 transition hover:shadow-[var(--shadow-md)]">
+              <Link href={`/tools/${t.slug}`} className="block h-full outline-none">
+                <div className="group relative flex flex-col h-full overflow-hidden p-6 transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] hover:ring-[rgba(var(--fg),0.1)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] rounded-3xl">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="font-medium leading-snug">{t.name}</div>
-                    <Badge>{t.category}</Badge>
+                    <div className="font-bold text-xl tracking-tight leading-snug">{t.name}</div>
+                    <span className="shrink-0 rounded-full bg-[rgba(var(--fg),0.05)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[rgb(var(--muted))]">
+                      {t.category}
+                    </span>
                   </div>
-                  <p className="mt-2 text-sm text-[rgb(var(--muted))]">
+                  
+                  <p className="mt-4 text-[15px] text-[rgb(var(--muted))] leading-relaxed flex-1">
                     {t.shortDescription}
                   </p>
 
-                  {t.tags?.length ? (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {t.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} className="opacity-80">
+                  <div className="mt-auto pt-8 flex items-center justify-between">
+                    <div className="flex gap-2 overflow-hidden">
+                      {t.tags?.slice(0, 2).map((tag) => (
+                        <span key={tag} className="truncate rounded-md bg-[rgba(var(--fg),0.06)] px-2.5 py-1 text-[11px] font-semibold text-[rgb(var(--fg))] opacity-75">
                           {tag}
-                        </Badge>
+                        </span>
                       ))}
                     </div>
-                  ) : null}
-
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-sm underline opacity-0 transition group-hover:opacity-80">
-                      Open →
+                    
+                    <span className="shrink-0 text-[13px] font-bold text-indigo-500 dark:text-indigo-400 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                      Open <span className="ml-0.5">→</span>
                     </span>
-                    <motion.span
-                      className="h-8 w-8 rounded-[var(--radius)] bg-[rgba(var(--accent),0.16)]"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.2 }}
-                    />
                   </div>
-                </Card>
+                </div>
               </Link>
             </motion.div>
           ))}
