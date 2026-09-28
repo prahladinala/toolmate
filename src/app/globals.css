@@ -217,32 +217,32 @@ div {
   }
 }
 /* =========================================
-   GLOBAL SELECTION STYLING (PALETTE AWARE)
+   GLOBAL SELECTION STYLING
 ========================================= */
 
 /* Default */
 ::selection {
-  background-color: rgb(var(--accent));
-  color: rgb(var(--on-accent));
+  background-color: rgba(99, 102, 241, 0.3);
+  color: inherit;
 }
 
 /* Firefox */
 ::-moz-selection {
-  background-color: rgb(var(--accent));
-  color: rgb(var(--on-accent));
+  background-color: rgba(99, 102, 241, 0.3);
+  color: inherit;
 }
 
 /* Inputs + textareas */
 input::selection,
 textarea::selection {
-  background-color: rgb(var(--accent));
-  color: rgb(var(--on-accent));
+  background-color: rgba(99, 102, 241, 0.3);
+  color: inherit;
 }
 
 input::-moz-selection,
 textarea::-moz-selection {
-  background-color: rgb(var(--accent));
-  color: rgb(var(--on-accent));
+  background-color: rgba(99, 102, 241, 0.3);
+  color: inherit;
 }
 
 /* ===========================
