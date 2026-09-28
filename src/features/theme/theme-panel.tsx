@@ -1,128 +1,73 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ThemeContext } from "./theme-provider";
-import { LOOKS } from "./looks";
-import { PALETTES } from "./palettes";
-import { Button } from "@/components/ui/button";
 import type { Mode } from "./theme-config";
 
 export function ThemePanel() {
   const { theme, setTheme } = React.useContext(ThemeContext);
+  
+  const modes: { id: Mode; label: string; icon: React.ReactNode }[] = [
+    {
+      id: "light",
+      label: "Light",
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+        </svg>
+      )
+    },
+    {
+      id: "dark",
+      label: "Dark",
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      )
+    },
+    {
+      id: "system",
+      label: "System",
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      )
+    }
+  ];
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
-      className="w-[300px] rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-3 shadow-[var(--shadow-md)]"
+      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 4, scale: 0.96 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      className="w-36 rounded-2xl border border-[rgba(var(--fg),0.08)] bg-[rgb(var(--card))] p-1.5 shadow-xl backdrop-blur-xl"
     >
-      <div className="text-sm font-semibold">Theme</div>
-
-      {/* LOOK */}
-      <motion.div
-        className="mt-3"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.05 }}
-      >
-        <div className="text-xs text-[rgb(var(--muted))]">Look</div>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {LOOKS.filter((l) => l.enabled).map((l) => (
-            <motion.div
-              key={l.id}
-              whileTap={{ scale: 0.95 }}
-              whileHover={{ scale: 1.02 }}
+      <div className="flex flex-col gap-0.5">
+        {modes.map((m) => {
+          const isActive = theme.mode === m.id;
+          return (
+            <button
+              key={m.id}
+              onClick={() => setTheme({ ...theme, mode: m.id })}
+              className={`flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                isActive 
+                  ? "bg-[rgba(var(--fg),0.05)] text-[rgb(var(--fg))]" 
+                  : "text-[rgb(var(--muted))] hover:bg-[rgba(var(--fg),0.03)] hover:text-[rgb(var(--fg))]"
+              }`}
             >
-              <Button
-                size="sm"
-                variant={theme.look === l.id ? "primary" : "secondary"}
-                onClick={() => setTheme({ ...theme, look: l.id })}
-              >
-                {l.label}
-              </Button>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* PALETTE */}
-      <motion.div
-        className="mt-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-      >
-        <div className="text-xs text-[rgb(var(--muted))]">Palette</div>
-
-        <div className="mt-2 flex flex-wrap gap-2">
-          {PALETTES.map((p) => (
-            <motion.div
-              key={p.id}
-              whileTap={{ scale: 0.97 }}
-              whileHover={{ scale: 1.01 }}
-              className="w-[calc(50%-4px)]"
-            >
-              <Button
-                size="sm"
-                className="w-full"
-                variant={theme.palette === p.id ? "primary" : "secondary"}
-                onClick={() => setTheme({ ...theme, palette: p.id })}
-              >
-                {p.label}
-              </Button>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* MODE */}
-      <motion.div
-        className="mt-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
-      >
-        <div className="text-xs text-[rgb(var(--muted))]">Mode</div>
-        <div className="mt-2 flex gap-2">
-          {(["system", "light", "dark"] as Mode[]).map((m) => (
-            <motion.div
-              key={m}
-              whileTap={{ scale: 0.95 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <Button
-                size="sm"
-                variant={theme.mode === m ? "primary" : "secondary"}
-                onClick={() => setTheme({ ...theme, mode: m })}
-              >
-                {m}
-              </Button>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* PREVIEW */}
-      <motion.div
-        className="mt-4 rounded-[var(--radius)] border border-[rgb(var(--border))] p-3"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="text-xs text-[rgb(var(--muted))]">Preview</div>
-        <div className="mt-2 flex gap-2">
-          <motion.span
-            layout
-            className="h-8 w-8 rounded-[var(--radius)] bg-[rgb(var(--accent))]"
-          />
-          <motion.span
-            layout
-            className="h-8 w-8 rounded-[var(--radius)] bg-[rgb(var(--card-2))] border border-[rgb(var(--border))]"
-          />
-        </div>
-      </motion.div>
+              {m.icon}
+              {m.label}
+            </button>
+          );
+        })}
+      </div>
     </motion.div>
   );
 }
