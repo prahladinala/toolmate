@@ -1,8 +1,13 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -27,7 +32,7 @@ export function CssTransformGeneratorTool({ tool }: { tool: ToolDef }) {
   const copyCss = async () => {
     try {
       await navigator.clipboard.writeText(cssOutput);
-      alert("CSS copied to clipboard!");
+      toast.success("CSS copied to clipboard!");
     } catch (e) {}
   };
 
@@ -67,14 +72,14 @@ export function CssTransformGeneratorTool({ tool }: { tool: ToolDef }) {
           ].map((slider) => (
             <div key={slider.label}>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-sm font-medium">{slider.label}</label>
+                <Label className="text-sm font-medium">{slider.label}</Label>
                 <span className="text-xs text-[rgb(var(--muted))]">{slider.val}{slider.unit}</span>
               </div>
               <input type="range" min={slider.min} max={slider.max} step={slider.step} value={slider.val} onChange={(e) => slider.set(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />
             </div>
           ))}
           
-          <Button onClick={copyCss} className="w-full mt-4">Copy CSS</Button>
+          <CopyButton value={cssOutput} text="Copy CSS" className="w-full mt-4" />
         </Card>
 
         <Card className="p-0 flex flex-col h-full min-h-[400px] overflow-hidden">

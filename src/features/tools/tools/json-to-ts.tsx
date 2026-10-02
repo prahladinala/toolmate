@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { motion } from "framer-motion";
 import JsonToTS from "json-to-ts";
+import { toast } from "sonner";
 
 export function JsonToTsTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
@@ -39,6 +40,7 @@ export function JsonToTsTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -54,18 +56,18 @@ export function JsonToTsTool({ tool }: { tool: ToolDef }) {
         </div>
       )}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
-          <div className="font-medium">Input JSON</div>
+        <div className="flex flex-col h-full">
+          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Input JSON</div>
           <CodeEditor
-            className="mt-3 min-h-[420px]"
+            className="min-h-[420px]"
             value={input.value}
             onChange={(value) => input.setValue(value || "")}
             language="json"
           />
         </div>
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+        <div className="flex flex-col h-full">
           <div className="flex items-center justify-between">
-            <div className="font-medium">Output TypeScript Interfaces</div>
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output TypeScript Interfaces</div>
             <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
               <motion.span
                 key={copied ? "copied" : "copy"}
@@ -78,7 +80,7 @@ export function JsonToTsTool({ tool }: { tool: ToolDef }) {
             </Button>
           </div>
           <CodeEditor
-            className="mt-3 min-h-[420px]"
+            className="min-h-[420px]"
             value={output}
             language="typescript"
             options={{ readOnly: true }}

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { toast } from "sonner";
 
 type Mode = "encode" | "decode";
 
@@ -87,6 +88,7 @@ export default function Base64Tool() {
 
   const copy = async (value: string, key: string) => {
     await navigator.clipboard.writeText(value);
+      toast.success("Copied to clipboard!");
     setCopied(key);
     setTimeout(() => setCopied(null), 1200);
   };
@@ -127,7 +129,7 @@ export default function Base64Tool() {
       {/* Sleek Mode Toggle */}
       <div className="flex justify-center">
         <div className="inline-flex items-center p-1 bg-[rgba(var(--fg),0.03)] rounded-full border border-[rgba(var(--fg),0.05)]">
-          <button
+          <Button
             onClick={() => setMode("encode")}
             className={`px-8 py-2.5 rounded-full text-[13px] font-bold uppercase tracking-wider transition-all duration-300 ${
               mode === "encode"
@@ -136,8 +138,8 @@ export default function Base64Tool() {
             }`}
           >
             Encode
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setMode("decode")}
             className={`px-8 py-2.5 rounded-full text-[13px] font-bold uppercase tracking-wider transition-all duration-300 ${
               mode === "decode"
@@ -146,7 +148,7 @@ export default function Base64Tool() {
             }`}
           >
             Decode
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -165,9 +167,9 @@ export default function Base64Tool() {
               Input
               <span className="px-2 py-0.5 rounded-full bg-[rgba(var(--fg),0.05)] text-[10px]">{input.length} chars</span>
             </div>
-            <button onClick={() => copy(input, "input")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
+            <Button onClick={() => copy(input, "input")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
               {copied === "input" ? "Copied ✓" : "Copy"}
-            </button>
+            </Button>
           </div>
 
           <CodeEditor
@@ -179,10 +181,10 @@ export default function Base64Tool() {
 
           <div className="flex items-center gap-3">
              <input ref={fileInputRef} type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
-             <button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-[rgba(var(--fg),0.1)] text-sm font-medium text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] hover:border-[rgba(var(--fg),0.3)] hover:bg-[rgba(var(--fg),0.02)] transition-all">
+             <Button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-[rgba(var(--fg),0.1)] text-sm font-medium text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] hover:border-[rgba(var(--fg),0.3)] hover:bg-[rgba(var(--fg),0.02)] transition-all">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                 Upload File Instead
-             </button>
+             </Button>
           </div>
         </div>
 
@@ -190,9 +192,9 @@ export default function Base64Tool() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="text-[13px] font-bold uppercase tracking-widest text-[rgb(var(--muted))]">Output</div>
-            <button onClick={() => copy(output, "output")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
+            <Button onClick={() => copy(output, "output")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
               {copied === "output" ? "Copied ✓" : "Copy"}
-            </button>
+            </Button>
           </div>
 
           {/* Smart Display */}
@@ -214,10 +216,10 @@ export default function Base64Tool() {
           )}
 
           {mode === "decode" && output && (
-            <button onClick={downloadFile} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgb(var(--fg))] text-[rgb(var(--bg))] text-sm font-bold shadow-lg hover:shadow-[rgb(var(--fg))]/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <Button onClick={downloadFile} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgb(var(--fg))] text-[rgb(var(--bg))] text-sm font-bold shadow-lg hover:shadow-[rgb(var(--fg))]/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
               Download Decoded File
-            </button>
+            </Button>
           )}
         </div>
       </div>

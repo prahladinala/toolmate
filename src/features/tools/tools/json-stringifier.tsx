@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 type Mode = "stringify" | "parse";
 
@@ -51,6 +52,7 @@ export function JsonStringifierTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -85,7 +87,7 @@ export function JsonStringifierTool({ tool }: { tool: ToolDef }) {
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+        <div className="flex flex-col h-full">
           <div className="font-medium mb-3">Input {mode === "stringify" ? "JSON Object" : "Stringified JSON"}</div>
           <CodeEditor
             className="min-h-[400px]"
@@ -94,9 +96,9 @@ export function JsonStringifierTool({ tool }: { tool: ToolDef }) {
             language={mode === "stringify" ? "json" : "plaintext"}
           />
         </div>
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+        <div className="flex flex-col h-full">
           <div className="flex items-center justify-between mb-3">
-            <div className="font-medium">Output {mode === "stringify" ? "Stringified JSON" : "JSON Object"}</div>
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output {mode === "stringify" ? "Stringified JSON" : "JSON Object"}</div>
             <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
               <motion.span
                 key={copied ? "copied" : "copy"}

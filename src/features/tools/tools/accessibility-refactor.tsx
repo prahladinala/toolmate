@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React from "react";
 import { motion } from "framer-motion";
@@ -17,9 +18,9 @@ export default function AccessibilityRefactorTool() {
   <div onclick="submitForm()">Click here to submit</div>
   
   <form>
-    First Name: <input type="text" name="fname" />
+    First Name: <Input type="text" name="fname" />
     <br/>
-    <button style="background: red; color: darkred;">Submit</button>
+    <Button style="background: red; color: darkred;">Submit</Button>
   </form>
 </div>`
   );
@@ -164,7 +165,7 @@ export default function AccessibilityRefactorTool() {
                                 {issue.severity}
                               </Badge>
 
-                              <span className="font-medium">
+                              <span className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">
                                 {issue.message}
                               </span>
                             </div>

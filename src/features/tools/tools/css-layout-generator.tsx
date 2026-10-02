@@ -1,4 +1,8 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
@@ -6,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export function CssLayoutGeneratorTool({ tool }: { tool: ToolDef }) {
   const [layoutType, setLayoutType] = useState<"flex" | "grid">("flex");
@@ -34,6 +39,7 @@ export function CssLayoutGeneratorTool({ tool }: { tool: ToolDef }) {
     if (!cssString) return;
     try {
       await navigator.clipboard.writeText(cssString);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -61,45 +67,45 @@ export function CssLayoutGeneratorTool({ tool }: { tool: ToolDef }) {
           {layoutType === "flex" && (
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">flex-direction</label>
-                <select value={flexDir} onChange={(e) => setFlexDir(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
+                <Label className="text-sm font-medium">flex-direction</Label>
+                <Select value={flexDir} onChange={(e) => setFlexDir(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
                   <option value="row">row</option>
                   <option value="row-reverse">row-reverse</option>
                   <option value="column">column</option>
                   <option value="column-reverse">column-reverse</option>
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">flex-wrap</label>
-                <select value={flexWrap} onChange={(e) => setFlexWrap(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
+                <Label className="text-sm font-medium">flex-wrap</Label>
+                <Select value={flexWrap} onChange={(e) => setFlexWrap(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
                   <option value="nowrap">nowrap</option>
                   <option value="wrap">wrap</option>
                   <option value="wrap-reverse">wrap-reverse</option>
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">justify-content</label>
-                <select value={justifyContent} onChange={(e) => setJustifyContent(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
+                <Label className="text-sm font-medium">justify-content</Label>
+                <Select value={justifyContent} onChange={(e) => setJustifyContent(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
                   <option value="flex-start">flex-start</option>
                   <option value="flex-end">flex-end</option>
                   <option value="center">center</option>
                   <option value="space-between">space-between</option>
                   <option value="space-around">space-around</option>
                   <option value="space-evenly">space-evenly</option>
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">align-items</label>
-                <select value={alignItems} onChange={(e) => setAlignItems(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
+                <Label className="text-sm font-medium">align-items</Label>
+                <Select value={alignItems} onChange={(e) => setAlignItems(e.target.value)} className="mt-1 w-full rounded border p-2 text-sm">
                   <option value="stretch">stretch</option>
                   <option value="flex-start">flex-start</option>
                   <option value="flex-end">flex-end</option>
                   <option value="center">center</option>
                   <option value="baseline">baseline</option>
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">gap ({gap}px)</label>
+                <Label className="text-sm font-medium">gap ({gap}px)</Label>
                 <input type="range" min={0} max={64} value={gap} onChange={(e) => setGap(Number(e.target.value))} className="mt-2 w-full" />
               </div>
             </div>
@@ -108,15 +114,15 @@ export function CssLayoutGeneratorTool({ tool }: { tool: ToolDef }) {
           {layoutType === "grid" && (
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Columns ({gridCols})</label>
+                <Label className="text-sm font-medium">Columns ({gridCols})</Label>
                 <input type="range" min={1} max={12} value={gridCols} onChange={(e) => setGridCols(Number(e.target.value))} className="mt-2 w-full" />
               </div>
               <div>
-                <label className="text-sm font-medium">Rows ({gridRows})</label>
+                <Label className="text-sm font-medium">Rows ({gridRows})</Label>
                 <input type="range" min={1} max={12} value={gridRows} onChange={(e) => setGridRows(Number(e.target.value))} className="mt-2 w-full" />
               </div>
               <div>
-                <label className="text-sm font-medium">gap ({gridGap}px)</label>
+                <Label className="text-sm font-medium">gap ({gridGap}px)</Label>
                 <input type="range" min={0} max={64} value={gridGap} onChange={(e) => setGridGap(Number(e.target.value))} className="mt-2 w-full" />
               </div>
             </div>
@@ -154,7 +160,7 @@ export function CssLayoutGeneratorTool({ tool }: { tool: ToolDef }) {
 
           <Card className="p-0 overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border))]">
-              <div className="font-medium">CSS Code</div>
+              <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">CSS Code</div>
               <Button size="sm" variant="secondary" onClick={copyToClipboard}>
                 <motion.span
                   key={copied ? "copied" : "copy"}

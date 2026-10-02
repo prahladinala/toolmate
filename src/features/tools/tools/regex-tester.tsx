@@ -1,4 +1,7 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -86,7 +89,7 @@ export default function RegexTesterTool() {
       {/* Pattern + Flags */}
       <Card className="p-4 mb-6">
         <div className="flex flex-wrap gap-4 items-center">
-          <input
+          <Input
             value={pattern}
             onChange={(e) => setPattern(e.target.value)}
             placeholder="Enter regex pattern..."
@@ -94,7 +97,7 @@ export default function RegexTesterTool() {
           />
 
           {(["g", "i", "m", "s", "u"] as const).map((flag) => (
-            <label key={flag} className="flex items-center gap-1 text-sm">
+            <Label key={flag} className="flex items-center gap-1 text-sm">
               <input
                 type="checkbox"
                 checked={flags[flag]}
@@ -103,7 +106,7 @@ export default function RegexTesterTool() {
                 }
               />
               {flag}
-            </label>
+            </Label>
           ))}
 
           <Button onClick={run}>Run</Button>
@@ -121,11 +124,11 @@ export default function RegexTesterTool() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Test String */}
         <Card className="p-4">
-          <div className="font-medium">Test String</div>
+          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Test String</div>
           <CodeEditor
             value={testString}
             onChange={(v) => setTestString(v || "")}
-            className="mt-3 min-h-[350px]"
+            className="min-h-[350px]"
             language="plaintext"
           />
         </Card>
@@ -133,7 +136,7 @@ export default function RegexTesterTool() {
         {/* Result Highlight */}
         <Card className="p-4">
           <div className="flex justify-between">
-            <div className="font-medium">Matches ({matches.length})</div>
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Matches ({matches.length})</div>
           </div>
 
           <div className="mt-3 h-[350px] overflow-auto rounded border p-3 font-mono text-sm">
@@ -149,7 +152,7 @@ export default function RegexTesterTool() {
       {/* Match Details */}
       {matches.length > 0 && (
         <Card className="p-4 mt-6">
-          <div className="font-medium">Match Details</div>
+          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Match Details</div>
           <div className="mt-3 space-y-2 text-sm">
             {matches.map((m, i) => (
               <div key={i} className="rounded border p-2">

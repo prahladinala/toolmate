@@ -1,10 +1,16 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
   const [tab, setTab] = useState<"commit" | "branch" | "reset">("commit");
@@ -44,6 +50,7 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
     if (!command) return;
     try {
       await navigator.clipboard.writeText(command);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -72,8 +79,8 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
         {tab === "commit" && (
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Commit Message</label>
-              <input
+              <Label className="text-sm font-medium">Commit Message</Label>
+              <Input
                 type="text"
                 value={commitMsg}
                 onChange={(e) => setCommitMsg(e.target.value)}
@@ -82,14 +89,14 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
               />
             </div>
             <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-sm">
+              <Label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={commitAll} onChange={(e) => setCommitAll(e.target.checked)} />
                 Stage all modified files (-a)
-              </label>
-              <label className="flex items-center gap-2 text-sm">
+              </Label>
+              <Label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={commitAmend} onChange={(e) => setCommitAmend(e.target.checked)} />
                 Amend previous commit (--amend)
-              </label>
+              </Label>
             </div>
           </div>
         )}
@@ -97,8 +104,8 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
         {tab === "branch" && (
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Branch Name</label>
-              <input
+              <Label className="text-sm font-medium">Branch Name</Label>
+              <Input
                 type="text"
                 value={branchName}
                 onChange={(e) => setBranchName(e.target.value.replace(/\s+/g, "-"))}
@@ -107,10 +114,10 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
               />
             </div>
             <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-sm">
+              <Label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={branchCheckout} onChange={(e) => setBranchCheckout(e.target.checked)} />
                 Checkout new branch immediately (-b)
-              </label>
+              </Label>
             </div>
           </div>
         )}
@@ -118,8 +125,8 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
         {tab === "reset" && (
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Reset Mode</label>
-              <select
+              <Label className="text-sm font-medium">Reset Mode</Label>
+              <Select
                 value={resetMode}
                 onChange={(e) => setResetMode(e.target.value as any)}
                 className="mt-2 w-full rounded border p-2 bg-[rgb(var(--card-2))]"
@@ -127,11 +134,11 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
                 <option value="--soft">--soft (Keep working tree & index)</option>
                 <option value="--mixed">--mixed (Keep working tree, reset index)</option>
                 <option value="--hard">--hard (Discard all changes)</option>
-              </select>
+              </Select>
             </div>
             <div>
-              <label className="text-sm font-medium">Target Commit / Ref</label>
-              <input
+              <Label className="text-sm font-medium">Target Commit / Ref</Label>
+              <Input
                 type="text"
                 value={resetTarget}
                 onChange={(e) => setResetTarget(e.target.value)}
@@ -145,7 +152,7 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
 
       <Card className="p-6">
         <div className="flex justify-between items-center mb-4">
-          <div className="font-medium">Generated Command</div>
+          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Generated Command</div>
           <Button size="sm" onClick={copyToClipboard}>
             <motion.span
               key={copied ? "copied" : "copy"}

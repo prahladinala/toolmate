@@ -1,8 +1,14 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -51,7 +57,7 @@ export function RobotsTxtGeneratorTool({ tool }: { tool: ToolDef }) {
   const copyTxt = async () => {
     try {
       await navigator.clipboard.writeText(output);
-      alert("robots.txt copied to clipboard!");
+      toast.success("robots.txt copied to clipboard!");
     } catch (e) {}
   };
 
@@ -69,24 +75,24 @@ export function RobotsTxtGeneratorTool({ tool }: { tool: ToolDef }) {
           
           {rules.map((rule, i) => (
             <div key={i} className="p-4 rounded border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] relative">
-              <button 
+              <Button 
                 onClick={() => removeRule(i)}
                 className="absolute top-2 right-2 text-xs text-red-500 hover:underline"
               >
                 Remove
-              </button>
+              </Button>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-medium block mb-1">User-Agent</label>
-                  <input type="text" value={rule.agent} onChange={(e) => updateRule(i, "agent", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. *, Googlebot, Bingbot" />
+                  <Label className="text-xs font-medium block mb-1">User-Agent</Label>
+                  <Input type="text" value={rule.agent} onChange={(e) => updateRule(i, "agent", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. *, Googlebot, Bingbot" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium block mb-1">Allow (comma separated paths)</label>
-                  <input type="text" value={rule.allow} onChange={(e) => updateRule(i, "allow", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. /public/, /images/" />
+                  <Label className="text-xs font-medium block mb-1">Allow (comma separated paths)</Label>
+                  <Input type="text" value={rule.allow} onChange={(e) => updateRule(i, "allow", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. /public/, /images/" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium block mb-1">Disallow (comma separated paths)</label>
-                  <input type="text" value={rule.disallow} onChange={(e) => updateRule(i, "disallow", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. /admin/, /private/" />
+                  <Label className="text-xs font-medium block mb-1">Disallow (comma separated paths)</Label>
+                  <Input type="text" value={rule.disallow} onChange={(e) => updateRule(i, "disallow", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. /admin/, /private/" />
                 </div>
               </div>
             </div>
@@ -95,8 +101,8 @@ export function RobotsTxtGeneratorTool({ tool }: { tool: ToolDef }) {
           <Button variant="secondary" onClick={addRule} className="w-full">+ Add Another Rule</Button>
 
           <div className="pt-4 border-t border-[rgb(var(--border))]">
-             <label className="text-sm font-medium block mb-1">Sitemap URL (Optional)</label>
-             <input type="text" value={sitemap} onChange={(e) => setSitemap(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="https://example.com/sitemap.xml" />
+             <Label className="text-sm font-medium block mb-1">Sitemap URL (Optional)</Label>
+             <Input type="text" value={sitemap} onChange={(e) => setSitemap(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="https://example.com/sitemap.xml" />
           </div>
 
           <Button onClick={copyTxt} className="w-full">Copy robots.txt</Button>

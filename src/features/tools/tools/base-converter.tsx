@@ -1,4 +1,9 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
@@ -34,10 +39,10 @@ export function BaseConverterTool({ tool }: { tool: ToolDef }) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="mb-6 flex flex-col gap-4 rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-6">
-        <label className="flex flex-col gap-2 font-medium">
+        <Label className="flex flex-col gap-2 font-medium">
           Input Number
           <div className="flex items-stretch overflow-hidden rounded-[var(--radius)] border border-[rgb(var(--border))]">
-            <select
+            <Select
               value={fromBase}
               onChange={(e) => setFromBase(Number(e.target.value))}
               className="bg-[rgb(var(--card-2))] px-4 py-3 outline-none border-r border-[rgb(var(--border))]"
@@ -46,15 +51,15 @@ export function BaseConverterTool({ tool }: { tool: ToolDef }) {
               <option value={16}>Hexadecimal</option>
               <option value={2}>Binary</option>
               <option value={8}>Octal</option>
-            </select>
-            <input
+            </Select>
+            <Input
               type="text"
               value={input.value}
               onChange={(e) => input.setValue(e.target.value)}
               className="w-full bg-[rgb(var(--card-2))] px-4 py-3 outline-none font-mono text-lg"
             />
           </div>
-        </label>
+        </Label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

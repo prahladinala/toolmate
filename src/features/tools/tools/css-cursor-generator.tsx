@@ -1,8 +1,16 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -24,7 +32,7 @@ export function CssCursorGeneratorTool({ tool }: { tool: ToolDef }) {
   const copyCss = async () => {
     try {
       await navigator.clipboard.writeText(cssOutput);
-      alert("CSS copied to clipboard!");
+      toast.success("CSS copied to clipboard!");
     } catch (e) {}
   };
 
@@ -40,8 +48,8 @@ export function CssCursorGeneratorTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6 space-y-6">
           <div>
-            <label className="text-sm font-medium block mb-2">Standard Cursors</label>
-            <select 
+            <Label className="text-sm font-medium block mb-2">Standard Cursors</Label>
+            <Select 
               value={customUrl ? "" : cursor} 
               onChange={(e) => {
                 setCursor(e.target.value);
@@ -52,12 +60,12 @@ export function CssCursorGeneratorTool({ tool }: { tool: ToolDef }) {
               {CURSORS.map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div>
-            <label className="text-sm font-medium block mb-2">Custom Image URL</label>
-            <input 
+            <Label className="text-sm font-medium block mb-2">Custom Image URL</Label>
+            <Input 
               type="text" 
               placeholder="https://example.com/cursor.png"
               value={customUrl} 

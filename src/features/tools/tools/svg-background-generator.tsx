@@ -1,8 +1,13 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -48,7 +53,7 @@ export function SvgBackgroundGeneratorTool({ tool }: { tool: ToolDef }) {
   const copySvg = async () => {
     try {
       await navigator.clipboard.writeText(svgCode);
-      alert("SVG copied to clipboard!");
+      toast.success("SVG copied to clipboard!");
     } catch (e) {}
   };
 
@@ -64,7 +69,7 @@ export function SvgBackgroundGeneratorTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6 space-y-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">Pattern Type</label>
+            <Label className="text-sm font-medium mb-2 block">Pattern Type</Label>
             <div className="flex flex-wrap gap-2">
               {PRESETS.map((p, i) => (
                 <Button 
@@ -81,18 +86,18 @@ export function SvgBackgroundGeneratorTool({ tool }: { tool: ToolDef }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium block mb-1">Background Color</label>
+              <Label className="text-sm font-medium block mb-1">Background Color</Label>
               <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-full h-10 rounded cursor-pointer p-0 border-0" />
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1">Pattern Color</label>
+              <Label className="text-sm font-medium block mb-1">Pattern Color</Label>
               <input type="color" value={patternColor} onChange={(e) => setPatternColor(e.target.value)} className="w-full h-10 rounded cursor-pointer p-0 border-0" />
             </div>
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="text-sm font-medium">Pattern Size</label>
+              <Label className="text-sm font-medium">Pattern Size</Label>
               <span className="text-xs text-[rgb(var(--muted))]">{size}px</span>
             </div>
             <input type="range" min="10" max="200" value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />
@@ -100,7 +105,7 @@ export function SvgBackgroundGeneratorTool({ tool }: { tool: ToolDef }) {
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="text-sm font-medium">Pattern Opacity</label>
+              <Label className="text-sm font-medium">Pattern Opacity</Label>
               <span className="text-xs text-[rgb(var(--muted))]">{opacity}%</span>
             </div>
             <input type="range" min="0" max="100" value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />

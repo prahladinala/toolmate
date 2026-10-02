@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
@@ -50,7 +51,7 @@ export function UrlParserTool({ tool }: { tool: ToolDef }) {
     <main className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-6 text-center">
         <h2 className="mb-4 text-xl font-medium">URL Parser</h2>
-        <input
+        <Input
           type="text"
           className="w-full rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] p-3 text-lg font-mono outline-none focus:border-blue-500"
           value={input.value}

@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React, { useState, useEffect, useCallback } from "react";
 import type { ToolDef } from "../registry";
@@ -6,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
   const [availableTemplates, setAvailableTemplates] = useState<string[]>([]);
@@ -84,6 +86,7 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -129,7 +132,7 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <input
+            <Input
               type="text"
               placeholder="Search environments (Node, React, macOS...)"
               value={search}
@@ -183,7 +186,7 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
                 {filteredTemplates.map((t) => {
                   const isSelected = selectedTemplates.includes(t);
                   return (
-                    <button
+                    <Button
                       key={t}
                       onClick={() => toggleTemplate(t)}
                       className={`group flex items-center justify-between rounded-lg px-3 py-2.5 text-[13px] font-medium text-left transition-all ${
@@ -198,7 +201,7 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
                       ) : (
                         <svg className="w-4 h-4 shrink-0 opacity-0 group-hover:opacity-40 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
                       )}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -209,7 +212,7 @@ export function GitignoreGeneratorTool({ tool }: { tool: ToolDef }) {
         {/* Right Col - Output */}
         <Card className="p-0 lg:col-span-7 flex flex-col h-[600px] overflow-hidden relative">
           <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border))]">
-            <div className="font-medium">
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">
               Output
               {loadingOutput && <span className="ml-2 text-xs text-[rgb(var(--muted))] animate-pulse">Generating...</span>}
             </div>

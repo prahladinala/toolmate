@@ -1,4 +1,8 @@
 "use client";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
@@ -7,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import bcrypt from "bcryptjs";
+import { toast } from "sonner";
 
 type Mode = "generate" | "check";
 
@@ -62,6 +67,7 @@ export function BcryptGeneratorTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -93,8 +99,8 @@ export function BcryptGeneratorTool({ tool }: { tool: ToolDef }) {
         {/* Left Column */}
         <Card className="p-5 space-y-4">
           <div>
-            <label className="text-sm font-medium">String to Hash/Check</label>
-            <input
+            <Label className="text-sm font-medium">String to Hash/Check</Label>
+            <Input
               type="text"
               value={input.value}
               onChange={(e) => input.setValue(e.target.value)}
@@ -106,7 +112,7 @@ export function BcryptGeneratorTool({ tool }: { tool: ToolDef }) {
           {mode === "generate" && (
             <div>
               <div className="flex justify-between">
-                <label className="text-sm font-medium">Cost Factor (Rounds): {rounds}</label>
+                <Label className="text-sm font-medium">Cost Factor (Rounds): {rounds}</Label>
               </div>
               <input
                 type="range"
@@ -124,8 +130,8 @@ export function BcryptGeneratorTool({ tool }: { tool: ToolDef }) {
 
           {mode === "check" && (
             <div>
-              <label className="text-sm font-medium">Bcrypt Hash</label>
-              <input
+              <Label className="text-sm font-medium">Bcrypt Hash</Label>
+              <Input
                 type="text"
                 value={hashInput}
                 onChange={(e) => setHashInput(e.target.value)}
@@ -149,7 +155,7 @@ export function BcryptGeneratorTool({ tool }: { tool: ToolDef }) {
         {mode === "generate" ? (
           <Card className="p-5">
             <div className="flex justify-between items-center mb-3">
-              <div className="font-medium">Output Hash</div>
+              <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output Hash</div>
               <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
                 <motion.span
                   key={copied ? "copied" : "copy"}
@@ -161,7 +167,7 @@ export function BcryptGeneratorTool({ tool }: { tool: ToolDef }) {
                 </motion.span>
               </Button>
             </div>
-            <textarea
+            <Textarea
               readOnly
               value={output}
               className="h-[120px] w-full rounded border p-3 font-mono text-sm bg-[rgb(var(--card-2))]"

@@ -1,8 +1,15 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -71,7 +78,7 @@ box-shadow: ${boxShadow};`;
   const copyCss = async () => {
     try {
       await navigator.clipboard.writeText(cssOutput);
-      alert("CSS copied to clipboard!");
+      toast.success("CSS copied to clipboard!");
     } catch (e) {}
   };
 
@@ -88,17 +95,17 @@ box-shadow: ${boxShadow};`;
         <Card className="p-6 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium block mb-1">Color</label>
+              <Label className="text-sm font-medium block mb-1">Color</Label>
               <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-full h-10 rounded cursor-pointer p-0 border-0" />
             </div>
             <div>
-              <label className="text-sm font-medium block mb-2">Shape</label>
-              <select value={shape} onChange={(e) => setShape(e.target.value as any)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+              <Label className="text-sm font-medium block mb-2">Shape</Label>
+              <Select value={shape} onChange={(e) => setShape(e.target.value as any)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
                 <option value="flat">Flat</option>
                 <option value="pressed">Pressed</option>
                 <option value="concave">Concave</option>
                 <option value="convex">Convex</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -111,7 +118,7 @@ box-shadow: ${boxShadow};`;
           ].map((slider) => (
             <div key={slider.label}>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-sm font-medium">{slider.label}</label>
+                <Label className="text-sm font-medium">{slider.label}</Label>
                 <span className="text-xs text-[rgb(var(--muted))]">{slider.val}</span>
               </div>
               <input type="range" min={slider.min} max={slider.max} value={slider.val} onChange={(e) => slider.set(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />

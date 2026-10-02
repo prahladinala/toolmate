@@ -1,4 +1,9 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React from "react";
 import { motion } from "framer-motion";
@@ -120,8 +125,8 @@ export default function PlaceholderGenerator() {
         <Card className="p-6 space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm">Width</label>
-              <input
+              <Label className="text-sm">Width</Label>
+              <Input
                 type="number"
                 value={width}
                 onChange={(e) => setWidth(Number(e.target.value))}
@@ -130,8 +135,8 @@ export default function PlaceholderGenerator() {
             </div>
 
             <div>
-              <label className="text-sm">Height</label>
-              <input
+              <Label className="text-sm">Height</Label>
+              <Input
                 type="number"
                 value={height}
                 onChange={(e) => setHeight(Number(e.target.value))}
@@ -141,7 +146,7 @@ export default function PlaceholderGenerator() {
           </div>
 
           <div>
-            <label className="text-sm">Background Color</label>
+            <Label className="text-sm">Background Color</Label>
             <input
               type="color"
               value={bgColor}
@@ -151,8 +156,8 @@ export default function PlaceholderGenerator() {
           </div>
 
           <div>
-            <label className="text-sm">Text</label>
-            <input
+            <Label className="text-sm">Text</Label>
+            <Input
               value={text}
               onChange={(e) => setText(e.target.value)}
               className="mt-1 w-full rounded border p-2"
@@ -160,7 +165,7 @@ export default function PlaceholderGenerator() {
           </div>
 
           <div>
-            <label className="text-sm">Text Color</label>
+            <Label className="text-sm">Text Color</Label>
             <input
               type="color"
               value={textColor}
@@ -170,8 +175,8 @@ export default function PlaceholderGenerator() {
           </div>
 
           <div>
-            <label className="text-sm">Format</label>
-            <select
+            <Label className="text-sm">Format</Label>
+            <Select
               value={format}
               onChange={(e) => setFormat(e.target.value as Format)}
               className="mt-1 w-full rounded border p-2"
@@ -180,12 +185,12 @@ export default function PlaceholderGenerator() {
               <option value="jpeg">JPEG</option>
               <option value="webp">WEBP</option>
               <option value="svg">SVG</option>
-            </select>
+            </Select>
           </div>
 
           {format === "jpeg" || format === "webp" ? (
             <div>
-              <label className="text-sm">Quality</label>
+              <Label className="text-sm">Quality</Label>
               <input
                 type="range"
                 min={0.1}

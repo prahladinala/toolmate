@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
@@ -31,7 +32,7 @@ export function CronParserTool({ tool }: { tool: ToolDef }) {
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-6 text-center">
         <h2 className="mb-4 text-xl font-medium">Cron Expression Parser</h2>
-        <input
+        <Input
           type="text"
           className="w-full max-w-md rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] p-3 text-center font-mono text-2xl tracking-widest outline-none focus:border-blue-500"
           value={input.value}

@@ -1,8 +1,14 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -50,7 +56,7 @@ If you have any questions about these Terms, please contact us at: ${email || "[
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(output);
-      alert("Terms copied to clipboard!");
+      toast.success("Terms copied to clipboard!");
     } catch (e) {}
   };
 
@@ -66,24 +72,24 @@ If you have any questions about these Terms, please contact us at: ${email || "[
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6 space-y-4">
           <div>
-            <label className="text-sm font-medium block mb-1">Company Name</label>
-            <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. Acme Corp" />
+            <Label className="text-sm font-medium block mb-1">Company Name</Label>
+            <Input type="text" value={company} onChange={(e) => setCompany(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. Acme Corp" />
           </div>
           <div>
-            <label className="text-sm font-medium block mb-1">Website Name</label>
-            <input type="text" value={websiteName} onChange={(e) => setWebsiteName(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. Acme App" />
+            <Label className="text-sm font-medium block mb-1">Website Name</Label>
+            <Input type="text" value={websiteName} onChange={(e) => setWebsiteName(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. Acme App" />
           </div>
           <div>
-            <label className="text-sm font-medium block mb-1">Website URL</label>
-            <input type="text" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. https://acme.com" />
+            <Label className="text-sm font-medium block mb-1">Website URL</Label>
+            <Input type="text" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. https://acme.com" />
           </div>
           <div>
-            <label className="text-sm font-medium block mb-1">Contact Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. legal@acme.com" />
+            <Label className="text-sm font-medium block mb-1">Contact Email</Label>
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. legal@acme.com" />
           </div>
           <div>
-            <label className="text-sm font-medium block mb-1">State / Country</label>
-            <input type="text" value={state} onChange={(e) => setState(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. California" />
+            <Label className="text-sm font-medium block mb-1">State / Country</Label>
+            <Input type="text" value={state} onChange={(e) => setState(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. California" />
           </div>
           
           <Button onClick={copyToClipboard} className="w-full mt-4">Copy Markdown</Button>

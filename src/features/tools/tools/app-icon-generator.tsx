@@ -1,4 +1,7 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { toast } from "sonner";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { ToolDef } from "../registry";
@@ -146,7 +149,7 @@ export function AppIconGeneratorTool({ tool }: { tool: ToolDef }) {
       saveAs(content, "AppIcons.zip");
     } catch (err) {
       console.error(err);
-      alert("An error occurred while generating icons.");
+      toast.error("An error occurred while generating icons.");
     } finally {
       setGenerating(false);
     }
@@ -165,7 +168,7 @@ export function AppIconGeneratorTool({ tool }: { tool: ToolDef }) {
         {/* Left Col - Settings */}
         <Card className="p-6 space-y-6">
           <div>
-            <label className="text-sm font-medium mb-1 block">Upload Base Icon</label>
+            <Label className="text-sm font-medium mb-1 block">Upload Base Icon</Label>
             <input
               type="file"
               accept="image/*"
@@ -175,7 +178,7 @@ export function AppIconGeneratorTool({ tool }: { tool: ToolDef }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-1 block">Background Color</label>
+            <Label className="text-sm font-medium mb-1 block">Background Color</Label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -189,7 +192,7 @@ export function AppIconGeneratorTool({ tool }: { tool: ToolDef }) {
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="text-sm font-medium">Padding</label>
+              <Label className="text-sm font-medium">Padding</Label>
               <span className="text-xs text-[rgb(var(--muted))]">{padding}%</span>
             </div>
             <input

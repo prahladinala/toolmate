@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
@@ -59,7 +60,7 @@ export function ColorConverterTool({ tool }: { tool: ToolDef }) {
             onChange={(e) => input.setValue(e.target.value)}
             className="w-24 h-24 cursor-pointer border-none bg-transparent rounded-lg"
           />
-          <input
+          <Input
             type="text"
             value={input.value}
             onChange={(e) => input.setValue(e.target.value)}

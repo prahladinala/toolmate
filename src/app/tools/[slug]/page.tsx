@@ -10,23 +10,56 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const tool = getTool(slug);
-  if (!tool) return { title: "Not found — ToolMate" };
+  if (!tool) return { title: "Not found — ToolMate - Prahlad Inala" };
+
+  const keywords = [
+    ...(tool.seo.keywords || []),
+    "toolmate",
+    "prahlad inala",
+    "toolmate prahlad inala",
+    `toolmate ${tool.name.toLowerCase()}`,
+    `${tool.name.toLowerCase()} toolmate`,
+    "toolmate developer tools",
+    "online developer tool"
+  ];
+
+  const ogImageUrl = `https://toolmate.co.in/api/og?title=${encodeURIComponent(tool.name)}&desc=${encodeURIComponent(tool.shortDescription)}`;
 
   return {
-    title: tool.seo.title,
-    description: tool.seo.description,
-    keywords: tool.seo.keywords,
+    title: `${tool.name} — Free Online Tool`,
+    description: `${tool.seo.description} Use ${tool.name} online for free on ToolMate by Prahlad Inala. Fast, private, and browser-based.`,
+    keywords: keywords,
     alternates: { canonical: `https://toolmate.co.in/tools/${tool.slug}` },
     openGraph: {
-      title: tool.seo.title,
+      title: `${tool.name} | ToolMate - Prahlad Inala`,
       description: tool.seo.description,
       url: `https://toolmate.co.in/tools/${tool.slug}`,
+      siteName: "ToolMate - Prahlad Inala",
       type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${tool.name} - ToolMate - Prahlad Inala`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
-      title: tool.seo.title,
+      title: `${tool.name} | ToolMate - Prahlad Inala`,
       description: tool.seo.description,
+      images: [ogImageUrl],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
   };
 }
@@ -39,11 +72,18 @@ export default async function ToolPage({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: tool.seo.title,
+    name: `${tool.name} — ToolMate`,
+    alternateName: [`ToolMate ${tool.name}`, `${tool.name} ToolMate`, `ToolMate Prahlad Inala ${tool.name}`],
     description: tool.seo.description,
     url: `https://toolmate.co.in/tools/${tool.slug}`,
     applicationCategory: "DeveloperApplication",
     operatingSystem: "All",
+    browserRequirements: "Requires JavaScript. Requires HTML5.",
+    provider: {
+      "@type": "Person",
+      name: "Prahlad Inala",
+      url: "https://toolmate.co.in"
+    },
     offers: {
       "@type": "Offer",
       price: "0",
@@ -88,7 +128,7 @@ export default async function ToolPage({ params }: Props) {
       />
       
       <main className="relative min-h-screen pt-32 pb-24 overflow-hidden">
-        {/* Ambient Grid Background - Pure CSS, no hydration needed */}
+        {/* Ambient Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(var(--fg),0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(var(--fg),0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
         <div className="absolute top-0 inset-x-0 h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 
@@ -102,7 +142,7 @@ export default async function ToolPage({ params }: Props) {
             <span aria-current="page" className="text-[rgb(var(--fg))]">{tool.name}</span>
           </nav>
 
-          {/* TOOL HEADER - Statically rendered for instantaneous SEO payload */}
+          {/* TOOL HEADER */}
           <header className="mb-14">
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div className="max-w-3xl relative">
@@ -120,7 +160,6 @@ export default async function ToolPage({ params }: Props) {
                   {tool.category}
                 </span>
 
-                {/* Client Component Island for interactivity */}
                 <ToolVisitTracker
                   slug={tool.slug}
                   name={tool.name}
@@ -137,7 +176,7 @@ export default async function ToolPage({ params }: Props) {
             </div>
           </header>
 
-          {/* TOOL BODY - Client Component boundary */}
+          {/* TOOL BODY */}
           <section className="rounded-[2.5rem] bg-[rgb(var(--card))] shadow-2xl shadow-black/5 ring-1 ring-[rgba(var(--fg),0.03)] p-6 md:p-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 ease-out fill-mode-both border border-[rgba(var(--fg),0.02)] relative overflow-hidden">
              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[rgba(var(--fg),0.1)] to-transparent" />
             <ToolRenderer tool={tool} />

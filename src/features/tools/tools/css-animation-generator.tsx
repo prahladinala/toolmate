@@ -1,8 +1,15 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -68,7 +75,7 @@ export function CssAnimationGeneratorTool({ tool }: { tool: ToolDef }) {
   const copyCss = async () => {
     try {
       await navigator.clipboard.writeText(fullCss);
-      alert("CSS copied to clipboard!");
+      toast.success("CSS copied to clipboard!");
     } catch (e) {}
   };
 
@@ -88,25 +95,25 @@ export function CssAnimationGeneratorTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6 space-y-4">
           <div>
-            <label className="text-sm font-medium block mb-2">Animation Type</label>
-            <select value={type} onChange={(e) => setType(e.target.value as AnimKey)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+            <Label className="text-sm font-medium block mb-2">Animation Type</Label>
+            <Select value={type} onChange={(e) => setType(e.target.value as AnimKey)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
               {Object.keys(ANIMATIONS).map((k) => (
                 <option key={k} value={k}>{k}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-sm font-medium">Duration</label>
+                <Label className="text-sm font-medium">Duration</Label>
                 <span className="text-xs text-[rgb(var(--muted))]">{duration}s</span>
               </div>
               <input type="range" min="0.1" max="5" step="0.1" value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-sm font-medium">Delay</label>
+                <Label className="text-sm font-medium">Delay</Label>
                 <span className="text-xs text-[rgb(var(--muted))]">{delay}s</span>
               </div>
               <input type="range" min="0" max="5" step="0.1" value={delay} onChange={(e) => setDelay(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />
@@ -115,51 +122,51 @@ export function CssAnimationGeneratorTool({ tool }: { tool: ToolDef }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium block mb-2">Timing Function</label>
-              <select value={easing} onChange={(e) => setEasing(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+              <Label className="text-sm font-medium block mb-2">Timing Function</Label>
+              <Select value={easing} onChange={(e) => setEasing(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
                 <option value="ease">ease</option>
                 <option value="ease-in">ease-in</option>
                 <option value="ease-out">ease-out</option>
                 <option value="ease-in-out">ease-in-out</option>
                 <option value="linear">linear</option>
                 <option value="cubic-bezier(0.68, -0.55, 0.265, 1.55)">bouncy bezier</option>
-              </select>
+              </Select>
             </div>
             <div>
-              <label className="text-sm font-medium block mb-2">Iteration Count</label>
-              <select value={iteration} onChange={(e) => setIteration(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+              <Label className="text-sm font-medium block mb-2">Iteration Count</Label>
+              <Select value={iteration} onChange={(e) => setIteration(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="infinite">infinite</option>
-              </select>
+              </Select>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium block mb-2">Direction</label>
-              <select value={direction} onChange={(e) => setDirection(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+              <Label className="text-sm font-medium block mb-2">Direction</Label>
+              <Select value={direction} onChange={(e) => setDirection(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
                 <option value="normal">normal</option>
                 <option value="reverse">reverse</option>
                 <option value="alternate">alternate</option>
                 <option value="alternate-reverse">alternate-reverse</option>
-              </select>
+              </Select>
             </div>
             <div>
-              <label className="text-sm font-medium block mb-2">Fill Mode</label>
-              <select value={fillMode} onChange={(e) => setFillMode(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+              <Label className="text-sm font-medium block mb-2">Fill Mode</Label>
+              <Select value={fillMode} onChange={(e) => setFillMode(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
                 <option value="none">none</option>
                 <option value="forwards">forwards</option>
                 <option value="backwards">backwards</option>
                 <option value="both">both</option>
-              </select>
+              </Select>
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
             <Button variant="secondary" onClick={() => setKey(k => k + 1)} className="flex-1">Replay</Button>
-            <Button onClick={copyCss} className="flex-1">Copy CSS</Button>
+            <CopyButton value={fullCss} text="Copy CSS" className="flex-1" />
           </div>
         </Card>
 

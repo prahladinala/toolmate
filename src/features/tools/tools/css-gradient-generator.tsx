@@ -1,9 +1,14 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export function CssGradientGeneratorTool({ tool }: { tool: ToolDef }) {
   const [color1, setColor1] = useState("#3b82f6");
@@ -19,6 +24,7 @@ export function CssGradientGeneratorTool({ tool }: { tool: ToolDef }) {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(`background: ${cssStr};`);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -31,19 +37,19 @@ export function CssGradientGeneratorTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-6 shadow-sm">
           <div className="mb-6 flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 text-sm font-medium">
+            <Label className="flex items-center gap-2 text-sm font-medium">
               Type
-              <select
+              <Select
                 value={type}
                 onChange={(e) => setType(e.target.value as any)}
                 className="rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] px-2 py-1"
               >
                 <option value="linear">Linear</option>
                 <option value="radial">Radial</option>
-              </select>
-            </label>
+              </Select>
+            </Label>
             {type === "linear" && (
-              <label className="flex items-center gap-2 text-sm font-medium">
+              <Label className="flex items-center gap-2 text-sm font-medium">
                 Angle ({angle}deg)
                 <input
                   type="range"
@@ -53,12 +59,12 @@ export function CssGradientGeneratorTool({ tool }: { tool: ToolDef }) {
                   onChange={(e) => setAngle(Number(e.target.value))}
                   className="w-32"
                 />
-              </label>
+              </Label>
             )}
           </div>
 
           <div className="flex gap-6 mb-8">
-            <label className="flex flex-col gap-2">
+            <Label className="flex flex-col gap-2">
               <span className="text-sm font-medium">Color 1</span>
               <input
                 type="color"
@@ -66,8 +72,8 @@ export function CssGradientGeneratorTool({ tool }: { tool: ToolDef }) {
                 onChange={(e) => setColor1(e.target.value)}
                 className="w-16 h-16 cursor-pointer border-none rounded bg-transparent"
               />
-            </label>
-            <label className="flex flex-col gap-2">
+            </Label>
+            <Label className="flex flex-col gap-2">
               <span className="text-sm font-medium">Color 2</span>
               <input
                 type="color"
@@ -75,7 +81,7 @@ export function CssGradientGeneratorTool({ tool }: { tool: ToolDef }) {
                 onChange={(e) => setColor2(e.target.value)}
                 className="w-16 h-16 cursor-pointer border-none rounded bg-transparent"
               />
-            </label>
+            </Label>
           </div>
 
           <div className="rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] p-4 font-mono text-sm">

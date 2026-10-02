@@ -7,6 +7,7 @@ import { html } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
 import { css } from "@codemirror/lang-css";
+import { EditorView } from "@codemirror/view";
 import { ThemeContext } from "@/features/theme/theme-provider";
 
 export interface CodeEditorProps extends Omit<ReactCodeMirrorProps, 'theme'> {
@@ -44,39 +45,41 @@ export function CodeEditor({ className, language, options, ...props }: CodeEdito
     <div
       className={`relative min-h-[420px] h-full w-full overflow-hidden rounded-xl border border-[rgba(var(--fg),0.1)] bg-white dark:bg-[#0d1117] z-10 flex flex-col shadow-sm ${className || ""}`}
     >
-      <CodeMirror
-        theme={isDark ? githubDark : githubLight}
-        extensions={getLanguageExtension()}
-        basicSetup={{
-          lineNumbers: true,
-          highlightActiveLineGutter: true,
-          highlightSpecialChars: true,
-          history: true,
-          foldGutter: true,
-          drawSelection: true,
-          dropCursor: true,
-          allowMultipleSelections: true,
-          indentOnInput: true,
-          syntaxHighlighting: true,
-          bracketMatching: true,
-          closeBrackets: true,
-          autocompletion: true,
-          rectangularSelection: true,
-          crosshairCursor: true,
-          highlightActiveLine: true,
-          highlightSelectionMatches: true,
-          closeBracketsKeymap: true,
-          defaultKeymap: true,
-          searchKeymap: true,
-          historyKeymap: true,
-          foldKeymap: true,
-          completionKeymap: true,
-          lintKeymap: true,
-        }}
-        className="flex-1 w-full h-full text-[14px] font-mono leading-relaxed [&>.cm-editor]:h-full [&_.cm-scroller]:font-mono [&_.cm-scroller]:p-4"
-        editable={options?.readOnly ? false : undefined}
-        {...props}
-      />
+      <div className="absolute inset-0">
+        <CodeMirror
+          theme={isDark ? githubDark : githubLight}
+          extensions={options?.wordWrap === "on" ? [...getLanguageExtension(), EditorView.lineWrapping] : getLanguageExtension()}
+          basicSetup={{
+            lineNumbers: true,
+            highlightActiveLineGutter: true,
+            highlightSpecialChars: true,
+            history: true,
+            foldGutter: true,
+            drawSelection: true,
+            dropCursor: true,
+            allowMultipleSelections: true,
+            indentOnInput: true,
+            syntaxHighlighting: true,
+            bracketMatching: true,
+            closeBrackets: true,
+            autocompletion: true,
+            rectangularSelection: true,
+            crosshairCursor: true,
+            highlightActiveLine: true,
+            highlightSelectionMatches: true,
+            closeBracketsKeymap: true,
+            defaultKeymap: true,
+            searchKeymap: true,
+            historyKeymap: true,
+            foldKeymap: true,
+            completionKeymap: true,
+            lintKeymap: true,
+          }}
+          className="flex-1 w-full h-full text-[14px] font-mono leading-relaxed [&>.cm-editor]:h-full [&_.cm-scroller]:font-mono [&_.cm-scroller]:p-4"
+          editable={options?.readOnly ? false : undefined}
+          {...props}
+        />
+      </div>
     </div>
   );
 }

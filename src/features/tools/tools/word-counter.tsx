@@ -47,10 +47,10 @@ export function WordCounterTool({ tool }: { tool: ToolDef }) {
         </div>
       </div>
 
-      <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
-        <div className="font-medium">Input Text</div>
+      <div className="flex flex-col h-full">
+        <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Input Text</div>
         <CodeEditor
-          className="mt-3 min-h-[420px]"
+          className="min-h-[420px]"
           value={input.value}
           onChange={(value) => input.setValue(value || "")}
           language="plaintext"

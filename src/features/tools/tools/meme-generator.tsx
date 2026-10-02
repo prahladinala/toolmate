@@ -1,4 +1,10 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
+import { toast } from "sonner";
 
 import React, { useState, useEffect, useRef } from "react";
 import type { ToolDef } from "../registry";
@@ -101,7 +107,7 @@ export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
       a.href = dataUrl;
       a.click();
     } catch (e) {
-      alert("Cannot download due to CORS restrictions on the image. You can try right-clicking and saving the image.");
+      toast.error("Cannot download due to CORS restrictions on the image. You can try right-clicking and saving the image.");
     }
   };
 
@@ -121,8 +127,8 @@ export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
           ) : (
             <>
               <div>
-                <label className="text-sm font-medium block mb-2">Select Template</label>
-                <select 
+                <Label className="text-sm font-medium block mb-2">Select Template</Label>
+                <Select 
                   value={selectedIdx} 
                   onChange={(e) => setSelectedIdx(Number(e.target.value))} 
                   className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]"
@@ -130,12 +136,12 @@ export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
                   {templates.map((t, i) => (
                     <option key={t.id} value={i}>{t.name}</option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div>
-                <label className="text-sm font-medium block mb-2">Top Text</label>
-                <input 
+                <Label className="text-sm font-medium block mb-2">Top Text</Label>
+                <Input 
                   type="text" 
                   value={topText} 
                   onChange={(e) => setTopText(e.target.value)} 
@@ -145,8 +151,8 @@ export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
               </div>
 
               <div>
-                <label className="text-sm font-medium block mb-2">Bottom Text</label>
-                <input 
+                <Label className="text-sm font-medium block mb-2">Bottom Text</Label>
+                <Input 
                   type="text" 
                   value={bottomText} 
                   onChange={(e) => setBottomText(e.target.value)} 

@@ -1,4 +1,8 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import type { ToolDef } from "../registry";
@@ -7,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { motion } from "framer-motion";
 import * as yaml from "js-yaml";
+import { toast } from "sonner";
 
 export function YamlFormatterTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
@@ -40,6 +45,7 @@ export function YamlFormatterTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -50,8 +56,8 @@ export function YamlFormatterTool({ tool }: { tool: ToolDef }) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-6 flex flex-wrap gap-4 items-center">
-        <label className="text-sm font-medium">Indent:</label>
-        <select
+        <Label className="text-sm font-medium">Indent:</Label>
+        <Select
           value={indent}
           onChange={(e) => setIndent(Number(e.target.value))}
           className="rounded border p-1 text-sm bg-[rgb(var(--card-2))]"
@@ -59,7 +65,7 @@ export function YamlFormatterTool({ tool }: { tool: ToolDef }) {
           <option value={2}>2 Spaces</option>
           <option value={4}>4 Spaces</option>
           <option value={8}>8 Spaces</option>
-        </select>
+        </Select>
         <Button size="sm" onClick={format}>Format</Button>
       </div>
 
@@ -70,7 +76,7 @@ export function YamlFormatterTool({ tool }: { tool: ToolDef }) {
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+        <div className="flex flex-col h-full">
           <div className="font-medium mb-3">Input YAML</div>
           <CodeEditor
             className="min-h-[500px]"
@@ -79,9 +85,9 @@ export function YamlFormatterTool({ tool }: { tool: ToolDef }) {
             language="yaml"
           />
         </div>
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+        <div className="flex flex-col h-full">
           <div className="flex items-center justify-between mb-3">
-            <div className="font-medium">Formatted Output</div>
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Formatted Output</div>
             <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
               <motion.span
                 key={copied ? "copied" : "copy"}

@@ -1,9 +1,11 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
 
 function detectTimestamp(value: string) {
   const n = Number(value);
@@ -101,6 +103,7 @@ export default function TimestampConverterTool() {
 
   const copy = async (value: string, key: string) => {
     await navigator.clipboard.writeText(value);
+      toast.success("Copied to clipboard!");
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 1500);
   };
@@ -122,8 +125,8 @@ export default function TimestampConverterTool() {
           transition={{ duration: 0.4 }}
         >
           <Card className="p-5">
-            <div className="font-medium">Unix Timestamp</div>
-            <input
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Unix Timestamp</div>
+            <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Enter 10 or 13 digit timestamp"
@@ -145,8 +148,8 @@ export default function TimestampConverterTool() {
           transition={{ duration: 0.4 }}
         >
           <Card className="p-5">
-            <div className="font-medium">Date Input</div>
-            <input
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Date Input</div>
+            <Input
               type="datetime-local"
               value={dateInput}
               onChange={(e) => setDateInput(e.target.value)}

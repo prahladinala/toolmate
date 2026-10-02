@@ -1,8 +1,16 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -38,7 +46,7 @@ export function TailwindTextGradientTool({ tool }: { tool: ToolDef }) {
   const copyClass = async () => {
     try {
       await navigator.clipboard.writeText(cssClass);
-      alert("Tailwind class copied!");
+      toast.success("Tailwind class copied!");
     } catch (e) {}
   };
 
@@ -54,8 +62,8 @@ export function TailwindTextGradientTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6 space-y-6">
           <div>
-            <label className="text-sm font-medium block mb-2">Preview Text</label>
-            <input 
+            <Label className="text-sm font-medium block mb-2">Preview Text</Label>
+            <Input 
               type="text" 
               value={text} 
               onChange={(e) => setText(e.target.value)} 
@@ -64,26 +72,26 @@ export function TailwindTextGradientTool({ tool }: { tool: ToolDef }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium block mb-2">Direction</label>
-            <select value={direction} onChange={(e) => setDirection(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+            <Label className="text-sm font-medium block mb-2">Direction</Label>
+            <Select value={direction} onChange={(e) => setDirection(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
               {DIRECTIONS.map(d => (
                 <option key={d.value} value={d.value}>{d.label}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-medium block mb-1">From</label>
+              <Label className="text-sm font-medium block mb-1">From</Label>
               <input type="color" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full h-10 rounded cursor-pointer p-0 border-0" />
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1">Via (Optional)</label>
+              <Label className="text-sm font-medium block mb-1">Via (Optional)</Label>
               <input type="color" value={via || "#ffffff"} onChange={(e) => setVia(e.target.value)} className="w-full h-10 rounded cursor-pointer p-0 border-0" />
               <Button size="sm" variant="ghost" onClick={() => setVia("")} className="mt-1 w-full text-xs h-6">Clear</Button>
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1">To</label>
+              <Label className="text-sm font-medium block mb-1">To</Label>
               <input type="color" value={to} onChange={(e) => setTo(e.target.value)} className="w-full h-10 rounded cursor-pointer p-0 border-0" />
             </div>
           </div>

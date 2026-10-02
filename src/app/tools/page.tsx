@@ -5,10 +5,30 @@ export const metadata = {
   title: "Tools | ToolMate",
   description:
     "Browse ToolMate’s collection of everyday tools: developer utilities, converters, generators, and info tools.",
+  alternates: {
+    canonical: "https://toolmate.co.in/tools",
+  },
 };
 
 export default function ToolsPage() {
-  // Keep the initial render SEO friendly: static list is embedded in HTML.
-  // Then the client component enhances with search/filter/animations.
-  return <ToolsExplorer tools={TOOLS} />;
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": TOOLS.map((tool, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `https://toolmate.co.in/tools/${tool.slug}`,
+      "name": tool.name
+    }))
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <ToolsExplorer tools={TOOLS} />
+    </>
+  );
 }

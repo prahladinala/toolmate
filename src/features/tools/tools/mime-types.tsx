@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
@@ -86,7 +87,7 @@ export function MimeTypesTool({ tool }: { tool: ToolDef }) {
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6">
-        <input
+        <Input
           type="text"
           placeholder="Search extensions, MIME types, or descriptions..."
           value={search}

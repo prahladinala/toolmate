@@ -1,4 +1,10 @@
 "use client";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
@@ -6,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
   const [title, setTitle] = useState("");
@@ -61,6 +68,7 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -84,8 +92,8 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
             <h3 className="font-semibold border-b border-[rgb(var(--border))] pb-2">Primary Information</h3>
             
             <div>
-              <label className="text-sm font-medium">Site Title</label>
-              <input
+              <Label className="text-sm font-medium">Site Title</Label>
+              <Input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -95,8 +103,8 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Site Description</label>
-              <textarea
+              <Label className="text-sm font-medium">Site Description</Label>
+              <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="A collection of the best developer tools..."
@@ -105,8 +113,8 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Keywords (comma separated)</label>
-              <input
+              <Label className="text-sm font-medium">Keywords (comma separated)</Label>
+              <Input
                 type="text"
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
@@ -117,8 +125,8 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium">Author</label>
-                <input
+                <Label className="text-sm font-medium">Author</Label>
+                <Input
                   type="text"
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
@@ -127,8 +135,8 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Language</label>
-                <input
+                <Label className="text-sm font-medium">Language</Label>
+                <Input
                   type="text"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
@@ -140,7 +148,7 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
 
             <div className="flex gap-6 items-center">
               <div>
-                <label className="text-sm font-medium">Theme Color</label>
+                <Label className="text-sm font-medium">Theme Color</Label>
                 <input
                   type="color"
                   value={themeColor}
@@ -149,14 +157,14 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-2 text-sm">
+                <Label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={allowRobotsIndex} onChange={(e) => setAllowRobotsIndex(e.target.checked)} />
                   Allow Search Engines to Index
-                </label>
-                <label className="flex items-center gap-2 text-sm">
+                </Label>
+                <Label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={allowRobotsFollow} onChange={(e) => setAllowRobotsFollow(e.target.checked)} />
                   Allow Search Engines to Follow Links
-                </label>
+                </Label>
               </div>
             </div>
           </div>
@@ -165,8 +173,8 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
             <h3 className="font-semibold border-b border-[rgb(var(--border))] pb-2">Open Graph & Social</h3>
             
             <div>
-              <label className="text-sm font-medium">OG Type</label>
-              <select
+              <Label className="text-sm font-medium">OG Type</Label>
+              <Select
                 value={ogType}
                 onChange={(e) => setOgType(e.target.value)}
                 className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
@@ -174,12 +182,12 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
                 <option value="website">Website</option>
                 <option value="article">Article</option>
                 <option value="profile">Profile</option>
-              </select>
+              </Select>
             </div>
 
             <div>
-              <label className="text-sm font-medium">Canonical URL</label>
-              <input
+              <Label className="text-sm font-medium">Canonical URL</Label>
+              <Input
                 type="text"
                 value={ogUrl}
                 onChange={(e) => setOgUrl(e.target.value)}
@@ -189,8 +197,8 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Social Image URL</label>
-              <input
+              <Label className="text-sm font-medium">Social Image URL</Label>
+              <Input
                 type="text"
                 value={ogImage}
                 onChange={(e) => setOgImage(e.target.value)}
@@ -204,7 +212,7 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
         {/* Right Col - Output */}
         <Card className="p-0 flex flex-col h-full min-h-[500px]">
           <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border))]">
-            <div className="font-medium">Generated Meta Tags</div>
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Generated Meta Tags</div>
             <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
               <motion.span
                 key={copied ? "copied" : "copy"}

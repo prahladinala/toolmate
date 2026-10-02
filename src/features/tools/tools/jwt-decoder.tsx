@@ -1,10 +1,13 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
 
 import React from "react";
 import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { toast } from "sonner";
 
 type Settings = {
   pretty: boolean;
@@ -99,7 +102,7 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
       {/* SETTINGS BAR */}
       <div className="sticky top-16 z-10 mb-6 rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-3 shadow-[var(--shadow-sm)] backdrop-blur">
         <div className="flex flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.value.pretty}
@@ -111,9 +114,9 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
               }
             />
             Pretty Format
-          </label>
+          </Label>
 
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.value.autoRun}
@@ -125,7 +128,7 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
               }
             />
             Auto Decode
-          </label>
+          </Label>
 
           <Button onClick={decode}>Decode</Button>
           <Button variant="secondary" onClick={input.clear}>
@@ -136,11 +139,11 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
 
       {/* INPUT */}
       <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4 shadow-[var(--shadow-sm)]">
-        <div className="font-medium">JWT Token</div>
+        <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">JWT Token</div>
         <CodeEditor
           value={input.value}
           onChange={(v) => input.setValue(v || "")}
-          className="mt-3 min-h-[120px]"
+          className="min-h-[120px]"
           language="plaintext"
         />
       </div>
@@ -154,9 +157,9 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
       {header && payload && (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           {/* HEADER */}
-          <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+          <div className="flex flex-col h-full">
             <div className="flex justify-between">
-              <div className="font-medium">Header</div>
+              <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Header</div>
               <Button
                 size="sm"
                 variant="secondary"
@@ -171,9 +174,9 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
           </div>
 
           {/* PAYLOAD */}
-          <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+          <div className="flex flex-col h-full">
             <div className="flex justify-between">
-              <div className="font-medium">Payload</div>
+              <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Payload</div>
               <Button
                 size="sm"
                 variant="secondary"
@@ -188,7 +191,7 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
 
             {expInfo && (
               <div className="mt-4 rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] p-3 text-sm">
-                <div className="font-medium">
+                <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">
                   Expiration: {isExpired ? "Expired ❌" : "Valid ✅"}
                 </div>
                 <div className="text-[rgb(var(--muted))]">{expInfo.local}</div>
@@ -199,7 +202,7 @@ export default function JwtDecoderTool({ tool }: { tool: ToolDef }) {
           {/* SIGNATURE */}
           <div className="lg:col-span-2 rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
             <div className="flex justify-between">
-              <div className="font-medium">Signature</div>
+              <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Signature</div>
               <Button
                 size="sm"
                 variant="secondary"

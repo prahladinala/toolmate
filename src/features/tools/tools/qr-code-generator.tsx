@@ -1,4 +1,8 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React from "react";
 import QRCode from "qrcode";
@@ -76,7 +80,7 @@ export default function QrCodeGeneratorTool() {
         {/* Controls */}
         <Card className="p-6 space-y-5">
           <div>
-            <label className="text-sm">QR Content</label>
+            <Label className="text-sm">QR Content</Label>
             <CodeEditor
               value={value}
               onChange={(v) => setValue(v || "")}
@@ -86,7 +90,7 @@ export default function QrCodeGeneratorTool() {
           </div>
 
           <div>
-            <label className="text-sm">Size: {size}px</label>
+            <Label className="text-sm">Size: {size}px</Label>
             <input
               type="range"
               min={128}
@@ -100,7 +104,7 @@ export default function QrCodeGeneratorTool() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm">Foreground</label>
+              <Label className="text-sm">Foreground</Label>
               <input
                 type="color"
                 value={fgColor}
@@ -109,7 +113,7 @@ export default function QrCodeGeneratorTool() {
               />
             </div>
             <div>
-              <label className="text-sm">Background</label>
+              <Label className="text-sm">Background</Label>
               <input
                 type="color"
                 value={bgColor}
@@ -120,8 +124,8 @@ export default function QrCodeGeneratorTool() {
           </div>
 
           <div>
-            <label className="text-sm">Error Correction</label>
-            <select
+            <Label className="text-sm">Error Correction</Label>
+            <Select
               value={errorLevel}
               onChange={(e) => setErrorLevel(e.target.value as ErrorLevel)}
               className="mt-2 w-full rounded border p-2"
@@ -130,7 +134,7 @@ export default function QrCodeGeneratorTool() {
               <option value="M">Medium</option>
               <option value="Q">Quartile</option>
               <option value="H">High</option>
-            </select>
+            </Select>
           </div>
 
           <div className="flex gap-3">

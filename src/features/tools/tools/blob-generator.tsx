@@ -1,8 +1,13 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 // @ts-ignore
@@ -35,7 +40,7 @@ export function BlobGeneratorTool({ tool }: { tool: ToolDef }) {
   const copySvg = async () => {
     try {
       await navigator.clipboard.writeText(svgCode);
-      alert("SVG copied to clipboard!");
+      toast.success("SVG copied to clipboard!");
     } catch (e) {
       // ignore
     }
@@ -55,7 +60,7 @@ export function BlobGeneratorTool({ tool }: { tool: ToolDef }) {
         <Card className="p-6 space-y-6">
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="text-sm font-medium">Edges (Complexity)</label>
+              <Label className="text-sm font-medium">Edges (Complexity)</Label>
               <span className="text-xs text-[rgb(var(--muted))]">{edges}</span>
             </div>
             <input
@@ -70,7 +75,7 @@ export function BlobGeneratorTool({ tool }: { tool: ToolDef }) {
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="text-sm font-medium">Growth (Smoothness)</label>
+              <Label className="text-sm font-medium">Growth (Smoothness)</Label>
               <span className="text-xs text-[rgb(var(--muted))]">{growth}</span>
             </div>
             <input
@@ -84,7 +89,7 @@ export function BlobGeneratorTool({ tool }: { tool: ToolDef }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium block mb-1">Color</label>
+            <Label className="text-sm font-medium block mb-1">Color</Label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -98,7 +103,7 @@ export function BlobGeneratorTool({ tool }: { tool: ToolDef }) {
 
           <div className="flex gap-3 pt-4">
             <Button onClick={handleRandomize} variant="secondary" className="flex-1">Randomize Shape</Button>
-            <Button onClick={copySvg} className="flex-1">Copy SVG</Button>
+            <CopyButton value={svgCode} text="Copy SVG" className="flex-1" />
           </div>
         </Card>
 

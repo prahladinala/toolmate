@@ -1,9 +1,13 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
 
 type Settings = {
   count: number;
@@ -50,6 +54,7 @@ export default function UuidGeneratorTool() {
 
   const copy = async (value: string, key: string) => {
     await navigator.clipboard.writeText(value);
+      toast.success("Copied to clipboard!");
     setCopied(key);
     setTimeout(() => setCopied(null), 1200);
   };
@@ -75,8 +80,8 @@ export default function UuidGeneratorTool() {
       <Card className="mt-6 p-5 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <label className="text-sm">Count</label>
-            <input
+            <Label className="text-sm">Count</Label>
+            <Input
               type="number"
               min={1}
               max={1000}
@@ -89,8 +94,8 @@ export default function UuidGeneratorTool() {
           </div>
 
           <div>
-            <label className="text-sm">Prefix</label>
-            <input
+            <Label className="text-sm">Prefix</Label>
+            <Input
               value={settings.prefix}
               onChange={(e) =>
                 setSettings({ ...settings, prefix: e.target.value })
@@ -100,8 +105,8 @@ export default function UuidGeneratorTool() {
           </div>
 
           <div>
-            <label className="text-sm">Suffix</label>
-            <input
+            <Label className="text-sm">Suffix</Label>
+            <Input
               value={settings.suffix}
               onChange={(e) =>
                 setSettings({ ...settings, suffix: e.target.value })
@@ -112,7 +117,7 @@ export default function UuidGeneratorTool() {
         </div>
 
         <div className="flex flex-wrap gap-4 text-sm">
-          <label>
+          <Label>
             <input
               type="checkbox"
               checked={settings.uppercase}
@@ -121,9 +126,9 @@ export default function UuidGeneratorTool() {
               }
             />{" "}
             Uppercase
-          </label>
+          </Label>
 
-          <label>
+          <Label>
             <input
               type="checkbox"
               checked={settings.removeHyphens}
@@ -132,9 +137,9 @@ export default function UuidGeneratorTool() {
               }
             />{" "}
             Remove Hyphens
-          </label>
+          </Label>
 
-          <label>
+          <Label>
             <input
               type="checkbox"
               checked={settings.autoGenerate}
@@ -143,7 +148,7 @@ export default function UuidGeneratorTool() {
               }
             />{" "}
             Auto Generate
-          </label>
+          </Label>
         </div>
 
         <div className="flex gap-3 flex-wrap">

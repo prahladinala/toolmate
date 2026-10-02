@@ -1,4 +1,6 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
 
 import React, { useContext } from "react";
 import ReactDiffViewer from "react-diff-viewer-continued";
@@ -25,14 +27,14 @@ export default function TextDiffTool() {
     <main className="mx-auto max-w-6xl w-full">
       <Card className="p-4 space-y-4">
         <div className="flex flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={sideBySide}
               onChange={(e) => setSideBySide(e.target.checked)}
             />
             Side by side
-          </label>
+          </Label>
         </div>
       </Card>
 

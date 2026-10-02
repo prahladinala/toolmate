@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
 import {
   ResponsiveContainer,
   BarChart,
@@ -31,7 +32,7 @@ function InfoRow({ label, value }: { label: string; value: any }) {
   return (
     <div className="flex justify-between border-b border-[rgba(var(--border),0.4)] pb-1">
       <span className="text-[rgb(var(--muted))]">{label}</span>
-      <span className="font-medium">{String(value ?? "N/A")}</span>
+      <span className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">{String(value ?? "N/A")}</span>
     </div>
   );
 }

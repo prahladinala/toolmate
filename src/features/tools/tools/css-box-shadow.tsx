@@ -1,8 +1,14 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
 
@@ -22,7 +28,7 @@ export function CssBoxShadowTool({ tool }: { tool: ToolDef }) {
   const copyCss = async () => {
     try {
       await navigator.clipboard.writeText(cssOutput);
-      alert("CSS copied to clipboard!");
+      toast.success("CSS copied to clipboard!");
     } catch (e) {}
   };
 
@@ -43,11 +49,11 @@ export function CssBoxShadowTool({ tool }: { tool: ToolDef }) {
         <Card className="p-6 space-y-5">
           <div className="grid grid-cols-2 gap-4 pb-2 border-b border-[rgb(var(--border))]">
              <div>
-              <label className="text-sm font-medium block mb-1">Canvas Color</label>
+              <Label className="text-sm font-medium block mb-1">Canvas Color</Label>
               <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-full h-8 rounded cursor-pointer p-0 border-0" />
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1">Box Color</label>
+              <Label className="text-sm font-medium block mb-1">Box Color</Label>
               <input type="color" value={boxColor} onChange={(e) => setBoxColor(e.target.value)} className="w-full h-8 rounded cursor-pointer p-0 border-0" />
             </div>
           </div>
@@ -60,7 +66,7 @@ export function CssBoxShadowTool({ tool }: { tool: ToolDef }) {
           ].map((slider) => (
             <div key={slider.label}>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-sm font-medium">{slider.label}</label>
+                <Label className="text-sm font-medium">{slider.label}</Label>
                 <span className="text-xs text-[rgb(var(--muted))]">{slider.val}px</span>
               </div>
               <input type="range" min={slider.min} max={slider.max} value={slider.val} onChange={(e) => slider.set(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />
@@ -69,16 +75,16 @@ export function CssBoxShadowTool({ tool }: { tool: ToolDef }) {
 
           <div className="flex gap-4 items-center">
             <div className="flex-1">
-              <label className="text-sm font-medium block mb-1">Shadow Color (RGBA/Hex)</label>
-              <input type="text" value={color} onChange={(e) => setColor(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" />
+              <Label className="text-sm font-medium block mb-1">Shadow Color (RGBA/Hex)</Label>
+              <Input type="text" value={color} onChange={(e) => setColor(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" />
             </div>
             <div className="flex items-center gap-2 mt-6">
               <input type="checkbox" id="inset" checked={inset} onChange={(e) => setInset(e.target.checked)} className="w-4 h-4 accent-[rgb(var(--accent))]" />
-              <label htmlFor="inset" className="text-sm font-medium cursor-pointer">Inset</label>
+              <Label htmlFor="inset" className="text-sm font-medium cursor-pointer">Inset</Label>
             </div>
           </div>
           
-          <Button onClick={copyCss} className="w-full mt-4">Copy CSS</Button>
+          <CopyButton value={cssOutput} text="Copy CSS" className="w-full mt-4" />
         </Card>
 
         <Card className="p-0 flex flex-col h-full min-h-[400px] overflow-hidden">

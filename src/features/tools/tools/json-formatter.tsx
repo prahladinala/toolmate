@@ -1,4 +1,8 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React from "react";
 import type { ToolDef } from "../registry";
@@ -6,6 +10,7 @@ import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 type Settings = {
   pretty: boolean;
@@ -85,6 +90,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -102,7 +108,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
       <div className="sticky top-16 z-10 mb-6 rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-3 shadow-[var(--shadow-sm)] backdrop-blur">
         {/* Primary Controls */}
         <div className="flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.value.pretty}
@@ -114,7 +120,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
               }
             />
             Pretty
-          </label>
+          </Label>
 
           <Button onClick={run}>Run</Button>
           <Button variant="secondary" onClick={input.clear}>
@@ -122,7 +128,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
           </Button>
 
           {/* Mobile Toggle */}
-          <button
+          <Button
             onClick={() => setShowAdvanced((v) => !v)}
             className="
               lg:hidden
@@ -136,14 +142,14 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
             "
           >
             {showAdvanced ? "Less ▲" : "More ▼"}
-          </button>
+          </Button>
         </div>
 
         {/* Desktop Advanced */}
         <div className="hidden lg:flex mt-4 flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             Indent
-            <select
+            <Select
               value={settings.value.indent}
               onChange={(e) =>
                 settings.setValue({
@@ -156,10 +162,10 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
               <option value={2}>2</option>
               <option value={4}>4</option>
               <option value={6}>6</option>
-            </select>
-          </label>
+            </Select>
+          </Label>
 
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.value.sortKeys}
@@ -171,9 +177,9 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
               }
             />
             Sort Keys
-          </label>
+          </Label>
 
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.value.autoRun}
@@ -185,9 +191,9 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
               }
             />
             Auto Run
-          </label>
+          </Label>
 
-          <label className="flex items-center gap-2 text-sm">
+          <Label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.value.wrap}
@@ -199,7 +205,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
               }
             />
             Wrap Output
-          </label>
+          </Label>
 
           <Button
             variant="secondary"
@@ -223,9 +229,9 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
           className="overflow-hidden lg:hidden"
         >
           <div className="mt-4 flex flex-col gap-3">
-            <label className="flex items-center gap-2 text-sm">
+            <Label className="flex items-center gap-2 text-sm">
               Indent
-              <select
+              <Select
                 value={settings.value.indent}
                 onChange={(e) =>
                   settings.setValue({
@@ -238,10 +244,10 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
                 <option value={2}>2</option>
                 <option value={4}>4</option>
                 <option value={6}>6</option>
-              </select>
-            </label>
+              </Select>
+            </Label>
 
-            <label className="flex items-center gap-2 text-sm">
+            <Label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={settings.value.sortKeys}
@@ -253,9 +259,9 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
                 }
               />
               Sort Keys
-            </label>
+            </Label>
 
-            <label className="flex items-center gap-2 text-sm">
+            <Label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={settings.value.autoRun}
@@ -267,9 +273,9 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
                 }
               />
               Auto Run
-            </label>
+            </Label>
 
-            <label className="flex items-center gap-2 text-sm">
+            <Label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={settings.value.wrap}
@@ -281,7 +287,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
                 }
               />
               Wrap Output
-            </label>
+            </Label>
 
             <Button
               variant="secondary"
@@ -304,20 +310,20 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
       )}
 
       {/* MAIN GRID */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
-          <div className="font-medium">Input</div>
+      <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
+        <div className="flex flex-col h-full">
+          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Input</div>
           <CodeEditor
-            className="mt-3 min-h-[420px]"
+            className="min-h-[420px]"
             value={input.value}
             onChange={(value) => input.setValue(value || "")}
             language="json"
           />
         </div>
 
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4">
+        <div className="flex flex-col h-full">
           <div className="flex items-center justify-between">
-            <div className="font-medium">Output</div>
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output</div>
 
             <Button
               size="sm"
@@ -341,7 +347,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
             </Button>
           </div>
           <CodeEditor
-            className="mt-3 min-h-[420px]"
+            className="min-h-[420px]"
             value={output}
             language="json"
             options={{

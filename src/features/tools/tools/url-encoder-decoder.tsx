@@ -1,10 +1,13 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
 
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { toast } from "sonner";
 
 type Mode = "encode" | "decode";
 
@@ -41,6 +44,7 @@ export default function UrlEncoderDecoderTool() {
 
   const copy = async (value: string, key: string) => {
     await navigator.clipboard.writeText(value);
+      toast.success("Copied to clipboard!");
     setCopied(key);
     setTimeout(() => setCopied(null), 1200);
   };
@@ -89,23 +93,23 @@ export default function UrlEncoderDecoderTool() {
         </div>
 
         <div className="flex flex-wrap gap-4 text-sm">
-          <label>
+          <Label>
             <input
               type="checkbox"
               checked={useComponent}
               onChange={(e) => setUseComponent(e.target.checked)}
             />{" "}
             Use encodeURIComponent
-          </label>
+          </Label>
 
-          <label>
+          <Label>
             <input
               type="checkbox"
               checked={autoRun}
               onChange={(e) => setAutoRun(e.target.checked)}
             />{" "}
             Auto Run
-          </label>
+          </Label>
         </div>
       </Card>
 
@@ -119,19 +123,19 @@ export default function UrlEncoderDecoderTool() {
         {/* Input */}
         <Card className="p-5">
           <div className="flex justify-between">
-            <div className="font-medium">Input</div>
-            <button
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Input</div>
+            <Button
               onClick={() => copy(input, "input")}
               className="text-xs underline text-[rgb(var(--accent))]"
             >
               {copied === "input" ? "Copied ✓" : "Copy"}
-            </button>
+            </Button>
           </div>
 
           <CodeEditor
             value={input}
             onChange={(v) => setInput(v || "")}
-            className="mt-3 min-h-[250px]"
+            className="min-h-[250px]"
             language="plaintext"
           />
         </Card>
@@ -139,19 +143,19 @@ export default function UrlEncoderDecoderTool() {
         {/* Output */}
         <Card className="p-5">
           <div className="flex justify-between">
-            <div className="font-medium">Output</div>
-            <button
+            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output</div>
+            <Button
               onClick={() => copy(output, "output")}
               className="text-xs underline text-[rgb(var(--accent))]"
             >
               {copied === "output" ? "Copied ✓" : "Copy"}
-            </button>
+            </Button>
           </div>
 
           <CodeEditor
             value={output}
             options={{ readOnly: true }}
-            className="mt-3 min-h-[250px]"
+            className="min-h-[250px]"
             language="plaintext"
           />
         </Card>

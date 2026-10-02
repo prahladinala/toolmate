@@ -1,4 +1,5 @@
 "use client";
+import { Input } from "@/components/ui/input";
 
 import React from "react";
 import { motion } from "framer-motion";
@@ -110,7 +111,7 @@ export default function DomainIntelligenceTool() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <Card className="mt-6 p-5 flex gap-3">
-        <input
+        <Input
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
           placeholder="example.com"

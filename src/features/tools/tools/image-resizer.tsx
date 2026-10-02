@@ -1,4 +1,9 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Select } from "@/components/ui/select";
+
 
 import React, { useState, useRef } from "react";
 import type { ToolDef } from "../registry";
@@ -90,7 +95,7 @@ export function ImageResizerTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6 space-y-6">
           <div>
-            <label className="text-sm font-medium mb-1 block">Upload Image</label>
+            <Label className="text-sm font-medium mb-1 block">Upload Image</Label>
             <input
               type="file"
               accept="image/*"
@@ -107,8 +112,8 @@ export function ImageResizerTool({ tool }: { tool: ToolDef }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium block mb-1">New Width (px)</label>
-                  <input 
+                  <Label className="text-sm font-medium block mb-1">New Width (px)</Label>
+                  <Input 
                     type="number" 
                     value={width} 
                     onChange={(e) => handleWidthChange(e.target.value)} 
@@ -116,8 +121,8 @@ export function ImageResizerTool({ tool }: { tool: ToolDef }) {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium block mb-1">New Height (px)</label>
-                  <input 
+                  <Label className="text-sm font-medium block mb-1">New Height (px)</Label>
+                  <Input 
                     type="number" 
                     value={height} 
                     onChange={(e) => handleHeightChange(e.target.value)} 
@@ -134,16 +139,16 @@ export function ImageResizerTool({ tool }: { tool: ToolDef }) {
                   onChange={(e) => setMaintainAspect(e.target.checked)} 
                   className="w-4 h-4 accent-[rgb(var(--accent))]" 
                 />
-                <label htmlFor="aspect" className="text-sm font-medium cursor-pointer">Maintain Aspect Ratio</label>
+                <Label htmlFor="aspect" className="text-sm font-medium cursor-pointer">Maintain Aspect Ratio</Label>
               </div>
 
               <div>
-                <label className="text-sm font-medium block mb-1">Export Format</label>
-                <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
+                <Label className="text-sm font-medium block mb-1">Export Format</Label>
+                <Select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
                   <option value="image/png">PNG</option>
                   <option value="image/jpeg">JPEG</option>
                   <option value="image/webp">WEBP</option>
-                </select>
+                </Select>
               </div>
 
               <Button onClick={handleDownload} className="w-full" disabled={!width || !height}>

@@ -1,10 +1,13 @@
 "use client";
+import { Label } from "@/components/ui/label";
+
 
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 const LOWER = "abcdefghijklmnopqrstuvwxyz";
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -63,6 +66,7 @@ export default function PasswordGeneratorTool() {
 
   const copy = async () => {
     await navigator.clipboard.writeText(password);
+      toast.success("Copied to clipboard!");
     setCopied(true);
     setTimeout(() => setCopied(false), 1200);
   };
@@ -82,7 +86,7 @@ export default function PasswordGeneratorTool() {
       {/* Controls */}
       <Card className="mt-6 p-6 space-y-6">
         <div>
-          <label className="text-sm">Length: {length}</label>
+          <Label className="text-sm">Length: {length}</Label>
           <input
             type="range"
             min={6}

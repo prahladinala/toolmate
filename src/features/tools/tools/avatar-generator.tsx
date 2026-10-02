@@ -1,4 +1,7 @@
 "use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 
 import React, { useState, useEffect, useMemo } from "react";
 import type { ToolDef } from "../registry";
@@ -78,7 +81,7 @@ export function AvatarGeneratorTool({ tool }: { tool: ToolDef }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6 space-y-6">
           <div>
-            <label className="text-sm font-medium block mb-2">Avatar Style</label>
+            <Label className="text-sm font-medium block mb-2">Avatar Style</Label>
             <div className="flex flex-wrap gap-2">
               {STYLES.map((s, i) => (
                 <Button 
@@ -94,9 +97,9 @@ export function AvatarGeneratorTool({ tool }: { tool: ToolDef }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium block mb-2">Seed (Unique Identifier)</label>
+            <Label className="text-sm font-medium block mb-2">Seed (Unique Identifier)</Label>
             <div className="flex gap-2">
-              <input 
+              <Input 
                 type="text" 
                 value={seed} 
                 onChange={(e) => setSeed(e.target.value)} 
