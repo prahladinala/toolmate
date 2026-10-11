@@ -29,8 +29,26 @@ export function Footer() {
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-[14px] text-[rgb(var(--fg))] tracking-tight">Ecosystem</h4>
             <div className="flex flex-col gap-2.5">
-              <a href="https://ui.toolmate.co.in" target="_blank" rel="noreferrer" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">ToolMate UI</a>
-              <a href="https://resume.toolmate.co.in" target="_blank" rel="noreferrer" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">ToolMate Resume</a>
+              <a 
+                href="https://resume.toolmate.co.in" 
+                target="_blank" 
+                rel="noopener" 
+                title="ToolMate Resume — Free ATS-Friendly Resume Builder"
+                className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>ToolMate Resume</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-semibold">New</span>
+              </a>
+              <a 
+                href="https://ui.toolmate.co.in" 
+                target="_blank" 
+                rel="noopener" 
+                title="ToolMate UI — Modern Tailwind & React Component Library"
+                className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>ToolMate UI</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 font-semibold">Library</span>
+              </a>
             </div>
           </div>
           

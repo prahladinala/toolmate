@@ -29,10 +29,28 @@ export function Navbar() {
           ToolMate.
         </Link>
 
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-4 sm:gap-6">
           <Link href="/tools" className="text-sm font-medium opacity-70 hover:opacity-100 transition-opacity">
             Tools
           </Link>
+          <a 
+            href="https://resume.toolmate.co.in" 
+            target="_blank" 
+            rel="noopener" 
+            title="ToolMate Resume — Free Resume Builder"
+            className="hidden sm:inline-flex items-center text-sm font-medium opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all"
+          >
+            Resume
+          </a>
+          <a 
+            href="https://ui.toolmate.co.in" 
+            target="_blank" 
+            rel="noopener" 
+            title="ToolMate UI — Modern Component Library"
+            className="hidden sm:inline-flex items-center text-sm font-medium opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all"
+          >
+            UI Kit
+          </a>
 
           <div className="relative">
             <button

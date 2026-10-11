@@ -1,6 +1,7 @@
 import { DeveloperSection } from "@/components/home/DeveloperSection";
 import HeroSection from "./HeroSection";
 import FeaturedSection from "./FeaturedSection";
+import { EcosystemSection } from "./EcosystemSection";
 import TrustSection from "./TrustSection";
 
 export default function HomePageSections() {
@@ -9,10 +10,13 @@ export default function HomePageSections() {
       {/* HERO */}
       <HeroSection />
 
-      {/* FEATURED */}
+      {/* FEATURED TOOLS */}
       <FeaturedSection />
 
-      {/* DEVELOPER */}
+      {/* ECOSYSTEM SUBDOMAINS */}
+      <EcosystemSection />
+
+      {/* DEVELOPER PROMISE */}
       <DeveloperSection />
 
       {/* TRUST */}
