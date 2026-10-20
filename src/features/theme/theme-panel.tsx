@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ThemeContext } from "./theme-provider";
 import type { Mode } from "./theme-config";
 
@@ -42,13 +41,7 @@ export function ThemePanel() {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 4, scale: 0.96 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
-      className="w-36 rounded-2xl border border-[rgba(var(--fg),0.08)] bg-[rgb(var(--card))] p-1.5 shadow-xl backdrop-blur-xl"
-    >
+    <div className="w-36 rounded-2xl border border-[rgba(var(--fg),0.08)] bg-[rgb(var(--card))] p-1.5 shadow-xl backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
       <div className="flex flex-col gap-0.5">
         {modes.map((m) => {
           const isActive = theme.mode === m.id;
@@ -68,6 +61,6 @@ export function ThemePanel() {
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 }

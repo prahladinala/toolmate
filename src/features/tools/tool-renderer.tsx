@@ -1,16 +1,16 @@
 "use client";
-import React, { useState } from "react";
+
+import React from "react";
 import dynamic from "next/dynamic";
 import { TOOLS } from "@/features/tools/registry";
 import type { ToolDef } from "./registry";
 import { ToolNotImplemented } from "./ToolNotImplemented";
-import { ShareModal } from "./ShareModal";
 const JsonFormatterTool = dynamic<{ tool: ToolDef }>(() => import('./tools/json-formatter').then(m => m.JsonFormatterTool));
 // const Base64Tool = dynamic<{ tool: ToolDef }>(() => import('./tools/base64').then(m => m.Base64Tool));
 // const UrlEncodeTool = dynamic<{ tool: ToolDef }>(() => import('./tools/url-encode').then(m => m.UrlEncodeTool));
 // const UuidTool = dynamic<{ tool: ToolDef }>(() => import('./tools/uuid').then(m => m.UuidTool));
 // const PasswordTool = dynamic<{ tool: ToolDef }>(() => import('./tools/password').then(m => m.PasswordTool));
-const DeviceDetailsTool = dynamic<{ tool: ToolDef }>(() => import('./tools/device-details'));
+const DeviceDetailsTool = dynamic<{ tool: ToolDef }>(() => import('./tools/device-details'), { ssr: false });
 const PlaceholderGenerator = dynamic<{ tool: ToolDef }>(() => import('./tools/placeholder-generator'));
 const RegexTesterTool = dynamic<{ tool: ToolDef }>(() => import('./tools/regex-tester'));
 const TimestampConverterTool = dynamic<{ tool: ToolDef }>(() => import('./tools/timestamp-converter'));
@@ -65,16 +65,13 @@ const GitignoreGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/
 const MetaTagGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/meta-tag-generator').then(m => m.MetaTagGeneratorTool));
 const MarkdownToHtmlTool = dynamic<{ tool: ToolDef }>(() => import('./tools/markdown-to-html').then(m => m.MarkdownToHtmlTool));
 
-import { Badge } from "@/components/ui/badge";
-import { motion } from "@/components/motion/motion";
 const JwtDecoderTool = dynamic<{ tool: ToolDef }>(() => import('./tools/jwt-decoder'));
-import Link from "next/link";
 const BlobGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/blob-generator').then(m => m.BlobGeneratorTool));
 const SvgBackgroundGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/svg-background-generator').then(m => m.SvgBackgroundGeneratorTool));
 const TermsGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/terms-generator').then(m => m.TermsGeneratorTool));
 const PrivacyPolicyGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/privacy-policy-generator').then(m => m.PrivacyPolicyGeneratorTool));
 const AvatarGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/avatar-generator').then(m => m.AvatarGeneratorTool));
-const WhiteboardAppTool = dynamic<{ tool: ToolDef }>(() => import('./tools/whiteboard-app'));
+const WhiteboardAppTool = dynamic<{ tool: ToolDef }>(() => import('./tools/whiteboard-app'), { ssr: false });
 const MemeGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/meme-generator').then(m => m.MemeGeneratorTool));
 const NeumorphismGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/neumorphism-generator').then(m => m.NeumorphismGeneratorTool));
 const GlassmorphismGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/glassmorphism-generator').then(m => m.GlassmorphismGeneratorTool));

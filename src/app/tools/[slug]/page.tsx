@@ -1,11 +1,19 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getTool } from "@/features/tools/registry";
+import { TOOLS, getTool } from "@/features/tools/registry";
 import { ToolRenderer } from "@/features/tools/tool-renderer";
 import { ToolVisitTracker } from "@/features/tools/ToolVisitTracker";
 import { ShareButton } from "@/features/tools/ShareButton";
+import { DonationBanner } from "@/components/donation/DonationBanner";
+import { EngagementModal } from "@/components/donation/EngagementModal";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  return TOOLS.map((t) => ({
+    slug: t.slug,
+  }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -23,8 +31,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     "online developer tool"
   ];
 
-  const ogImageUrl = `https://toolmate.co.in/api/og?title=${encodeURIComponent(tool.name)}&desc=${encodeURIComponent(tool.shortDescription)}`;
-
   return {
     title: `${tool.name} — Free Online Tool`,
     description: `${tool.seo.description} Use ${tool.name} online for free on ToolMate by Prahlad Inala. Fast, private, and browser-based.`,
@@ -36,20 +42,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `https://toolmate.co.in/tools/${tool.slug}`,
       siteName: "ToolMate - Prahlad Inala",
       type: "website",
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: `${tool.name} - ToolMate - Prahlad Inala`,
-        },
-      ],
     },
     twitter: {
       card: "summary_large_image",
       title: `${tool.name} | ToolMate - Prahlad Inala`,
       description: tool.seo.description,
-      images: [ogImageUrl],
     },
     robots: {
       index: true,
@@ -181,6 +178,14 @@ export default async function ToolPage({ params }: Props) {
              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[rgba(var(--fg),0.1)] to-transparent" />
             <ToolRenderer tool={tool} />
           </section>
+
+          {/* STATIC DONATION BUTTONS / BANNER */}
+          <div className="mt-12">
+            <DonationBanner />
+          </div>
+
+          {/* TIME-TRIGGERED ENGAGEMENT FEEDBACK & PAYMENT MODAL */}
+          <EngagementModal toolName={tool.name} />
         </div>
       </main>
     </>

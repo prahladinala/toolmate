@@ -1,8 +1,7 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 import { TOOLS } from "@/features/tools/registry";
-import { motion } from "@/components/motion/motion";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 const featured = TOOLS.slice(0, 6);
 
@@ -26,39 +25,20 @@ export default function FeaturedSection() {
         {/* Subtle background glow for this section */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col items-center text-center gap-4 mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-3xl md:text-4xl font-extrabold tracking-tight"
-          >
+        <ScrollReveal className="relative z-10 flex flex-col items-center text-center gap-4 mb-16">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
             Featured Tools
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg text-[rgb(var(--muted))] max-w-xl"
-          >
+          </h2>
+          <p className="text-lg text-[rgb(var(--muted))] max-w-xl">
             Polished utilities you’ll actually use. Built for speed and reliability.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          </p>
+          <Link
+            href="/tools"
+            className="group inline-flex items-center text-sm font-semibold text-indigo-500 hover:text-indigo-400 transition-colors mt-2"
           >
-            <Link
-              href="/tools"
-              className="group inline-flex items-center text-sm font-semibold text-indigo-500 hover:text-indigo-400 transition-colors mt-2"
-            >
-              Explore all tools <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </motion.div>
-        </div>
+            Explore all tools <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+          </Link>
+        </ScrollReveal>
 
         {/* EXTERNAL TOOLS MARQUEE */}
         <div className="mb-20 relative py-4 flex overflow-hidden">
@@ -109,31 +89,9 @@ export default function FeaturedSection() {
         </div>
 
         {/* INTERNAL TOOLS GRID */}
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={{
-            hidden: {},
-            show: {
-              transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-            },
-          }}
-          className="relative z-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {featured.map((t) => (
-            <motion.div
-              key={t.slug}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                show: {
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-                },
-              }}
-              className="h-full"
-            >
+        <div className="relative z-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((t, idx) => (
+            <ScrollReveal key={t.slug} delay={idx * 0.05} className="h-full">
               <Link href={`/tools/${t.slug}`} className="block h-full outline-none">
                 <div className="group relative flex flex-col h-full overflow-hidden p-6 transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] hover:ring-[rgba(var(--fg),0.1)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] rounded-3xl">
                   <div className="flex items-start justify-between gap-3">
@@ -162,9 +120,9 @@ export default function FeaturedSection() {
                   </div>
                 </div>
               </Link>
-            </motion.div>
+            </ScrollReveal>
           ))}
-        </motion.div>
+        </div>
       </section>
     </>
   );

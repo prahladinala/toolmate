@@ -41,7 +41,6 @@
     "jsonc-parser": "^3.3.1",
     "lucide-react": "^0.564.0",
     "markdown-it": "^14.2.0",
-    "monaco-editor": "^0.57.0",
     "next": "16.1.6",
     "papaparse": "^5.5.4",
     "prettier": "^3.8.4",

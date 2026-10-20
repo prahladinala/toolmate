@@ -132,6 +132,7 @@ body {
 body {
   background: rgb(var(--bg));
   color: rgb(var(--fg));
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Force-hide the Next.js Turbopack dev overlay that aggressively catches Monaco's safe internal fallback promises */
