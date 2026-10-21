@@ -1,15 +1,15 @@
 "use client";
-import { Label } from "@/components/ui/label";
 
-import { toast } from "sonner";
-
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Download, Upload, Smartphone, Check } from "lucide-react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { toast } from "sonner";
 
 const IOS_SIZES = [
   { name: "Icon-20@2x.png", size: 40 },
@@ -37,54 +37,51 @@ const ANDROID_SIZES = [
 
 export function AppIconGeneratorTool({ tool }: { tool: ToolDef }) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [padding, setPadding] = useState<number>(0);
+  const [padding, setPadding] = useState<number>(10);
   const [bgColor, setBgColor] = useState<string>("#ffffff");
   const [generating, setGenerating] = useState(false);
 
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  const drawIcon = useCallback((ctx: CanvasRenderingContext2D, size: number) => {
-    // Fill background
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, size, size);
+  const drawIcon = useCallback(
+    (ctx: CanvasRenderingContext2D, size: number) => {
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, size, size);
 
-    if (!imageRef.current) return;
+      if (!imageRef.current) return;
 
-    // Draw image with padding
-    const padPixels = (padding / 100) * (size / 2);
-    const drawSize = size - padPixels * 2;
-    
-    // Maintain aspect ratio
-    const imgRatio = imageRef.current.width / imageRef.current.height;
-    let w = drawSize;
-    let h = drawSize;
-    if (imgRatio > 1) {
-      h = w / imgRatio;
-    } else {
-      w = h * imgRatio;
-    }
+      const padPixels = (padding / 100) * (size / 2);
+      const drawSize = size - padPixels * 2;
+      const imgRatio = imageRef.current.width / imageRef.current.height;
+      let w = drawSize;
+      let h = drawSize;
 
-    const x = (size - w) / 2;
-    const y = (size - h) / 2;
+      if (imgRatio > 1) {
+        h = drawSize / imgRatio;
+      } else {
+        w = drawSize * imgRatio;
+      }
 
-    ctx.drawImage(imageRef.current, x, y, w, h);
-  }, [bgColor, padding]);
+      const x = (size - w) / 2;
+      const y = (size - h) / 2;
+      ctx.drawImage(imageRef.current, x, y, w, h);
+    },
+    [bgColor, padding]
+  );
 
   const updatePreview = useCallback(() => {
-    const canvas = previewCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    if (!previewCanvasRef.current) return;
+    const ctx = previewCanvasRef.current.getContext("2d");
     if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawIcon(ctx, canvas.width);
+    drawIcon(ctx, 256);
   }, [drawIcon]);
 
   useEffect(() => {
     updatePreview();
-  }, [updatePreview]);
+  }, [updatePreview, imageSrc]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -92,7 +89,7 @@ export function AppIconGeneratorTool({ tool }: { tool: ToolDef }) {
     reader.onload = (event) => {
       const src = event.target?.result as string;
       setImageSrc(src);
-      
+
       const img = new Image();
       img.onload = () => {
         imageRef.current = img;
@@ -103,130 +100,136 @@ export function AppIconGeneratorTool({ tool }: { tool: ToolDef }) {
     reader.readAsDataURL(file);
   };
 
-  const getBlobFromCanvas = (canvas: HTMLCanvasElement): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (blob) resolve(blob);
-        else reject(new Error("Failed to create blob"));
-      }, "image/png");
-    });
-  };
+  const generateZip = async () => {
+    if (!imageRef.current) {
+      toast.error("Please upload an image first.");
+      return;
+    }
 
-  const handleGenerate = async () => {
-    if (!imageRef.current) return;
     setGenerating(true);
+    const zip = new JSZip();
+    const iosFolder = zip.folder("ios");
+    const androidFolder = zip.folder("android");
+
+    const renderSize = (size: number): Promise<Blob> => {
+      return new Promise((resolve) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        if (ctx) drawIcon(ctx, size);
+        canvas.toBlob((blob) => resolve(blob!), "image/png");
+      });
+    };
 
     try {
-      const zip = new JSZip();
-      
-      const iosFolder = zip.folder("iOS");
-      const androidFolder = zip.folder("Android");
-
-      const offscreenCanvas = document.createElement("canvas");
-      const ctx = offscreenCanvas.getContext("2d");
-      if (!ctx) throw new Error("No 2d context");
-
-      // iOS
-      for (const spec of IOS_SIZES) {
-        offscreenCanvas.width = spec.size;
-        offscreenCanvas.height = spec.size;
-        drawIcon(ctx, spec.size);
-        const blob = await getBlobFromCanvas(offscreenCanvas);
-        iosFolder?.file(spec.name, blob);
+      for (const item of IOS_SIZES) {
+        const blob = await renderSize(item.size);
+        iosFolder?.file(item.name, blob);
       }
 
-      // Android
-      for (const spec of ANDROID_SIZES) {
-        const subFolder = androidFolder?.folder(spec.folder);
-        offscreenCanvas.width = spec.size;
-        offscreenCanvas.height = spec.size;
-        drawIcon(ctx, spec.size);
-        const blob = await getBlobFromCanvas(offscreenCanvas);
-        subFolder?.file("ic_launcher.png", blob);
+      for (const item of ANDROID_SIZES) {
+        const blob = await renderSize(item.size);
+        androidFolder?.file(`${item.folder}/ic_launcher.png`, blob);
       }
 
       const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, "AppIcons.zip");
-    } catch (err) {
-      console.error(err);
-      toast.error("An error occurred while generating icons.");
+      saveAs(content, "app-icons.zip");
+      toast.success("Downloaded app-icons.zip!");
+    } catch {
+      toast.error("Error generating icon archive.");
     } finally {
       setGenerating(false);
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">App Icon Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Upload an image, customize it, and instantly download a ZIP package containing all required iOS and Android app icon sizes.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Generate production app icon assets for iOS (App Store) and Android (Google Play) in one click
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="primary"
+          onClick={generateZip}
+          disabled={!imageSrc}
+          loading={generating}
+          className="text-xs"
+        >
+          <Download className="w-3.5 h-3.5 mr-1" />
+          Download All Icons (.ZIP)
+        </Button>
+      </ToolToolbar>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Left Col - Settings */}
-        <Card className="p-6 space-y-6">
-          <div>
-            <Label className="text-sm font-medium mb-1 block">Upload Base Icon</Label>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Controls Column */}
+        <div className="lg:col-span-5 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Logo / Icon Master Graphic
+            </label>
             <input
               type="file"
               accept="image/*"
-              onChange={handleImageUpload}
-              className="w-full text-sm rounded border p-2 bg-[rgb(var(--card-2))] cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[rgba(var(--accent),0.1)] file:text-[rgb(var(--accent))] hover:file:bg-[rgba(var(--accent),0.2)]"
+              onChange={handleUpload}
+              className="w-full text-xs rounded-xl border border-[rgb(var(--border))] p-2.5 bg-[rgb(var(--card-2))] cursor-pointer file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-500/10 file:text-indigo-600 hover:file:bg-indigo-500/20"
             />
           </div>
 
-          <div>
-            <Label className="text-sm font-medium mb-1 block">Background Color</Label>
-            <div className="flex items-center gap-3">
+          <div className="space-y-3.5 pt-3 border-t border-[rgb(var(--border))]">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Background Fill Color
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={bgColor}
+                  onChange={(e) => setBgColor(e.target.value)}
+                  className="w-9 h-9 rounded-lg cursor-pointer p-0 border border-[rgb(var(--border))] bg-transparent shrink-0"
+                />
+                <span className="text-xs font-mono">{bgColor}</span>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-[rgb(var(--muted))] uppercase tracking-wider">
+                  Safe-Area Inset Margin
+                </span>
+                <span className="font-mono text-[rgb(var(--fg))]">{padding}%</span>
+              </div>
               <input
-                type="color"
-                value={bgColor}
-                onChange={(e) => setBgColor(e.target.value)}
-                className="w-10 h-10 rounded cursor-pointer p-0 border-0"
+                type="range"
+                min="0"
+                max="50"
+                value={padding}
+                onChange={(e) => setPadding(Number(e.target.value))}
+                className="w-full h-1.5 bg-[rgb(var(--card-2))] rounded-lg appearance-none cursor-pointer accent-indigo-500"
               />
-              <span className="text-sm font-mono">{bgColor}</span>
             </div>
           </div>
+        </div>
 
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm font-medium">Padding</Label>
-              <span className="text-xs text-[rgb(var(--muted))]">{padding}%</span>
+        {/* Live Canvas Preview */}
+        <div className="lg:col-span-7 flex flex-col items-center justify-center p-8 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm min-h-[350px] overflow-hidden">
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="p-4 rounded-3xl bg-[rgb(var(--card-2))] border border-[rgb(var(--border))] shadow-xl flex items-center justify-center">
+              <canvas
+                ref={previewCanvasRef}
+                width={256}
+                height={256}
+                className="rounded-2xl shadow-sm object-contain"
+              />
             </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={padding}
-              onChange={(e) => setPadding(Number(e.target.value))}
-              className="w-full accent-[rgb(var(--accent))]"
-            />
+            <span className="text-xs font-mono text-[rgb(var(--muted))]">
+              Master Canvas Preview (256 × 256 px)
+            </span>
           </div>
-
-          <Button 
-            className="w-full" 
-            onClick={handleGenerate} 
-            disabled={!imageSrc || generating}
-          >
-            {generating ? "Generating ZIP..." : "Generate iOS & Android Icons"}
-          </Button>
-        </Card>
-
-        {/* Right Col - Preview */}
-        <Card className="p-6 flex flex-col items-center justify-center bg-[rgb(var(--card-2))] min-h-[400px]">
-          <div className="mb-4 text-sm font-medium text-[rgb(var(--muted))]">Live Preview (1024x1024 scaled down)</div>
-          <div className="relative shadow-[var(--shadow-lg)] rounded-2xl overflow-hidden border border-[rgba(var(--border),0.5)]">
-            <canvas
-              ref={previewCanvasRef}
-              width={1024}
-              height={1024}
-              className="w-64 h-64 sm:w-80 sm:h-80 object-contain bg-white"
-            />
-          </div>
-        </Card>
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

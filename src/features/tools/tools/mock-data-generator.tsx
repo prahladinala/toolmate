@@ -1,20 +1,19 @@
 "use client";
-import { Select } from "@/components/ui/select";
 
-
-import React, { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Copy, Check, Download, RefreshCw } from "lucide-react";
 import { faker } from "@faker-js/faker";
 import { toast } from "sonner";
 
 const FIELD_TYPES = [
-  "UUID", "First Name", "Last Name", "Full Name", "Email", 
-  "Phone", "Date", "Address", "City", "Country", 
+  "UUID", "First Name", "Last Name", "Full Name", "Email",
+  "Phone", "Date", "Address", "City", "Country",
   "Job Title", "Company", "Word", "Sentence", "Paragraph", "Avatar"
 ];
 
@@ -23,40 +22,75 @@ export default function MockDataGenerator() {
     { name: "id", type: "UUID" },
     { name: "name", type: "Full Name" },
     { name: "email", type: "Email" },
-    { name: "createdAt", type: "Date" }
+    { name: "company", type: "Company" },
+    { name: "createdAt", type: "Date" },
   ]);
   const [count, setCount] = useState(10);
   const [format, setFormat] = useState<"JSON" | "CSV" | "SQL">("JSON");
   const [tableName, setTableName] = useState("users");
   const [output, setOutput] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  const generateData = () => {
-    faker.seed(Math.random());
-    const data = [];
+  const generateData = useCallback(() => {
+    faker.seed(Math.floor(Math.random() * 100000));
+    const data: Record<string, any>[] = [];
 
     for (let i = 0; i < count; i++) {
       const row: Record<string, any> = {};
-      fields.forEach(f => {
+      fields.forEach((f) => {
         if (!f.name) return;
         let val: any = "";
         switch (f.type) {
-          case "UUID": val = faker.string.uuid(); break;
-          case "First Name": val = faker.person.firstName(); break;
-          case "Last Name": val = faker.person.lastName(); break;
-          case "Full Name": val = faker.person.fullName(); break;
-          case "Email": val = faker.internet.email(); break;
-          case "Phone": val = faker.phone.number(); break;
-          case "Date": val = faker.date.past().toISOString(); break;
-          case "Address": val = faker.location.streetAddress(); break;
-          case "City": val = faker.location.city(); break;
-          case "Country": val = faker.location.country(); break;
-          case "Job Title": val = faker.person.jobTitle(); break;
-          case "Company": val = faker.company.name(); break;
-          case "Word": val = faker.word.sample(); break;
-          case "Sentence": val = faker.lorem.sentence(); break;
-          case "Paragraph": val = faker.lorem.paragraph(); break;
-          case "Avatar": val = faker.image.avatar(); break;
-          default: val = "";
+          case "UUID":
+            val = faker.string.uuid();
+            break;
+          case "First Name":
+            val = faker.person.firstName();
+            break;
+          case "Last Name":
+            val = faker.person.lastName();
+            break;
+          case "Full Name":
+            val = faker.person.fullName();
+            break;
+          case "Email":
+            val = faker.internet.email();
+            break;
+          case "Phone":
+            val = faker.phone.number();
+            break;
+          case "Date":
+            val = faker.date.past().toISOString();
+            break;
+          case "Address":
+            val = faker.location.streetAddress();
+            break;
+          case "City":
+            val = faker.location.city();
+            break;
+          case "Country":
+            val = faker.location.country();
+            break;
+          case "Job Title":
+            val = faker.person.jobTitle();
+            break;
+          case "Company":
+            val = faker.company.name();
+            break;
+          case "Word":
+            val = faker.word.sample();
+            break;
+          case "Sentence":
+            val = faker.lorem.sentence();
+            break;
+          case "Paragraph":
+            val = faker.lorem.paragraph();
+            break;
+          case "Avatar":
+            val = faker.image.avatar();
+            break;
+          default:
+            val = "";
         }
         row[f.name] = val;
       });
@@ -66,133 +100,229 @@ export default function MockDataGenerator() {
     if (format === "JSON") {
       setOutput(JSON.stringify(data, null, 2));
     } else if (format === "CSV") {
-      const headers = fields.map(f => f.name).filter(Boolean);
-      const csvRows = [headers.join(",")];
-      data.forEach(row => {
-        const values = headers.map(h => {
-          const v = row[h];
-          if (typeof v === "string" && (v.includes(",") || v.includes('"') || v.includes("\n"))) {
-            return `"${v.replace(/"/g, '""')}"`;
-          }
-          return v;
-        });
-        csvRows.push(values.join(","));
-      });
-      setOutput(csvRows.join("\n"));
+      const headers = fields.map((f) => f.name).join(",");
+      const rows = data.map((r) =>
+        fields
+          .map((f) => {
+            const val = r[f.name];
+            return typeof val === "string" && val.includes(",") ? `"${val}"` : val;
+          })
+          .join(",")
+      );
+      setOutput([headers, ...rows].join("\n"));
     } else if (format === "SQL") {
-      const headers = fields.map(f => f.name).filter(Boolean);
-      const sqlRows = data.map(row => {
-        const values = headers.map(h => {
-          const v = row[h];
-          if (typeof v === "string") return `'${v.replace(/'/g, "''")}'`;
-          return v;
-        });
-        return `INSERT INTO ${tableName} (${headers.join(", ")}) VALUES (${values.join(", ")});`;
+      const colNames = fields.map((f) => f.name).join(", ");
+      const queries = data.map((r) => {
+        const values = fields.map((f) => `'${String(r[f.name]).replace(/'/g, "''")}'`).join(", ");
+        return `INSERT INTO ${tableName} (${colNames}) VALUES (${values});`;
       });
-      setOutput(sqlRows.join("\n"));
+      setOutput(queries.join("\n"));
     }
-  };
+  }, [fields, count, format, tableName]);
 
   useEffect(() => {
     generateData();
-  }, [fields, count, format, tableName]);
+  }, [generateData]);
+
+  const addField = () => {
+    setFields([...fields, { name: `field_${fields.length + 1}`, type: "Word" }]);
+  };
+
+  const removeField = (idx: number) => {
+    if (fields.length <= 1) return;
+    setFields(fields.filter((_, i) => i !== idx));
+  };
+
+  const updateField = (idx: number, key: "name" | "type", val: string) => {
+    const updated = [...fields];
+    updated[idx][key] = val;
+    setFields(updated);
+  };
+
+  const copyToClipboard = async () => {
+    if (!output) return;
+    try {
+      await navigator.clipboard.writeText(output);
+      toast.success("Mock dataset copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const downloadFile = () => {
+    if (!output) return;
+    const ext = format === "JSON" ? "json" : format === "CSV" ? "csv" : "sql";
+    const mime =
+      format === "JSON" ? "application/json" : format === "CSV" ? "text/csv" : "text/plain";
+    const blob = new Blob([output], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mock_data.${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded mock_data.${ext}!`);
+  };
 
   return (
-    <main className="w-full max-w-6xl mx-auto space-y-6">
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        
-        {/* Schema Editor */}
-        <Card className="p-6 space-y-6 shadow-sm border border-[rgba(var(--fg),0.1)] flex flex-col">
-          <div className="flex items-center justify-between pb-4 border-b">
-            <h2 className="font-semibold text-lg">Schema Definition</h2>
-            <Button size="sm" variant="secondary" onClick={() => setFields([...fields, { name: "", type: "Word" }])}>
-              <Plus className="w-4 h-4 mr-2" /> Add Field
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {(["JSON", "CSV", "SQL"] as const).map((fmt) => (
+            <Button
+              key={fmt}
+              type="button"
+              size="sm"
+              variant={format === fmt ? "primary" : "secondary"}
+              onClick={() => setFormat(fmt)}
+              className="text-xs h-8"
+            >
+              {fmt}
+            </Button>
+          ))}
+          <div className="flex items-center gap-1.5 ml-2">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider">
+              Rows:
+            </label>
+            <Input
+              type="number"
+              min={1}
+              max={100}
+              value={count}
+              onChange={(e) => setCount(Math.max(1, Number(e.target.value)))}
+              className="w-16 h-8 text-xs bg-[rgb(var(--card-2))]"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            onClick={generateData}
+            className="text-xs"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1" />
+            Regenerate
+          </Button>
+
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={copyToClipboard}
+            className="text-xs"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 mr-1" />
+                Copy
+              </>
+            )}
+          </Button>
+
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={downloadFile}
+            className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+          >
+            <Download className="w-3.5 h-3.5 mr-1" />
+            Download
+          </Button>
+        </div>
+      </ToolToolbar>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Schema Configuration */}
+        <div className="lg:col-span-5 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[rgb(var(--border))]">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Schema Fields ({fields.length})
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={addField}
+              className="text-xs h-7 px-2"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              Add Field
             </Button>
           </div>
 
-          <div className="space-y-3 flex-1 overflow-y-auto pr-2">
-            {fields.map((f, i) => (
-              <div key={i} className="flex gap-3 items-center group">
-                <Input 
-                  placeholder="Field Name" 
-                  value={f.name} 
-                  onChange={e => {
-                    const newFields = [...fields];
-                    newFields[i].name = e.target.value;
-                    setFields(newFields);
-                  }}
-                  className="font-mono flex-1"
+          {format === "SQL" && (
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Target Table Name
+              </label>
+              <Input
+                value={tableName}
+                onChange={(e) => setTableName(e.target.value)}
+                className="text-xs font-mono h-8 bg-[rgb(var(--card-2))]"
+              />
+            </div>
+          )}
+
+          <div className="space-y-2.5 max-h-[420px] overflow-y-auto scrollbar-refined pr-1">
+            {fields.map((field, idx) => (
+              <div
+                key={idx}
+                className="p-3 rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] flex items-center gap-2"
+              >
+                <Input
+                  value={field.name}
+                  onChange={(e) => updateField(idx, "name", e.target.value)}
+                  placeholder="field_name"
+                  className="flex-1 h-8 text-xs font-mono bg-[rgb(var(--card))]"
                 />
-                <Select 
-                  value={f.type}
-                  onChange={e => {
-                    const newFields = [...fields];
-                    newFields[i].type = e.target.value;
-                    setFields(newFields);
-                  }}
-                  className="p-2 border rounded-md bg-background focus:ring-2 focus:ring-accent outline-none w-40 flex-shrink-0"
+                <Select
+                  value={field.type}
+                  onChange={(e) => updateField(idx, "type", e.target.value)}
+                  className="w-36 h-8 text-xs bg-[rgb(var(--card))]"
                 >
-                  {FIELD_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  {FIELD_TYPES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
                 </Select>
-                <Button 
-                  size="sm" aria-label="Action" 
-                  variant="ghost" 
-                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => {
-                    const newFields = [...fields];
-                    newFields.splice(i, 1);
-                    setFields(newFields);
-                  }}
+                <button
+                  type="button"
+                  onClick={() => removeField(idx)}
+                  disabled={fields.length <= 1}
+                  className="p-1 text-[rgb(var(--muted))] hover:text-red-500 disabled:opacity-30 transition-colors"
                 >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
             ))}
           </div>
+        </div>
 
-          <div className="pt-4 border-t space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Rows to Generate</Label>
-                <Input type="number" min="1" max="1000" value={count} onChange={e => setCount(Math.min(1000, Math.max(1, parseInt(e.target.value) || 1)))} />
-              </div>
-              <div className="space-y-2">
-                <Label>Output Format</Label>
-                <Select 
-                  value={format}
-                  onChange={e => setFormat(e.target.value as any)}
-                  className="w-full p-2 border rounded-md bg-background focus:ring-2 focus:ring-accent outline-none h-10"
-                >
-                  <option value="JSON">JSON</option>
-                  <option value="CSV">CSV</option>
-                  <option value="SQL">SQL Insert</option>
-                </Select>
-              </div>
-            </div>
-            {format === "SQL" && (
-              <div className="space-y-2">
-                <Label>SQL Table Name</Label>
-                <Input value={tableName} onChange={e => setTableName(e.target.value)} />
-              </div>
-            )}
-            <Button className="w-full" size="lg" onClick={generateData}>Generate Data</Button>
-          </div>
-        </Card>
-
-        {/* Output */}
-        <Card className="p-4 space-y-4 shadow-sm border border-[rgba(var(--fg),0.1)] h-full flex flex-col">
-          <div className="flex items-center justify-between pb-2 border-b">
-            <h2 className="font-semibold text-lg">Output ({count} records)</h2>
-            <Button size="sm" onClick={() => navigator.clipboard.writeText(output)}>Copy</Button>
-          </div>
-          <CodeEditor 
-            value={output} 
-            editable={false} 
-            language={format === "JSON" ? "json" : format === "SQL" ? "sql" : "text"} 
-            className="flex-1 !min-h-[500px]"
+        {/* Output Viewer */}
+        <div className="lg:col-span-7 flex flex-col min-w-0 space-y-2">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Generated {format} Mock Data
+          </span>
+          <CodeEditor
+            value={output}
+            language={format === "JSON" ? "json" : format === "SQL" ? "sql" : "plaintext"}
+            editable={false}
+            minHeight="min-h-[350px] sm:min-h-[480px]"
           />
-        </Card>
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

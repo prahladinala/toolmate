@@ -1,301 +1,143 @@
 "use client";
-import { Input } from "@/components/ui/input";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Search, Globe, ShieldCheck, AlertCircle, Clock, ExternalLink } from "lucide-react";
 
 const RECORD_TYPES = ["A", "AAAA", "MX", "TXT", "NS", "CNAME"];
 
 export default function DomainIntelligenceTool() {
-  const [domain, setDomain] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const [dnsData, setDnsData] = React.useState<any>(null);
-  const [ipInfo, setIpInfo] = React.useState<any>(null);
-  const [headers, setHeaders] = React.useState<any>(null);
-  const [responseTime, setResponseTime] = React.useState<number | null>(null);
-  const [redirectUrl, setRedirectUrl] = React.useState<string | null>(null);
+  const [domain, setDomain] = useState("toolmate.co.in");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [dnsData, setDnsData] = useState<Record<string, any[]> | null>(null);
+  const [responseTime, setResponseTime] = useState<number | null>(null);
 
   const lookup = async () => {
-    if (!domain) return;
+    if (!domain.trim()) return;
 
     setLoading(true);
     setError(null);
     setDnsData(null);
-    setIpInfo(null);
-    setHeaders(null);
     setResponseTime(null);
-    setRedirectUrl(null);
+
+    const cleanDomain = domain.replace(/^https?:\/\//i, "").replace(/\/.*$/, "").trim();
 
     try {
       const dnsResults: Record<string, any[]> = {};
+      const start = performance.now();
 
       const responses = await Promise.all(
         RECORD_TYPES.map((t) =>
-          fetch(`https://dns.google/resolve?name=${domain}&type=${t}`).then(
-            (r) => r.json(),
-          ),
-        ),
+          fetch(`https://dns.google/resolve?name=${cleanDomain}&type=${t}`)
+            .then((r) => r.json())
+            .catch(() => ({ Answer: null }))
+        )
       );
 
+      const duration = Math.round(performance.now() - start);
+      setResponseTime(duration);
+
       responses.forEach((res, i) => {
-        if (Array.isArray(res.Answer)) {
+        if (Array.isArray(res?.Answer)) {
           dnsResults[RECORD_TYPES[i]] = res.Answer;
         }
       });
 
       if (Object.keys(dnsResults).length === 0) {
-        throw new Error("No DNS records found.");
+        throw new Error("No public DNS records could be retrieved for this domain.");
       }
 
       setDnsData(dnsResults);
-
-      const firstA = dnsResults.A?.[0]?.data;
-
-      if (firstA) {
-        const ipRes = await fetch(`https://ipapi.co/${firstA}/json/`);
-        let ipJson = null;
-
-        if (ipRes.ok) {
-          ipJson = await ipRes.json();
-        } else {
-          console.warn("IP API rate limited");
-        }
-        setIpInfo(ipJson);
-      }
-
-      try {
-        const start = performance.now();
-        const res = await fetch(`https://${domain}`);
-        const duration = performance.now() - start;
-
-        setResponseTime(Math.round(duration));
-
-        if (res.redirected) {
-          setRedirectUrl(res.url);
-        }
-
-        const headerObj: Record<string, string> = {};
-        res.headers.forEach((value, key) => {
-          headerObj[key.toLowerCase()] = value;
-        });
-
-        setHeaders(headerObj);
-      } catch {
-        // Some sites block CORS
-      }
     } catch (e: any) {
-      let message = "Domain lookup failed.";
-
-      if (e?.message?.includes("Too many")) {
-        message =
-          "Rate limit reached. Please wait a few seconds and try again.";
-      } else if (e?.message?.includes("Failed to fetch")) {
-        message = "Network error. Please check your internet connection.";
-      } else if (e?.message?.includes("No DNS records")) {
-        message = "No DNS records found for this domain.";
-      }
-
-      setError(message);
+      setError(e.message || "Failed to query domain records.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  const hasHTTPS = headers?.["strict-transport-security"];
-
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <Card className="mt-6 p-5 flex gap-3">
-        <Input
-          value={domain}
-          onChange={(e) => setDomain(e.target.value)}
-          placeholder="example.com"
-          className="flex-1 rounded border p-2"
-        />
-        <Button onClick={lookup} loading={loading}>
-          Analyze
-        </Button>
-      </Card>
+    <ToolWorkspace maxWidth="wide">
+      {/* Search Bar */}
+      <div className="w-full p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            lookup();
+          }}
+          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2"
+        >
+          <div className="relative flex-1">
+            <Globe className="w-4 h-4 text-[rgb(var(--muted))] absolute left-3 top-1/2 -translate-y-1/2" />
+            <Input
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              placeholder="e.g. google.com or github.com"
+              className="pl-9 font-mono text-xs sm:text-sm h-11 bg-[rgb(var(--card-2))]"
+            />
+          </div>
+          <Button type="submit" loading={loading} className="text-xs h-11 px-5">
+            <Search className="w-3.5 h-3.5 mr-1" />
+            Lookup Records
+          </Button>
+        </form>
+      </div>
 
       {error && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          <Card className="mt-6 border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.06)] p-6">
-            <div className="flex items-start gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(var(--danger),0.15)] text-[rgb(var(--danger))]">
-                !
-              </div>
+        <div className="flex items-center gap-2 p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
-              <div>
-                <div className="text-lg font-semibold text-[rgb(var(--danger))]">
-                  Lookup Failed
-                </div>
-
-                <div className="mt-1 text-sm text-[rgb(var(--muted))]">
-                  {error}
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
+      {responseTime && (
+        <div className="p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-emerald-500" />
+            <span className="font-semibold text-[rgb(var(--fg))]">Google DNS Latency</span>
+          </div>
+          <span className="font-mono text-emerald-500 font-semibold">{responseTime} ms</span>
+        </div>
       )}
 
       {dnsData && (
-        <div className="mt-6 space-y-6">
-          {/* Overview */}
-          <Card className="p-5">
-            <div className="font-semibold mb-3">Overview</div>
-
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
-              <div>
-                <div className="text-[rgb(var(--muted))]">Response Time</div>
-                <div>{responseTime ? `${responseTime} ms` : "—"}</div>
+        <div className="space-y-4 w-full min-w-0">
+          {Object.entries(dnsData).map(([type, records]) => (
+            <div
+              key={type}
+              className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm overflow-hidden"
+            >
+              <div className="p-3.5 sm:p-4 border-b border-[rgb(var(--border))] bg-[rgb(var(--card-2))] flex items-center justify-between">
+                <span className="font-mono font-bold text-xs px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                  {type} Records
+                </span>
+                <span className="text-xs text-[rgb(var(--muted))]">
+                  {records.length} item{records.length > 1 ? "s" : ""}
+                </span>
               </div>
 
-              <div>
-                <div className="text-[rgb(var(--muted))]">HTTPS</div>
-                <div>
-                  {hasHTTPS ? (
-                    <Badge variant="accent">Enabled</Badge>
-                  ) : (
-                    <Badge variant="destructive">Not Detected</Badge>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-[rgb(var(--muted))]">Redirect</div>
-                <div>{redirectUrl || "No redirect"}</div>
+              <div className="divide-y divide-[rgb(var(--border))]">
+                {records.map((r, i) => (
+                  <div
+                    key={i}
+                    className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono hover:bg-[rgb(var(--card-2))]/50 transition-colors"
+                  >
+                    <span className="text-[rgb(var(--fg))] break-all select-all flex-1">
+                      {r.data}
+                    </span>
+                    <span className="text-[rgb(var(--muted))] text-[11px] shrink-0">
+                      TTL: {r.TTL}s
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
-          </Card>
-
-          {/* DNS Fallback */}
-          {dnsData === null && (
-            <Card className="p-5">
-              <div className="font-semibold mb-3">DNS Records</div>
-              <div className="text-sm text-[rgb(var(--muted))]">
-                Unable to fetch DNS records data. This may be due to API rate
-                limits or network issues.
-              </div>
-            </Card>
-          )}
-
-          {/* DNS */}
-          <Card className="p-5">
-            <div className="font-semibold mb-3">DNS Records</div>
-
-            {Object.entries(dnsData).map(([type, records]) => (
-              <div key={type} className="mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge>{type}</Badge>
-                  <span className="text-xs text-[rgb(var(--muted))]">
-                    {(records as any[]).length} records
-                  </span>
-                </div>
-
-                <div className="space-y-1 text-sm font-mono">
-                  {(records as any[]).map((r, i) => (
-                    <div key={i} className="break-all border-b pb-1">
-                      {r.data}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </Card>
-
-          {/* IP Intelligence Fallback */}
-          {dnsData && !ipInfo && (
-            <Card className="p-5">
-              <div className="font-semibold mb-3">IP Intelligence</div>
-              <div className="text-sm text-[rgb(var(--muted))]">
-                Unable to fetch IP intelligence data. This may be due to API
-                rate limits or network issues.
-              </div>
-            </Card>
-          )}
-
-          {/* IP Intelligence */}
-          {ipInfo && (
-            <Card className="p-5">
-              <div className="font-semibold mb-3">IP Intelligence</div>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div>IP: {ipInfo.ip}</div>
-                <div>Country: {ipInfo.country_name}</div>
-                <div>Region: {ipInfo.region}</div>
-                <div>ISP: {ipInfo.org}</div>
-                <div>ASN: {ipInfo.asn}</div>
-                <div>Timezone: {ipInfo.timezone}</div>
-              </div>
-            </Card>
-          )}
-
-          {/* Security Headers Fallback */}
-          {dnsData && headers === null && (
-            <Card className="p-5">
-              <div className="font-semibold mb-3">Security Headers</div>
-              <div className="text-sm text-[rgb(var(--muted))]">
-                Unable to fetch security header data. This may be due to CORS
-                restrictions or network issues.
-              </div>
-            </Card>
-          )}
-
-          {/* Security Headers */}
-          {headers && (
-            <Card className="p-5">
-              <div className="font-semibold mb-3">Security Headers</div>
-
-              <div className="grid md:grid-cols-2 gap-3 text-sm">
-                <div>
-                  HSTS:{" "}
-                  {headers["strict-transport-security"] ? (
-                    <Badge variant="accent">Yes</Badge>
-                  ) : (
-                    <Badge variant="destructive">No</Badge>
-                  )}
-                </div>
-
-                <div>
-                  CSP:{" "}
-                  {headers["content-security-policy"] ? (
-                    <Badge variant="accent">Yes</Badge>
-                  ) : (
-                    <Badge variant="destructive">No</Badge>
-                  )}
-                </div>
-
-                <div>
-                  X-Frame-Options:{" "}
-                  {headers["x-frame-options"] ? (
-                    <Badge variant="accent">Yes</Badge>
-                  ) : (
-                    <Badge variant="destructive">No</Badge>
-                  )}
-                </div>
-
-                <div>
-                  Referrer-Policy:{" "}
-                  {headers["referrer-policy"] ? (
-                    <Badge variant="accent">Yes</Badge>
-                  ) : (
-                    <Badge variant="destructive">No</Badge>
-                  )}
-                </div>
-              </div>
-            </Card>
-          )}
+          ))}
         </div>
       )}
-    </main>
+    </ToolWorkspace>
   );
 }

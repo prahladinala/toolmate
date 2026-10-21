@@ -1,20 +1,20 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Select } from "@/components/ui/select";
-
 
 import React, { useState, useRef } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Download, Upload, Image as ImageIcon, Link2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function ImageResizerTool({ tool }: { tool: ToolDef }) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [origWidth, setOrigWidth] = useState(0);
   const [origHeight, setOrigHeight] = useState(0);
-  
+
   const [width, setWidth] = useState<number | "">(0);
   const [height, setHeight] = useState<number | "">(0);
   const [maintainAspect, setMaintainAspect] = useState(true);
@@ -31,7 +31,7 @@ export function ImageResizerTool({ tool }: { tool: ToolDef }) {
     reader.onload = (event) => {
       const src = event.target?.result as string;
       setImageSrc(src);
-      
+
       const img = new Image();
       img.onload = () => {
         setOrigWidth(img.width);
@@ -63,120 +63,158 @@ export function ImageResizerTool({ tool }: { tool: ToolDef }) {
 
   const handleDownload = () => {
     if (!imgRef.current || !canvasRef.current || !width || !height) return;
-    
+
     const canvas = canvasRef.current;
     canvas.width = Number(width);
     canvas.height = Number(height);
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    
-    // Draw scaled
+
     ctx.drawImage(imgRef.current, 0, 0, Number(width), Number(height));
-    
-    // Download
+
     const ext = format === "image/jpeg" ? "jpg" : format === "image/webp" ? "webp" : "png";
-    const dataUrl = canvas.toDataURL(format, 0.9);
-    
+    const dataUrl = canvas.toDataURL(format, 0.92);
+
     const link = document.createElement("a");
-    link.download = `resized_image.${ext}`;
+    link.download = `resized_${width}x${height}.${ext}`;
     link.href = dataUrl;
     link.click();
+    toast.success("Resized image downloaded!");
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Image Resizer</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Quickly resize your images directly in your browser. No images are uploaded to any server.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Fast client-side batch canvas image resizing. Images are never uploaded to any remote server.
+        </span>
+        {imageSrc && (
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            onClick={handleDownload}
+            className="text-xs"
+          >
+            <Download className="w-3.5 h-3.5 mr-1" />
+            Download Resized
+          </Button>
+        )}
+      </ToolToolbar>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-6 space-y-6">
-          <div>
-            <Label className="text-sm font-medium mb-1 block">Upload Image</Label>
+      {/* Hidden processing canvas */}
+      <canvas ref={canvasRef} className="hidden" />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Controls Column */}
+        <div className="lg:col-span-5 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Select Image File
+            </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleUpload}
-              className="w-full text-sm rounded border p-2 bg-[rgb(var(--card-2))] cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[rgba(var(--accent),0.1)] file:text-[rgb(var(--accent))] hover:file:bg-[rgba(var(--accent),0.2)]"
+              className="w-full text-xs rounded-xl border border-[rgb(var(--border))] p-2.5 bg-[rgb(var(--card-2))] cursor-pointer file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-500/10 file:text-indigo-600 hover:file:bg-indigo-500/20"
             />
           </div>
 
           {imageSrc && (
-            <>
-              <div className="flex justify-between text-sm text-[rgb(var(--muted))]">
-                <span>Original: {origWidth} × {origHeight} px</span>
+            <div className="space-y-4 pt-3 border-t border-[rgb(var(--border))]">
+              <div className="flex items-center justify-between text-xs text-[rgb(var(--muted))]">
+                <span>Original Dimensions:</span>
+                <span className="font-mono font-medium text-[rgb(var(--fg))]">
+                  {origWidth} × {origHeight} px
+                </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium block mb-1">New Width (px)</Label>
-                  <Input 
-                    type="number" 
-                    value={width} 
-                    onChange={(e) => handleWidthChange(e.target.value)} 
-                    className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]"
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                    Width (px)
+                  </label>
+                  <Input
+                    type="number"
+                    value={width}
+                    onChange={(e) => handleWidthChange(e.target.value)}
+                    className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
                   />
                 </div>
-                <div>
-                  <Label className="text-sm font-medium block mb-1">New Height (px)</Label>
-                  <Input 
-                    type="number" 
-                    value={height} 
-                    onChange={(e) => handleHeightChange(e.target.value)} 
-                    className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]"
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                    Height (px)
+                  </label>
+                  <Input
+                    type="number"
+                    value={height}
+                    onChange={(e) => handleHeightChange(e.target.value)}
+                    className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  id="aspect" 
-                  checked={maintainAspect} 
-                  onChange={(e) => setMaintainAspect(e.target.checked)} 
-                  className="w-4 h-4 accent-[rgb(var(--accent))]" 
+              <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-medium">
+                <input
+                  type="checkbox"
+                  checked={maintainAspect}
+                  onChange={(e) => setMaintainAspect(e.target.checked)}
+                  className="w-4 h-4 rounded text-indigo-600 accent-indigo-500"
                 />
-                <Label htmlFor="aspect" className="text-sm font-medium cursor-pointer">Maintain Aspect Ratio</Label>
-              </div>
+                <span className="flex items-center gap-1">
+                  <Link2 className="w-3.5 h-3.5 text-indigo-500" />
+                  Lock Aspect Ratio
+                </span>
+              </label>
 
-              <div>
-                <Label className="text-sm font-medium block mb-1">Export Format</Label>
-                <Select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]">
-                  <option value="image/png">PNG</option>
-                  <option value="image/jpeg">JPEG</option>
-                  <option value="image/webp">WEBP</option>
+              <div className="space-y-1 pt-1">
+                <label className="text-[11px] font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                  Export Image Format
+                </label>
+                <Select
+                  value={format}
+                  onChange={(e) => setFormat(e.target.value)}
+                  className="text-xs h-9 bg-[rgb(var(--card-2))]"
+                >
+                  <option value="image/png">PNG (.png) — Lossless</option>
+                  <option value="image/jpeg">JPEG (.jpg) — Compressed</option>
+                  <option value="image/webp">WebP (.webp) — Modern Web</option>
                 </Select>
               </div>
-
-              <Button onClick={handleDownload} className="w-full" disabled={!width || !height}>
-                Download Resized Image
-              </Button>
-            </>
+            </div>
           )}
-        </Card>
+        </div>
 
-        {/* Hidden canvas for processing */}
-        <canvas ref={canvasRef} className="hidden" />
-
-        <Card className="p-4 flex items-center justify-center bg-[rgb(var(--card-2))] min-h-[400px]">
+        {/* Preview Column */}
+        <div className="lg:col-span-7 flex flex-col items-center justify-center p-6 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm min-h-[350px] overflow-hidden">
           {imageSrc ? (
-            <div className="max-w-full max-h-full overflow-hidden flex items-center justify-center relative">
+            <div className="max-w-full flex flex-col items-center justify-center space-y-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={imageSrc} alt="Preview" className="max-w-full max-h-[500px] object-contain opacity-50" width={800} height={500} />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                 <div className="bg-black/70 text-white px-4 py-2 rounded-lg font-mono text-sm shadow-lg backdrop-blur-sm">
-                   {width || "?"} × {height || "?"}
-                 </div>
-              </div>
+              <img
+                src={imageSrc}
+                alt="Upload preview"
+                className="max-w-full max-h-[400px] rounded-xl shadow-md object-contain border border-[rgb(var(--border))]"
+              />
+              <span className="text-xs font-mono text-[rgb(var(--muted))]">
+                Target Output: {width} × {height} px ({format.replace("image/", "")})
+              </span>
             </div>
           ) : (
-            <div className="text-[rgb(var(--muted))] text-sm">Upload an image to see preview</div>
+            <div className="flex flex-col items-center justify-center text-center p-8 select-none space-y-2">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 mb-2">
+                <ImageIcon className="w-7 h-7" />
+              </div>
+              <span className="text-base font-semibold text-[rgb(var(--fg))]">
+                No Image Selected
+              </span>
+              <p className="text-xs text-[rgb(var(--muted))] max-w-xs">
+                Upload a PNG, JPEG, or WebP photo to customize target dimensions and pixel ratios.
+              </p>
+            </div>
           )}
-        </Card>
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

@@ -4,45 +4,117 @@ import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Button } from "@/components/ui/button";
+import { Copy, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
 import MarkdownIt from "markdown-it";
 
-const md = new MarkdownIt();
+const md = new MarkdownIt({
+  html: true,
+  breaks: true,
+  linkify: true,
+});
+
+const DEFAULT_MARKDOWN = `# Markdown Editor
+
+Welcome to the **live preview** editor.
+
+### Features
+- Real-time HTML rendering
+- Clean typography preview
+- Responsive layout (Split, Mobile Tabs)
+
+\`\`\`javascript
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+\`\`\`
+
+> Markdown makes writing formatted content fast and effortless.`;
 
 export function MarkdownEditorTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
-  const input = usePersistedState<string>(inputKey, "# Hello Markdown\n\nThis is a **live preview** of the editor.\n\n- List item 1\n- List item 2\n\n```js\nconsole.log('Code block');\n```");
+  const input = usePersistedState<string>(inputKey, DEFAULT_MARKDOWN);
   const [html, setHtml] = useState("");
 
   useEffect(() => {
     try {
       setHtml(md.render(input.value || ""));
     } catch {
-      setHtml("<p>Error parsing markdown</p>");
+      setHtml("<p class='text-red-500'>Error parsing markdown</p>");
     }
   }, [input.value]);
 
+  const copyHtml = async () => {
+    if (!html) return;
+    try {
+      await navigator.clipboard.writeText(html);
+      toast.success("Copied HTML to clipboard!");
+    } catch {
+      toast.error("Failed to copy HTML");
+    }
+  };
+
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8">
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4 flex flex-col">
-          <div className="font-medium mb-3">Markdown Input</div>
-          <div className="flex-1 min-h-[500px]">
-            <CodeEditor
-              value={input.value}
-              onChange={(value) => input.setValue(value || "")}
-              language="markdown"
-              options={{ wordWrap: "on" }}
-            />
-          </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs font-medium text-[rgb(var(--muted))]">
+          Markdown with instant side-by-side rendering
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={copyHtml}
+            className="text-xs"
+          >
+            <Copy className="w-3.5 h-3.5 mr-1.5" />
+            Copy HTML
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => input.setValue(DEFAULT_MARKDOWN)}
+            className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+          >
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+            Reset
+          </Button>
         </div>
-        <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4 flex flex-col">
-          <div className="font-medium mb-3">Live Preview</div>
-          <div 
-            className="flex-1 min-h-[500px] prose dark:prose-invert max-w-none p-4 rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] overflow-auto"
-            dangerouslySetInnerHTML={{ __html: html }}
+      </ToolToolbar>
+
+      <ToolSplitPane
+        defaultMobileView="both"
+        inputHeader={
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Markdown Source
+          </span>
+        }
+        outputHeader={
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Live Preview
+          </span>
+        }
+        input={
+          <CodeEditor
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="markdown"
+            minHeight="min-h-[350px] sm:min-h-[460px]"
+            options={{ wordWrap: "on" }}
           />
-        </div>
-      </div>
-    </main>
+        }
+        output={
+          <div className="w-full min-w-0 min-h-[350px] sm:min-h-[460px] p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] overflow-auto scrollbar-refined prose dark:prose-invert max-w-none text-sm">
+            <div dangerouslySetInnerHTML={{ __html: html }} />
+          </div>
+        }
+      />
+    </ToolWorkspace>
   );
 }

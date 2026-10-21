@@ -1,15 +1,14 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-import { Select } from "@/components/ui/select";
-
-import { toast } from "sonner";
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Download, Sparkles, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 interface MemeTemplate {
   id: string;
@@ -23,18 +22,17 @@ interface MemeTemplate {
 export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
   const [templates, setTemplates] = useState<MemeTemplate[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [topText, setTopText] = useState("");
-  const [bottomText, setBottomText] = useState("");
+  const [topText, setTopText] = useState("WHEN CODE COMPILES");
+  const [bottomText, setBottomText] = useState("ON FIRST ATTEMPT");
   const [loading, setLoading] = useState(true);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     fetch("https://api.imgflip.com/get_memes")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success) {
-          // Filter to memes with 2 boxes for simplicity
           const filtered = data.data.memes.filter((m: MemeTemplate) => m.box_count === 2);
           setTemplates(filtered);
         }
@@ -43,26 +41,26 @@ export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
       .catch(() => setLoading(false));
   }, []);
 
-  const drawMeme = () => {
+  const drawMeme = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || templates.length === 0) return;
-    
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const img = new Image();
-    img.crossOrigin = "anonymous"; // Needed for downloading tainted canvas
+    img.crossOrigin = "anonymous";
     const currentMeme = templates[selectedIdx];
-    img.src = currentMeme.url;
+    if (!currentMeme) return;
 
+    img.src = currentMeme.url;
     img.onload = () => {
-      // Setup canvas size
       const maxW = 600;
       let w = img.width;
       let h = img.height;
       if (w > maxW) {
-         h = (maxW / w) * h;
-         w = maxW;
+        h = (maxW / w) * h;
+        w = maxW;
       }
       canvas.width = w;
       canvas.height = h;
@@ -70,32 +68,29 @@ export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      // Setup text
-      ctx.font = `bold ${Math.floor(canvas.height / 8)}px Impact`;
+      ctx.font = `bold ${Math.floor(canvas.height / 9)}px Impact, sans-serif`;
       ctx.textAlign = "center";
       ctx.fillStyle = "white";
       ctx.strokeStyle = "black";
-      ctx.lineWidth = Math.floor(canvas.height / 150) || 2;
+      ctx.lineWidth = Math.max(2, Math.floor(canvas.height / 120));
       ctx.textBaseline = "top";
 
-      // Draw Top Text
       if (topText) {
-        ctx.strokeText(topText.toUpperCase(), canvas.width / 2, 10);
-        ctx.fillText(topText.toUpperCase(), canvas.width / 2, 10);
+        ctx.strokeText(topText.toUpperCase(), canvas.width / 2, 12);
+        ctx.fillText(topText.toUpperCase(), canvas.width / 2, 12);
       }
 
-      // Draw Bottom Text
       if (bottomText) {
         ctx.textBaseline = "bottom";
-        ctx.strokeText(bottomText.toUpperCase(), canvas.width / 2, canvas.height - 10);
-        ctx.fillText(bottomText.toUpperCase(), canvas.width / 2, canvas.height - 10);
+        ctx.strokeText(bottomText.toUpperCase(), canvas.width / 2, canvas.height - 12);
+        ctx.fillText(bottomText.toUpperCase(), canvas.width / 2, canvas.height - 12);
       }
     };
-  };
+  }, [templates, selectedIdx, topText, bottomText]);
 
   useEffect(() => {
     drawMeme();
-  }, [selectedIdx, topText, bottomText, templates]);
+  }, [drawMeme]);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -103,76 +98,107 @@ export function MemeGeneratorTool({ tool }: { tool: ToolDef }) {
     try {
       const dataUrl = canvas.toDataURL("image/png");
       const a = document.createElement("a");
-      a.download = `meme_${templates[selectedIdx]?.id}.png`;
+      a.download = `meme_${templates[selectedIdx]?.id || "custom"}.png`;
       a.href = dataUrl;
       a.click();
-    } catch (e) {
-      toast.error("Cannot download due to CORS restrictions on the image. You can try right-clicking and saving the image.");
+      toast.success("Meme image downloaded!");
+    } catch {
+      toast.error("Cross-origin restriction prevented direct download. Right-click and choose Save Image.");
     }
   };
 
+  const handleRandomTemplate = () => {
+    if (templates.length === 0) return;
+    setSelectedIdx(Math.floor(Math.random() * templates.length));
+  };
+
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Meme Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Select a trending template from ImgFlip, add your text, and download your meme instantly.
-        </p>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Create viral developer memes with trending templates and live typography canvas preview
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={handleRandomTemplate}
+            className="text-xs"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1" />
+            Random Template
+          </Button>
+
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            onClick={handleDownload}
+            className="text-xs"
+          >
+            <Download className="w-3.5 h-3.5 mr-1" />
+            Download Meme
+          </Button>
+        </div>
+      </ToolToolbar>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Form Controls */}
+        <div className="lg:col-span-5 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Meme Template
+            </label>
+            <Select
+              value={String(selectedIdx)}
+              onChange={(e) => setSelectedIdx(Number(e.target.value))}
+              disabled={loading || templates.length === 0}
+              className="text-xs sm:text-sm h-10 bg-[rgb(var(--card-2))]"
+            >
+              {templates.map((tpl, idx) => (
+                <option key={tpl.id} value={idx}>
+                  {tpl.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Top Text
+            </label>
+            <Input
+              value={topText}
+              onChange={(e) => setTopText(e.target.value)}
+              placeholder="TOP TEXT..."
+              className="text-xs sm:text-sm font-semibold h-10 uppercase bg-[rgb(var(--card-2))]"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Bottom Text
+            </label>
+            <Input
+              value={bottomText}
+              onChange={(e) => setBottomText(e.target.value)}
+              placeholder="BOTTOM TEXT..."
+              className="text-xs sm:text-sm font-semibold h-10 uppercase bg-[rgb(var(--card-2))]"
+            />
+          </div>
+        </div>
+
+        {/* Canvas Display */}
+        <div className="lg:col-span-7 flex flex-col items-center justify-center p-6 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm min-h-[350px] overflow-hidden">
+          <div className="max-w-full flex items-center justify-center">
+            <canvas
+              ref={canvasRef}
+              className="max-w-full h-auto rounded-xl shadow-md border border-[rgb(var(--border))] object-contain"
+            />
+          </div>
+        </div>
       </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-6 space-y-6">
-          {loading ? (
-            <div className="text-sm text-[rgb(var(--muted))]">Loading templates...</div>
-          ) : (
-            <>
-              <div>
-                <Label className="text-sm font-medium block mb-2">Select Template</Label>
-                <Select 
-                  value={selectedIdx} 
-                  onChange={(e) => setSelectedIdx(Number(e.target.value))} 
-                  className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]"
-                >
-                  {templates.map((t, i) => (
-                    <option key={t.id} value={i}>{t.name}</option>
-                  ))}
-                </Select>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium block mb-2">Top Text</Label>
-                <Input 
-                  type="text" 
-                  value={topText} 
-                  onChange={(e) => setTopText(e.target.value)} 
-                  placeholder="e.g., WHEN THE CODE WORKS"
-                  className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]"
-                />
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium block mb-2">Bottom Text</Label>
-                <Input 
-                  type="text" 
-                  value={bottomText} 
-                  onChange={(e) => setBottomText(e.target.value)} 
-                  placeholder="e.g., BUT YOU DON'T KNOW WHY"
-                  className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]"
-                />
-              </div>
-
-              <Button onClick={handleDownload} className="w-full">Download Meme</Button>
-            </>
-          )}
-        </Card>
-
-        <Card className="p-4 flex items-center justify-center bg-[rgb(var(--card-2))] min-h-[400px] overflow-hidden">
-          <canvas 
-            ref={canvasRef} 
-            className="max-w-full max-h-[500px] object-contain shadow-lg rounded-lg bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"
-          />
-        </Card>
-      </div>
-    </main>
+    </ToolWorkspace>
   );
 }

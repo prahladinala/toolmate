@@ -1,123 +1,141 @@
 "use client";
-import { Input } from "@/components/ui/input";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Search, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 const MIME_DATA = [
-  { ext: ".aac", mime: "audio/aac", desc: "AAC audio" },
-  { ext: ".abw", mime: "application/x-abiword", desc: "AbiWord document" },
-  { ext: ".arc", mime: "application/x-freearc", desc: "Archive document (multiple files embedded)" },
-  { ext: ".avi", mime: "video/x-msvideo", desc: "AVI: Audio Video Interleave" },
-  { ext: ".azw", mime: "application/vnd.amazon.ebook", desc: "Amazon Kindle eBook format" },
-  { ext: ".bin", mime: "application/octet-stream", desc: "Any kind of binary data" },
-  { ext: ".bmp", mime: "image/bmp", desc: "Windows OS/2 Bitmap Graphics" },
-  { ext: ".bz", mime: "application/x-bzip", desc: "BZip archive" },
-  { ext: ".bz2", mime: "application/x-bzip2", desc: "BZip2 archive" },
-  { ext: ".csv", mime: "text/csv", desc: "Comma-separated values (CSV)" },
-  { ext: ".doc", mime: "application/msword", desc: "Microsoft Word" },
-  { ext: ".docx", mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", desc: "Microsoft Word (OpenXML)" },
-  { ext: ".eot", mime: "application/vnd.ms-fontobject", desc: "MS Embedded OpenType fonts" },
-  { ext: ".epub", mime: "application/epub+zip", desc: "Electronic publication (EPUB)" },
-  { ext: ".gz", mime: "application/gzip", desc: "GZip Compressed Archive" },
-  { ext: ".gif", mime: "image/gif", desc: "Graphics Interchange Format (GIF)" },
-  { ext: ".htm, .html", mime: "text/html", desc: "HyperText Markup Language (HTML)" },
-  { ext: ".ico", mime: "image/vnd.microsoft.icon", desc: "Icon format" },
-  { ext: ".ics", mime: "text/calendar", desc: "iCalendar format" },
-  { ext: ".jar", mime: "application/java-archive", desc: "Java Archive (JAR)" },
-  { ext: ".jpeg, .jpg", mime: "image/jpeg", desc: "JPEG images" },
-  { ext: ".js", mime: "text/javascript", desc: "JavaScript" },
-  { ext: ".json", mime: "application/json", desc: "JSON format" },
-  { ext: ".jsonld", mime: "application/ld+json", desc: "JSON-LD format" },
-  { ext: ".mid, .midi", mime: "audio/midi", desc: "Musical Instrument Digital Interface (MIDI)" },
-  { ext: ".mjs", mime: "text/javascript", desc: "JavaScript module" },
-  { ext: ".mp3", mime: "audio/mpeg", desc: "MP3 audio" },
-  { ext: ".mpeg", mime: "video/mpeg", desc: "MPEG Video" },
-  { ext: ".mpkg", mime: "application/vnd.apple.installer+xml", desc: "Apple Installer Package" },
-  { ext: ".odp", mime: "application/vnd.oasis.opendocument.presentation", desc: "OpenDocument presentation document" },
-  { ext: ".ods", mime: "application/vnd.oasis.opendocument.spreadsheet", desc: "OpenDocument spreadsheet document" },
-  { ext: ".odt", mime: "application/vnd.oasis.opendocument.text", desc: "OpenDocument text document" },
-  { ext: ".oga", mime: "audio/ogg", desc: "OGG audio" },
-  { ext: ".ogv", mime: "video/ogg", desc: "OGG video" },
-  { ext: ".ogx", mime: "application/ogg", desc: "OGG" },
-  { ext: ".opus", mime: "audio/opus", desc: "Opus audio" },
-  { ext: ".otf", mime: "font/otf", desc: "OpenType font" },
-  { ext: ".png", mime: "image/png", desc: "Portable Network Graphics" },
-  { ext: ".pdf", mime: "application/pdf", desc: "Adobe Portable Document Format (PDF)" },
-  { ext: ".php", mime: "application/x-httpd-php", desc: "Hypertext Preprocessor (Personal Home Page)" },
-  { ext: ".ppt", mime: "application/vnd.ms-powerpoint", desc: "Microsoft PowerPoint" },
-  { ext: ".pptx", mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation", desc: "Microsoft PowerPoint (OpenXML)" },
-  { ext: ".rar", mime: "application/vnd.rar", desc: "RAR archive" },
-  { ext: ".rtf", mime: "application/rtf", desc: "Rich Text Format (RTF)" },
-  { ext: ".sh", mime: "application/x-sh", desc: "Bourne shell script" },
-  { ext: ".svg", mime: "image/svg+xml", desc: "Scalable Vector Graphics (SVG)" },
-  { ext: ".swf", mime: "application/x-shockwave-flash", desc: "Small web format (SWF) or Adobe Flash document" },
-  { ext: ".tar", mime: "application/x-tar", desc: "Tape Archive (TAR)" },
-  { ext: ".tif, .tiff", mime: "image/tiff", desc: "Tagged Image File Format (TIFF)" },
+  { ext: ".json", mime: "application/json", desc: "JavaScript Object Notation format" },
+  { ext: ".csv", mime: "text/csv", desc: "Comma-separated values spreadsheet" },
+  { ext: ".html, .htm", mime: "text/html", desc: "HyperText Markup Language" },
+  { ext: ".css", mime: "text/css", desc: "Cascading Style Sheets" },
+  { ext: ".js, .mjs", mime: "text/javascript", desc: "JavaScript programming script" },
   { ext: ".ts", mime: "video/mp2t", desc: "MPEG transport stream" },
+  { ext: ".png", mime: "image/png", desc: "Portable Network Graphics" },
+  { ext: ".jpg, .jpeg", mime: "image/jpeg", desc: "JPEG compressed image" },
+  { ext: ".webp", mime: "image/webp", desc: "Modern WebP lossy/lossless image" },
+  { ext: ".svg", mime: "image/svg+xml", desc: "Scalable Vector Graphics" },
+  { ext: ".gif", mime: "image/gif", desc: "Graphics Interchange Format" },
+  { ext: ".ico", mime: "image/vnd.microsoft.icon", desc: "Favicon / Icon format" },
+  { ext: ".pdf", mime: "application/pdf", desc: "Adobe Portable Document Format" },
+  { ext: ".zip", mime: "application/zip", desc: "ZIP compressed archive" },
+  { ext: ".tar", mime: "application/x-tar", desc: "Tape Archive container" },
+  { ext: ".gz", mime: "application/gzip", desc: "Gnu Zip archive" },
+  { ext: ".mp3", mime: "audio/mpeg", desc: "MPEG Layer-3 Audio" },
+  { ext: ".wav", mime: "audio/wav", desc: "Waveform Audio File" },
+  { ext: ".mp4", mime: "video/mp4", desc: "MPEG-4 Part 14 Video container" },
+  { ext: ".webm", mime: "video/webm", desc: "WebM open video format" },
+  { ext: ".xml", mime: "application/xml", desc: "Extensible Markup Language" },
+  { ext: ".yaml, .yml", mime: "application/x-yaml", desc: "YAML Ain't Markup Language" },
+  { ext: ".woff2", mime: "font/woff2", desc: "Web Open Font Format 2" },
+  { ext: ".woff", mime: "font/woff", desc: "Web Open Font Format" },
   { ext: ".ttf", mime: "font/ttf", desc: "TrueType Font" },
-  { ext: ".txt", mime: "text/plain", desc: "Text, (generally ASCII or ISO 8859-n)" },
-  { ext: ".vsd", mime: "application/vnd.visio", desc: "Microsoft Visio" },
-  { ext: ".wav", mime: "audio/wav", desc: "Waveform Audio Format" },
-  { ext: ".weba", mime: "audio/webm", desc: "WEBM audio" },
-  { ext: ".webm", mime: "video/webm", desc: "WEBM video" },
-  { ext: ".webp", mime: "image/webp", desc: "WEBP image" },
-  { ext: ".woff", mime: "font/woff", desc: "Web Open Font Format (WOFF)" },
-  { ext: ".woff2", mime: "font/woff2", desc: "Web Open Font Format (WOFF) - 2" },
-  { ext: ".xhtml", mime: "application/xhtml+xml", desc: "XHTML" },
-  { ext: ".xls", mime: "application/vnd.ms-excel", desc: "Microsoft Excel" },
-  { ext: ".xlsx", mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", desc: "Microsoft Excel (OpenXML)" },
-  { ext: ".xml", mime: "application/xml", desc: "XML" },
-  { ext: ".xul", mime: "application/vnd.mozilla.xul+xml", desc: "XUL" },
-  { ext: ".zip", mime: "application/zip", desc: "ZIP archive" },
-  { ext: ".3gp", mime: "video/3gpp", desc: "3GPP audio/video container" },
-  { ext: ".3g2", mime: "video/3gpp2", desc: "3GPP2 audio/video container" },
-  { ext: ".7z", mime: "application/x-7z-compressed", desc: "7-zip archive" }
+  { ext: ".otf", mime: "font/otf", desc: "OpenType Font" },
+  { ext: ".txt", mime: "text/plain", desc: "Plain text format" },
+  { ext: ".md", mime: "text/markdown", desc: "Markdown documentation file" },
+  { ext: ".doc", mime: "application/msword", desc: "Microsoft Word Legacy Doc" },
+  { ext: ".docx", mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", desc: "Microsoft Word OpenXML" },
+  { ext: ".xls", mime: "application/vnd.ms-excel", desc: "Microsoft Excel Legacy" },
+  { ext: ".xlsx", mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", desc: "Microsoft Excel OpenXML" },
+  { ext: ".ppt", mime: "application/vnd.ms-powerpoint", desc: "Microsoft PowerPoint Legacy" },
+  { ext: ".pptx", mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation", desc: "Microsoft PowerPoint OpenXML" },
 ];
 
 export function MimeTypesTool({ tool }: { tool: ToolDef }) {
   const [search, setSearch] = useState("");
+  const [copiedMime, setCopiedMime] = useState<string | null>(null);
 
-  const filtered = MIME_DATA.filter((m) =>
-    m.ext.toLowerCase().includes(search.toLowerCase()) ||
-    m.mime.toLowerCase().includes(search.toLowerCase()) ||
-    m.desc.toLowerCase().includes(search.toLowerCase())
+  const filtered = MIME_DATA.filter(
+    (m) =>
+      m.ext.toLowerCase().includes(search.toLowerCase()) ||
+      m.mime.toLowerCase().includes(search.toLowerCase()) ||
+      m.desc.toLowerCase().includes(search.toLowerCase())
   );
 
+  const copyMime = async (mime: string) => {
+    try {
+      await navigator.clipboard.writeText(mime);
+      setCopiedMime(mime);
+      toast.success(`Copied "${mime}"!`);
+      setTimeout(() => setCopiedMime(null), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-6">
-        <Input
-          type="text"
-          placeholder="Search extensions, MIME types, or descriptions..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] px-4 py-3 text-lg outline-none focus:border-blue-500 shadow-[var(--shadow-sm)]"
-        />
+    <ToolWorkspace maxWidth="default">
+      {/* Search Input Toolbar */}
+      <div className="w-full p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm">
+        <div className="relative w-full">
+          <Search className="w-4 h-4 text-[rgb(var(--muted))] absolute left-3 top-1/2 -translate-y-1/2" />
+          <Input
+            type="text"
+            placeholder="Search by file extension, MIME type, or file description..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 text-xs sm:text-sm h-11 bg-[rgb(var(--card-2))]"
+          />
+        </div>
       </div>
 
-      <div className="rounded-[var(--radius-lg)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+      {/* Table Container */}
+      <div className="w-full rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-[rgb(var(--border))] bg-[rgb(var(--card-2))] flex items-center justify-between">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Matching Content Types ({filtered.length})
+          </span>
+        </div>
+
+        <div className="overflow-x-auto scrollbar-refined">
+          <table className="w-full text-left border-collapse min-w-[500px]">
             <thead>
-              <tr className="bg-[rgb(var(--card-2))] border-b border-[rgb(var(--border))]">
-                <th className="p-4 font-medium whitespace-nowrap">Extension</th>
-                <th className="p-4 font-medium whitespace-nowrap">MIME Type</th>
-                <th className="p-4 font-medium">Description</th>
+              <tr className="border-b border-[rgb(var(--border))] text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider">
+                <th className="p-3.5 sm:p-4">Extension</th>
+                <th className="p-3.5 sm:p-4">MIME Content-Type</th>
+                <th className="p-3.5 sm:p-4">Description</th>
+                <th className="p-3.5 sm:p-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
-              {filtered.map((item, idx) => (
-                <tr key={idx} className="border-b border-[rgb(var(--border))] last:border-0 hover:bg-[rgba(var(--accent),0.02)] transition">
-                  <td className="p-4 font-mono font-medium text-blue-500 whitespace-nowrap">{item.ext}</td>
-                  <td className="p-4 font-mono text-sm whitespace-nowrap">{item.mime}</td>
-                  <td className="p-4 text-sm text-neutral-600 dark:text-neutral-400">{item.desc}</td>
+            <tbody className="divide-y divide-[rgb(var(--border))] text-xs sm:text-sm">
+              {filtered.map((item) => (
+                <tr
+                  key={item.mime}
+                  className="hover:bg-[rgb(var(--card-2))]/50 transition-colors"
+                >
+                  <td className="p-3.5 sm:p-4 font-mono font-bold text-indigo-500 whitespace-nowrap">
+                    {item.ext}
+                  </td>
+                  <td className="p-3.5 sm:p-4 font-mono text-[rgb(var(--fg))] whitespace-nowrap">
+                    {item.mime}
+                  </td>
+                  <td className="p-3.5 sm:p-4 text-[rgb(var(--muted))]">
+                    {item.desc}
+                  </td>
+                  <td className="p-3.5 sm:p-4 text-right whitespace-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => copyMime(item.mime)}
+                      className="p-1.5 rounded-lg text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] hover:bg-[rgb(var(--card-2))] transition-colors"
+                      title={`Copy ${item.mime}`}
+                    >
+                      {copiedMime === item.mime ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-500 inline-block" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5 inline-block" />
+                      )}
+                    </button>
+                  </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="p-8 text-center text-neutral-500">
-                    No matching MIME types found.
+                  <td colSpan={4} className="p-8 text-center text-xs text-[rgb(var(--muted))]">
+                    No MIME types found matching &ldquo;{search}&rdquo;.
                   </td>
                 </tr>
               )}
@@ -125,6 +143,6 @@ export function MimeTypesTool({ tool }: { tool: ToolDef }) {
           </table>
         </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

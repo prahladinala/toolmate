@@ -1,25 +1,24 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Copy, Check } from "lucide-react";
-import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { Copy, Check, Download } from "lucide-react";
+import { toast } from "sonner";
 
 export function PrivacyPolicyGeneratorTool({ tool }: { tool: ToolDef }) {
-  const [company, setCompany] = useState("");
-  const [websiteName, setWebsiteName] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
-  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("ToolMate Inc.");
+  const [websiteName, setWebsiteName] = useState("ToolMate");
+  const [websiteUrl, setWebsiteUrl] = useState("https://toolmate.co.in");
+  const [email, setEmail] = useState("privacy@toolmate.co.in");
+  const [copied, setCopied] = useState(false);
 
   const generateMarkdown = () => {
-    const d = new Date().toLocaleDateString();
+    const d = new Date().toISOString().split("T")[0];
     return `# Privacy Policy for ${company || "[Company Name]"}
 
 **Last updated:** ${d}
@@ -33,19 +32,21 @@ If you contact us directly, we may receive additional information about you such
 
 ## How We Use Your Information
 We use the information we collect in various ways, including to:
-- Provide, operate, and maintain our website
-- Improve, personalize, and expand our website
-- Understand and analyze how you use our website
+- Provide, operate, and maintain our website and utilities
+- Improve, personalize, and expand our services
+- Understand and analyze how you use our applications
 - Develop new products, services, features, and functionality
-- Communicate with you, either directly or through one of our partners, including for customer service, to provide you with updates and other information relating to the website, and for marketing and promotional purposes
-- Send you emails
-- Find and prevent fraud
+- Communicate with you for customer support, notices, and updates
+- Prevent fraud and guarantee security
 
-## Log Files
-${websiteName || "[Website Name]"} follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services' analytics. The information collected by log files include internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends, administering the site, tracking users' movement on the website, and gathering demographic information.
+## Log Files & Analytics
+${websiteName || "[Website Name]"} follows standard web logging procedures. These logs record visitors when they access websites. All hosting providers do this as part of infrastructure diagnostics. Information collected includes IP addresses, browser types, Internet Service Providers (ISPs), date/time stamps, and referring URLs. None of this data is linked to personally identifiable information.
+
+## Data Retention & Deletion
+We only retain personal data for as long as necessary to provide you with your requested services.
 
 ## Contact Us
-If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at ${email || "[Email Address]"}.
+If you have additional questions or require more information about our Privacy Policy, please contact our team at: ${email || "[Email Address]"}.
 `;
   };
 
@@ -54,50 +55,131 @@ If you have additional questions or require more information about our Privacy P
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("Privacy Policy copied to clipboard!");
-    } catch (e) {}
+      toast.success("Privacy Policy copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const downloadFile = () => {
+    const blob = new Blob([output], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "PRIVACY_POLICY.md";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Downloaded PRIVACY_POLICY.md!");
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Privacy Policy Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Quickly generate standard boilerplate Privacy Policy for your website or app.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Generate compliant standard Privacy Policy documentation ready for websites, mobile apps, and SaaS platforms
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={copyToClipboard}
+            className="text-xs"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 mr-1" />
+                Copy Markdown
+              </>
+            )}
+          </Button>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-6 space-y-4">
-          <div>
-            <Label className="text-sm font-medium block mb-1">Company Name</Label>
-            <Input type="text" value={company} onChange={(e) => setCompany(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. Acme Corp" />
-          </div>
-          <div>
-            <Label className="text-sm font-medium block mb-1">Website Name</Label>
-            <Input type="text" value={websiteName} onChange={(e) => setWebsiteName(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. Acme App" />
-          </div>
-          <div>
-            <Label className="text-sm font-medium block mb-1">Website URL</Label>
-            <Input type="text" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. https://acme.com" />
-          </div>
-          <div>
-            <Label className="text-sm font-medium block mb-1">Contact Email</Label>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="e.g. privacy@acme.com" />
-          </div>
-          
-          <Button onClick={copyToClipboard} className="w-full mt-4">Copy Markdown</Button>
-        </Card>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={downloadFile}
+            className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+          >
+            <Download className="w-3.5 h-3.5 mr-1" />
+            Export Markdown
+          </Button>
+        </div>
+      </ToolToolbar>
 
-        <Card className="p-0 flex flex-col h-full min-h-[400px] overflow-hidden">
-          <div className="p-3 border-b border-[rgb(var(--border))] font-medium text-sm flex justify-between items-center bg-[rgb(var(--card-2))]">
-             <span>Generated Output</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Form Inputs */}
+        <div className="lg:col-span-5 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Legal Entity / Company Name
+            </label>
+            <Input
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="e.g. Acme Corp Inc."
+              className="text-xs sm:text-sm h-10 bg-[rgb(var(--card-2))]"
+            />
           </div>
-          <div className="flex-1 relative">
-             <CodeEditor value={output} language="markdown" options={{ readOnly: true, wordWrap: "on" }} className="absolute inset-0" />
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Website / App Name
+            </label>
+            <Input
+              value={websiteName}
+              onChange={(e) => setWebsiteName(e.target.value)}
+              placeholder="e.g. Acme App"
+              className="text-xs sm:text-sm h-10 bg-[rgb(var(--card-2))]"
+            />
           </div>
-        </Card>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Canonical URL
+            </label>
+            <Input
+              value={websiteUrl}
+              onChange={(e) => setWebsiteUrl(e.target.value)}
+              placeholder="https://example.com"
+              className="text-xs sm:text-sm font-mono h-10 bg-[rgb(var(--card-2))]"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Contact Privacy Email
+            </label>
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="privacy@example.com"
+              className="text-xs sm:text-sm font-mono h-10 bg-[rgb(var(--card-2))]"
+            />
+          </div>
+        </div>
+
+        {/* Output Code */}
+        <div className="lg:col-span-7 flex flex-col min-w-0 space-y-2">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Generated Markdown Document
+          </span>
+          <CodeEditor
+            value={output}
+            language="markdown"
+            editable={false}
+            minHeight="min-h-[350px] sm:min-h-[460px]"
+            options={{ wordWrap: "on" }}
+          />
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

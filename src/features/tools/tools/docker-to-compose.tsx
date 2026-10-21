@@ -5,14 +5,18 @@ import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, RotateCcw, AlertCircle } from "lucide-react";
 import composerize from "composerize";
 import { toast } from "sonner";
 
+const DEFAULT_CMD = "docker run -d -p 8080:80 --name webserver --restart always -v /var/www:/usr/share/nginx/html:ro nginx:alpine";
+
 export function DockerToComposeTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
-  const input = usePersistedState<string>(inputKey, "docker run -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro --restart always --log-opt max-size=1g nginx");
+  const input = usePersistedState<string>(inputKey, DEFAULT_CMD);
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -24,7 +28,6 @@ export function DockerToComposeTool({ tool }: { tool: ToolDef }) {
       return;
     }
     try {
-      // composerize expects a clean command string
       const cmd = input.value.replace(/\\\n/g, " ").replace(/\s+/g, " ").trim();
       if (!cmd.startsWith("docker run") && !cmd.startsWith("docker create")) {
         throw new Error("Input must be a valid 'docker run' or 'docker create' command.");
@@ -45,65 +48,105 @@ export function DockerToComposeTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("Copied to clipboard!");
+      toast.success("Copied compose YAML to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setCopied(false);
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Docker Run to Docker Compose</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Paste a long <code>docker run</code> command to instantly convert it into a <code>docker-compose.yml</code> file.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Convert <code>docker run</code> CLI commands into ready-to-use <code>docker-compose.yml</code>
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => input.setValue(DEFAULT_CMD)}
+            className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+          >
+            <RotateCcw className="w-3.5 h-3.5 mr-1" />
+            Reset Sample
+          </Button>
+        </div>
+      </ToolToolbar>
 
       {error && (
-        <div className="mb-4 rounded-[var(--radius)] border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.08)] p-4 text-sm text-red-500 whitespace-pre-wrap font-mono">
-          {error}
+        <div className="flex items-center gap-2 p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Docker Run Command</div>
-            <Button size="sm" variant="secondary" onClick={input.clear}>Clear</Button>
-          </div>
-          <CodeEditor
-            className="min-h-[400px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language="shell"
-            options={{ wordWrap: "on" }}
-          />
-        </div>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">docker-compose.yml</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+      <ToolSplitPane
+        defaultMobileView="both"
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Docker Run Command
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={input.clear}
+              className="text-xs h-7 px-2"
+            >
+              Clear
             </Button>
           </div>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              docker-compose.yml
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={copyToClipboard}
+              disabled={!output}
+              className="text-xs h-7 px-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3 mr-1" />
+                  Copy YAML
+                </>
+              )}
+            </Button>
+          </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[400px]"
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="shell"
+            minHeight="min-h-[260px] sm:min-h-[380px]"
+            options={{ wordWrap: "on" }}
+          />
+        }
+        output={
+          <CodeEditor
             value={output}
             language="yaml"
-            options={{ readOnly: true }}
+            editable={false}
+            minHeight="min-h-[260px] sm:min-h-[380px]"
           />
-        </div>
-      </div>
-    </main>
+        }
+      />
+    </ToolWorkspace>
   );
 }

@@ -5,8 +5,26 @@ import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+
+const DEFAULT_SQL = `CREATE TABLE users (
+  id INT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE posts (
+  id INT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  author_id INT NOT NULL,
+  published_at TIMESTAMP
+);`;
 
 function parseSqlToPrisma(sql: string): string {
   if (!sql.trim()) return "";
@@ -22,14 +40,13 @@ function parseSqlToPrisma(sql: string): string {
 
     const rawName = tableMatch[1].replace(/["']/g, "");
     const modelName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-    
+
     prismaSchema += `model ${modelName} {\n`;
 
     const columnsStr = tableMatch[2];
-    const columns = columnsStr.split(/,\s*\n/).map(c => c.trim()).filter(Boolean);
+    const columns = columnsStr.split(/,\s*\n/).map((c) => c.trim()).filter(Boolean);
 
-    columns.forEach(col => {
-      // Ignore keys for this simple parser
+    columns.forEach((col) => {
       if (/^(PRIMARY|FOREIGN|UNIQUE|KEY|CONSTRAINT)/i.test(col)) return;
 
       const colParts = col.split(/\s+/);
@@ -38,17 +55,23 @@ function parseSqlToPrisma(sql: string): string {
 
       let type = "String";
       if (colTypeRaw.includes("INT")) type = "Int";
-      else if (colTypeRaw.includes("FLOAT") || colTypeRaw.includes("DOUBLE") || colTypeRaw.includes("DECIMAL") || colTypeRaw.includes("NUMERIC")) type = "Float";
+      else if (
+        colTypeRaw.includes("FLOAT") ||
+        colTypeRaw.includes("DOUBLE") ||
+        colTypeRaw.includes("DECIMAL") ||
+        colTypeRaw.includes("NUMERIC")
+      )
+        type = "Float";
       else if (colTypeRaw.includes("BOOL") || colTypeRaw.includes("BIT")) type = "Boolean";
       else if (colTypeRaw.includes("DATE") || colTypeRaw.includes("TIME")) type = "DateTime";
 
       let modifiers = "";
       const isPrimaryKey = /PRIMARY\s+KEY/i.test(col);
       if (isPrimaryKey) modifiers += " @id";
-      
+
       const isUnique = /UNIQUE/i.test(col);
       if (isUnique) modifiers += " @unique";
-      
+
       const isNullable = !/NOT\s+NULL/i.test(col);
       if (isNullable && !isPrimaryKey) type += "?";
 
@@ -69,7 +92,6 @@ function parseSqlToPrisma(sql: string): string {
       prismaSchema += `  ${colName} ${type}${modifiers}\n`;
     });
 
-    // Map table if the model name differs
     if (modelName !== rawName) {
       prismaSchema += `\n  @@map("${rawName}")\n`;
     }
@@ -82,7 +104,7 @@ function parseSqlToPrisma(sql: string): string {
 
 export function SqlToPrismaTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
-  const input = usePersistedState<string>(inputKey, "CREATE TABLE users (\n  id INT PRIMARY KEY,\n  name VARCHAR(255) NOT NULL,\n  email VARCHAR(255) UNIQUE NOT NULL,\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);");
+  const input = usePersistedState<string>(inputKey, DEFAULT_SQL);
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -103,51 +125,80 @@ export function SqlToPrismaTool({ tool }: { tool: ToolDef }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setCopied(false);
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">SQL to Prisma Schema</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Convert basic SQL <code>CREATE TABLE</code> statements into Prisma <code>model</code> definitions. Note: This is a basic regex parser and may not support complex SQL constraints or relations.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Convert SQL <code>CREATE TABLE</code> statements into Prisma <code>model</code> definitions
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={() => input.setValue(DEFAULT_SQL)}
+          className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+        >
+          <RotateCcw className="w-3.5 h-3.5 mr-1" />
+          Reset Sample
+        </Button>
+      </ToolToolbar>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col h-full">
-          <div className="font-medium mb-3">Input SQL</div>
-          <CodeEditor
-            className="min-h-[500px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language="sql"
-          />
-        </div>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Prisma Schema</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+      <ToolSplitPane
+        defaultMobileView="both"
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Input SQL DDL
+          </span>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Prisma Schema Models
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={copyToClipboard}
+              disabled={!output}
+              className="text-xs h-7 px-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3 mr-1" />
+                  Copy
+                </>
+              )}
             </Button>
           </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[500px]"
-            value={output}
-            language="graphql" // Monaco doesn't have prisma by default without extra setup, graphql looks close enough for highlighting
-            options={{ readOnly: true }}
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="sql"
+            minHeight="min-h-[300px] sm:min-h-[420px]"
           />
-        </div>
-      </div>
-    </main>
+        }
+        output={
+          <CodeEditor
+            value={output}
+            language="graphql"
+            editable={false}
+            minHeight="min-h-[300px] sm:min-h-[420px]"
+          />
+        }
+      />
+    </ToolWorkspace>
   );
 }

@@ -1,15 +1,14 @@
 "use client";
-import { Label } from "@/components/ui/label";
 
-import { Copy, Check } from "lucide-react";
-import { toast } from "sonner";
-
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Card } from "@/components/ui/card";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { CodeEditor } from "@/components/ui/code-editor";
+import { Copy, Check, Dices } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 // @ts-ignore
 import blobshape from "blobshape";
 
@@ -18,13 +17,16 @@ export function BlobGeneratorTool({ tool }: { tool: ToolDef }) {
   const [growth, setGrowth] = useState(5);
   const [color, setColor] = useState("#3b82f6");
   const [seed, setSeed] = useState<string | null>(null);
-  
   const [path, setPath] = useState("");
-  
+  const [copied, setCopied] = useState(false);
+
   const generateBlob = useCallback(() => {
-    // blobshape takes size, growth (1-10), edges (3-20), seed (string|null)
-    const res = blobshape({ size: 400, growth, edges, seed });
-    setPath(res.path);
+    try {
+      const res = blobshape({ size: 400, growth, edges, seed });
+      setPath(res.path);
+    } catch {
+      // fallback
+    }
   }, [edges, growth, seed]);
 
   useEffect(() => {
@@ -35,96 +37,143 @@ export function BlobGeneratorTool({ tool }: { tool: ToolDef }) {
     setSeed(Math.random().toString(36).substring(2, 8));
   };
 
-  const svgCode = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">\n  <path fill="${color}" d="${path}" />\n</svg>`;
+  const svgCode = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <path fill="${color}" d="${path}" />
+</svg>`;
 
   const copySvg = async () => {
     try {
       await navigator.clipboard.writeText(svgCode);
-      toast.success("SVG copied to clipboard!");
-    } catch (e) {
-      // ignore
+      toast.success("SVG Blob copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">SVG Blob Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Create smooth, organic, and random SVG blob shapes for your next web design.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Create smooth, organic, mathematical vector SVG blobs with randomized seeds
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="primary"
+          onClick={handleRandomize}
+          className="text-xs"
+        >
+          <Dices className="w-3.5 h-3.5 mr-1" />
+          Randomize Shape
+        </Button>
+      </ToolToolbar>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
         {/* Controls */}
-        <Card className="p-6 space-y-6">
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm font-medium">Edges (Complexity)</Label>
-              <span className="text-xs text-[rgb(var(--muted))]">{edges}</span>
-            </div>
-            <input
-              type="range"
-              min="3"
-              max="20"
-              value={edges}
-              onChange={(e) => setEdges(Number(e.target.value))}
-              className="w-full accent-[rgb(var(--accent))]"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm font-medium">Growth (Smoothness)</Label>
-              <span className="text-xs text-[rgb(var(--muted))]">{growth}</span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={growth}
-              onChange={(e) => setGrowth(Number(e.target.value))}
-              className="w-full accent-[rgb(var(--accent))]"
-            />
-          </div>
-
-          <div>
-            <Label className="text-sm font-medium block mb-1">Color</Label>
-            <div className="flex items-center gap-3">
+        <div className="lg:col-span-5 flex flex-col min-w-0 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="pb-3 border-b border-[rgb(var(--border))]">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block mb-1.5">
+              Fill Color
+            </label>
+            <div className="flex items-center gap-2">
               <input
                 type="color"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-10 h-10 rounded cursor-pointer p-0 border-0"
+                className="w-9 h-9 rounded-lg cursor-pointer p-0 border border-[rgb(var(--border))] bg-transparent shrink-0"
               />
-              <span className="text-sm font-mono">{color}</span>
+              <span className="text-xs font-mono">{color}</span>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button onClick={handleRandomize} variant="secondary" className="flex-1">Randomize Shape</Button>
-            <CopyButton value={svgCode} text="Copy SVG" className="flex-1" />
-          </div>
-        </Card>
-
-        {/* Preview */}
-        <Card className="p-6 flex flex-col items-center justify-center bg-[rgb(var(--card-2))] min-h-[400px]">
-          <div className="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center bg-white rounded-xl shadow-sm border border-[rgba(var(--border),0.5)] overflow-hidden">
-            <motion.svg
-              viewBox="0 0 400 400"
-              className="w-full h-full p-4"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <motion.path
-                d={path}
-                fill={color}
-                animate={{ d: path, fill: color }}
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-medium text-[rgb(var(--fg))]">Edges (Complexity)</span>
+                <span className="font-mono text-[rgb(var(--muted))]">{edges}</span>
+              </div>
+              <input
+                type="range"
+                min="3"
+                max="18"
+                value={edges}
+                onChange={(e) => setEdges(Number(e.target.value))}
+                className="w-full h-1.5 bg-[rgb(var(--card-2))] rounded-lg appearance-none cursor-pointer accent-indigo-500"
               />
-            </motion.svg>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-medium text-[rgb(var(--fg))]">Growth (Smoothness)</span>
+                <span className="font-mono text-[rgb(var(--muted))]">{growth}</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={growth}
+                onChange={(e) => setGrowth(Number(e.target.value))}
+                className="w-full h-1.5 bg-[rgb(var(--card-2))] rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              />
+            </div>
           </div>
-        </Card>
+        </div>
+
+        {/* Live Canvas & Output */}
+        <div className="lg:col-span-7 flex flex-col min-w-0 space-y-6">
+          <div className="w-full min-h-[300px] sm:min-h-[340px] rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] flex items-center justify-center p-6 overflow-hidden">
+            <div className="w-60 h-60 sm:w-72 sm:h-72 max-w-full max-h-full flex items-center justify-center">
+              <motion.svg
+                viewBox="0 0 400 400"
+                className="w-full h-full drop-shadow-md"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <motion.path
+                  d={path}
+                  fill={color}
+                  animate={{ d: path, fill: color }}
+                  transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                />
+              </motion.svg>
+            </div>
+          </div>
+
+          <div className="space-y-2 w-full min-w-0">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+                Generated SVG Markup
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={copySvg}
+                className="text-xs h-7 px-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3 mr-1" />
+                    Copy SVG
+                  </>
+                )}
+              </Button>
+            </div>
+            <CodeEditor
+              value={svgCode}
+              language="html"
+              editable={false}
+              minHeight="min-h-[140px]"
+            />
+          </div>
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

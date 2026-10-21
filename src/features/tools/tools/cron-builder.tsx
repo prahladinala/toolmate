@@ -1,19 +1,14 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-
 
 import React, { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, Clock } from "lucide-react";
 import { toast } from "sonner";
-
-const MINUTES = ["*", "0", "15", "30", "45", "*/5", "*/10", "*/15"];
-const HOURS = ["*", "0", "12", "*/2", "*/4", "*/6"];
-const DOM = ["*", "1", "15", "L", "1-15"];
-const MONTHS = ["*", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-const DOW = ["*", "0", "1", "2", "3", "4", "5", "6", "1-5", "0,6"];
+import cronstrue from "cronstrue";
 
 const EXAMPLES = [
   { label: "Every minute", value: "* * * * *" },
@@ -21,7 +16,7 @@ const EXAMPLES = [
   { label: "Every hour at minute 0", value: "0 * * * *" },
   { label: "Every day at midnight", value: "0 0 * * *" },
   { label: "Every Monday at midnight", value: "0 0 * * 1" },
-  { label: "Every weekday (Mon-Fri) at midnight", value: "0 0 * * 1-5" },
+  { label: "Every weekday (Mon-Fri) at 9:00 AM", value: "0 9 * * 1-5" },
 ];
 
 export default function CronBuilder() {
@@ -30,11 +25,18 @@ export default function CronBuilder() {
   const [dom, setDom] = useState("*");
   const [month, setMonth] = useState("*");
   const [dow, setDow] = useState("*");
-  
   const [cron, setCron] = useState("* * * * *");
-  
+  const [humanReadable, setHumanReadable] = useState("");
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
-    setCron(`${minute} ${hour} ${dom} ${month} ${dow}`);
+    const expr = `${minute} ${hour} ${dom} ${month} ${dow}`;
+    setCron(expr);
+    try {
+      setHumanReadable(cronstrue.toString(expr));
+    } catch {
+      setHumanReadable("Custom schedule");
+    }
   }, [minute, hour, dom, month, dow]);
 
   const loadExample = (val: string) => {
@@ -48,121 +50,139 @@ export default function CronBuilder() {
     }
   };
 
+  const copyCron = async () => {
+    try {
+      await navigator.clipboard.writeText(cron);
+      toast.success("CRON expression copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
   return (
-    <main className="w-full max-w-4xl mx-auto space-y-6">
-      <Card className="p-8 space-y-8 bg-card shadow-sm border border-[rgba(var(--fg),0.1)] text-center">
-        <h2 className="text-xl font-semibold mb-4 text-muted-foreground uppercase tracking-widest">Generated CRON Expression</h2>
-        <div className="text-5xl md:text-7xl font-mono font-bold tracking-tight py-4 bg-muted/30 rounded-2xl border">
-          {cron}
-        </div>
-        <Button size="lg" onClick={() => navigator.clipboard.writeText(cron)}>
-          Copy Expression
-        </Button>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="p-4 space-y-3 shadow-sm border border-[rgba(var(--fg),0.1)]">
-          <Label className="font-semibold text-accent">Minute</Label>
-          <Select 
-            value={minute} 
-            onChange={(e) => setMinute(e.target.value)}
-            className="w-full p-2 border rounded-md bg-background focus:ring-2 focus:ring-accent outline-none font-mono"
-          >
-            {MINUTES.map(m => <option key={m} value={m}>{m}</option>)}
-            <option value="custom">Custom...</option>
-          </Select>
-          <Input 
-            type="text" 
-            value={minute} 
-            onChange={(e) => setMinute(e.target.value)} 
-            className="w-full p-2 border rounded-md font-mono text-sm"
-          />
-        </Card>
-
-        <Card className="p-4 space-y-3 shadow-sm border border-[rgba(var(--fg),0.1)]">
-          <Label className="font-semibold text-accent">Hour</Label>
-          <Select 
-            value={hour} 
-            onChange={(e) => setHour(e.target.value)}
-            className="w-full p-2 border rounded-md bg-background focus:ring-2 focus:ring-accent outline-none font-mono"
-          >
-            {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
-          </Select>
-          <Input 
-            type="text" 
-            value={hour} 
-            onChange={(e) => setHour(e.target.value)} 
-            className="w-full p-2 border rounded-md font-mono text-sm"
-          />
-        </Card>
-
-        <Card className="p-4 space-y-3 shadow-sm border border-[rgba(var(--fg),0.1)]">
-          <Label className="font-semibold text-accent">Day of Month</Label>
-          <Select 
-            value={dom} 
-            onChange={(e) => setDom(e.target.value)}
-            className="w-full p-2 border rounded-md bg-background focus:ring-2 focus:ring-accent outline-none font-mono"
-          >
-            {DOM.map(d => <option key={d} value={d}>{d}</option>)}
-          </Select>
-          <Input 
-            type="text" 
-            value={dom} 
-            onChange={(e) => setDom(e.target.value)} 
-            className="w-full p-2 border rounded-md font-mono text-sm"
-          />
-        </Card>
-
-        <Card className="p-4 space-y-3 shadow-sm border border-[rgba(var(--fg),0.1)]">
-          <Label className="font-semibold text-accent">Month</Label>
-          <Select 
-            value={month} 
-            onChange={(e) => setMonth(e.target.value)}
-            className="w-full p-2 border rounded-md bg-background focus:ring-2 focus:ring-accent outline-none font-mono"
-          >
-            {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
-          </Select>
-          <Input 
-            type="text" 
-            value={month} 
-            onChange={(e) => setMonth(e.target.value)} 
-            className="w-full p-2 border rounded-md font-mono text-sm"
-          />
-        </Card>
-
-        <Card className="p-4 space-y-3 shadow-sm border border-[rgba(var(--fg),0.1)]">
-          <Label className="font-semibold text-accent">Day of Week</Label>
-          <Select 
-            value={dow} 
-            onChange={(e) => setDow(e.target.value)}
-            className="w-full p-2 border rounded-md bg-background focus:ring-2 focus:ring-accent outline-none font-mono"
-          >
-            {DOW.map(d => <option key={d} value={d}>{d}</option>)}
-          </Select>
-          <Input 
-            type="text" 
-            value={dow} 
-            onChange={(e) => setDow(e.target.value)} 
-            className="w-full p-2 border rounded-md font-mono text-sm"
-          />
-        </Card>
-      </div>
-
-      <Card className="p-4 border border-[rgba(var(--fg),0.1)] shadow-sm">
-        <Label className="font-semibold mb-4 block">Quick Examples</Label>
-        <div className="flex flex-wrap gap-2">
-          {EXAMPLES.map(ex => (
-            <Button 
-              key={ex.label} 
-              variant="secondary" 
+    <ToolWorkspace maxWidth="default">
+      <ToolToolbar>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mr-1">
+            Common Schedules:
+          </span>
+          {EXAMPLES.map((ex) => (
+            <Button
+              key={ex.label}
+              type="button"
               size="sm"
+              variant={cron === ex.value ? "primary" : "secondary"}
               onClick={() => loadExample(ex.value)}
+              className="text-xs h-7 px-2.5"
             >
               {ex.label}
             </Button>
           ))}
         </div>
-      </Card>
-    </main>
+      </ToolToolbar>
+
+      {/* Generated Display Hero */}
+      <div className="p-8 sm:p-10 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm text-center flex flex-col items-center justify-center space-y-4">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[rgb(var(--muted))]">
+          Standard 5-Field CRON Expression
+        </span>
+        <div className="text-4xl sm:text-6xl font-mono font-extrabold tracking-widest text-[rgb(var(--fg))] select-all py-2">
+          {cron}
+        </div>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium text-xs sm:text-sm">
+          <Clock className="w-4 h-4 shrink-0" />
+          <span>&ldquo;{humanReadable}&rdquo;</span>
+        </div>
+        <Button
+          type="button"
+          size="lg"
+          variant="primary"
+          onClick={copyCron}
+          className="text-xs h-11 px-6 rounded-2xl"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 mr-1.5 text-emerald-500" />
+              Copied Expression
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5 mr-1.5" />
+              Copy Expression
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Field Modifiers Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 w-full">
+        <div className="p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-2">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+            Minute (0-59)
+          </label>
+          <Input
+            value={minute}
+            onChange={(e) => setMinute(e.target.value)}
+            className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
+            placeholder="*"
+          />
+          <span className="text-[11px] text-[rgb(var(--muted))] block">e.g. *, 0, */5</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-2">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+            Hour (0-23)
+          </label>
+          <Input
+            value={hour}
+            onChange={(e) => setHour(e.target.value)}
+            className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
+            placeholder="*"
+          />
+          <span className="text-[11px] text-[rgb(var(--muted))] block">e.g. *, 0, 12, */2</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-2">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+            Day of Month (1-31)
+          </label>
+          <Input
+            value={dom}
+            onChange={(e) => setDom(e.target.value)}
+            className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
+            placeholder="*"
+          />
+          <span className="text-[11px] text-[rgb(var(--muted))] block">e.g. *, 1, 15, L</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-2">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+            Month (1-12)
+          </label>
+          <Input
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
+            placeholder="*"
+          />
+          <span className="text-[11px] text-[rgb(var(--muted))] block">e.g. *, 1, 6, 12</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-2">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+            Day of Week (0-6)
+          </label>
+          <Input
+            value={dow}
+            onChange={(e) => setDow(e.target.value)}
+            className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
+            placeholder="*"
+          />
+          <span className="text-[11px] text-[rgb(var(--muted))] block">0=Sun, 1-5=Mon-Fri</span>
+        </div>
+      </div>
+    </ToolWorkspace>
   );
 }

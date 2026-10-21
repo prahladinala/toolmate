@@ -1,16 +1,17 @@
 "use client";
-import { Label } from "@/components/ui/label";
-
-import { Select } from "@/components/ui/select";
-
 
 import React from "react";
 import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { toast } from "sonner";
+import { Check, Copy, Play, Trash2, Sparkles, AlertCircle } from "lucide-react";
 
 type Settings = {
   pretty: boolean;
@@ -20,13 +21,45 @@ type Settings = {
   wrap: boolean;
 };
 
+const SAMPLE_JSON = `{
+  "name": "ToolMate",
+  "version": "2.0.0",
+  "description": "Everyday developer tools, in one place",
+  "author": "Prahlad Inala",
+  "features": [
+    "JSON Formatter",
+    "Base64 Converter",
+    "UUID Generator",
+    "CSS Generators"
+  ],
+  "openSource": true,
+  "stats": {
+    "toolsCount": 60,
+    "rating": 4.98
+  }
+}`;
+
+function sortObjectKeys(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(sortObjectKeys);
+  } else if (obj && typeof obj === "object") {
+    return Object.keys(obj)
+      .sort()
+      .reduce((acc: any, key) => {
+        acc[key] = sortObjectKeys(obj[key]);
+        return acc;
+      }, {});
+  }
+  return obj;
+}
+
 function formatJSON(
   input: string,
-  settings: Settings,
+  settings: Settings
 ): { output: string; error?: string } {
+  if (!input.trim()) return { output: "" };
   try {
     const parsed = JSON.parse(input);
-
     let value = parsed;
 
     if (settings.sortKeys) {
@@ -41,20 +74,6 @@ function formatJSON(
   } catch (err: any) {
     return { output: "", error: err.message };
   }
-}
-
-function sortObjectKeys(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map(sortObjectKeys);
-  } else if (obj && typeof obj === "object") {
-    return Object.keys(obj)
-      .sort()
-      .reduce((acc: any, key) => {
-        acc[key] = sortObjectKeys(obj[key]);
-        return acc;
-      }, {});
-  }
-  return obj;
 }
 
 export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
@@ -72,7 +91,6 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
 
   const [output, setOutput] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
-  const [showAdvanced, setShowAdvanced] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
 
   const run = React.useCallback(() => {
@@ -90,7 +108,7 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("Copied to clipboard!");
+      toast.success("JSON copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -98,74 +116,85 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
     }
   };
 
+  const loadSample = () => {
+    input.setValue(SAMPLE_JSON);
+  };
+
   React.useEffect(() => {
     if (settings.value.autoRun) run();
   }, [input.value, settings.value, run]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      {/* SETTINGS BAR */}
-      <div className="sticky top-16 z-10 mb-6 rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-3 shadow-[var(--shadow-sm)] backdrop-blur">
-        {/* Primary Controls */}
-        <div className="flex flex-wrap items-center gap-3">
-          <Label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={settings.value.pretty}
-              onChange={(e) =>
-                settings.setValue({
-                  ...settings.value,
-                  pretty: e.target.checked,
-                })
-              }
-            />
-            Pretty
-          </Label>
-
-          <Button onClick={run}>Run</Button>
-          <Button variant="secondary" onClick={input.clear}>
-            Clear
+    <ToolWorkspace>
+      {/* TOOLBAR */}
+      <ToolToolbar>
+        {/* Left Actions */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Button onClick={run} size="sm" className="gap-1.5 shadow-sm">
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>Format</span>
           </Button>
 
-          {/* Mobile Toggle */}
           <Button
-            onClick={() => setShowAdvanced((v) => !v)}
-            className="
-              lg:hidden
-              rounded-[var(--radius)]
-              border border-[rgb(var(--border))]
-              bg-[rgb(var(--card-2))]
-              px-3 py-1 text-sm
-              hover:border-[rgba(var(--accent),0.55)]
-              hover:bg-[rgba(var(--accent),0.08)]
-              transition
-            "
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              settings.setValue({ ...settings.value, pretty: false });
+              run();
+            }}
+            className="text-xs sm:text-sm"
           >
-            {showAdvanced ? "Less ▲" : "More ▼"}
+            Minify
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={loadSample}
+            className="text-xs sm:text-sm gap-1"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Sample</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              input.clear();
+              setOutput("");
+              setError(null);
+            }}
+            className="text-xs sm:text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--danger))]"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Clear</span>
           </Button>
         </div>
 
-        {/* Desktop Advanced */}
-        <div className="hidden lg:flex mt-4 flex-wrap items-center gap-4">
-          <Label className="flex items-center gap-2 text-sm">
-            Indent
+        {/* Right Settings */}
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[rgb(var(--muted))] text-xs">Indent:</span>
             <Select
+              size="sm"
               value={settings.value.indent}
               onChange={(e) =>
                 settings.setValue({
                   ...settings.value,
                   indent: Number(e.target.value),
+                  pretty: true,
                 })
               }
-              className="rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] px-2 py-1 text-sm"
+              className="w-16 h-8 text-xs py-1"
             >
               <option value={2}>2</option>
               <option value={4}>4</option>
               <option value={6}>6</option>
             </Select>
-          </Label>
+          </div>
 
-          <Label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm text-[rgb(var(--fg))]">
             <input
               type="checkbox"
               checked={settings.value.sortKeys}
@@ -175,25 +204,12 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
                   sortKeys: e.target.checked,
                 })
               }
+              className="rounded accent-[rgb(var(--accent))]"
             />
-            Sort Keys
-          </Label>
+            <span>Sort Keys</span>
+          </label>
 
-          <Label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={settings.value.autoRun}
-              onChange={(e) =>
-                settings.setValue({
-                  ...settings.value,
-                  autoRun: e.target.checked,
-                })
-              }
-            />
-            Auto Run
-          </Label>
-
-          <Label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm text-[rgb(var(--fg))]">
             <input
               type="checkbox"
               checked={settings.value.wrap}
@@ -203,151 +219,70 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
                   wrap: e.target.checked,
                 })
               }
+              className="rounded accent-[rgb(var(--accent))]"
             />
-            Wrap Output
-          </Label>
-
-          <Button
-            variant="secondary"
-            onClick={() => {
-              settings.setValue({ ...settings.value, pretty: false });
-              run();
-            }}
-          >
-            Minify
-          </Button>
+            <span>Wrap</span>
+          </label>
         </div>
+      </ToolToolbar>
 
-        {/* Mobile Expanded Advanced */}
-        <motion.div
-          initial={false}
-          animate={{
-            height: showAdvanced ? "auto" : 0,
-            opacity: showAdvanced ? 1 : 0,
-          }}
-          transition={{ duration: 0.25 }}
-          className="overflow-hidden lg:hidden"
-        >
-          <div className="mt-4 flex flex-col gap-3">
-            <Label className="flex items-center gap-2 text-sm">
-              Indent
-              <Select
-                value={settings.value.indent}
-                onChange={(e) =>
-                  settings.setValue({
-                    ...settings.value,
-                    indent: Number(e.target.value),
-                  })
-                }
-                className="rounded-[var(--radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] px-2 py-1 text-sm"
-              >
-                <option value={2}>2</option>
-                <option value={4}>4</option>
-                <option value={6}>6</option>
-              </Select>
-            </Label>
-
-            <Label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={settings.value.sortKeys}
-                onChange={(e) =>
-                  settings.setValue({
-                    ...settings.value,
-                    sortKeys: e.target.checked,
-                  })
-                }
-              />
-              Sort Keys
-            </Label>
-
-            <Label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={settings.value.autoRun}
-                onChange={(e) =>
-                  settings.setValue({
-                    ...settings.value,
-                    autoRun: e.target.checked,
-                  })
-                }
-              />
-              Auto Run
-            </Label>
-
-            <Label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={settings.value.wrap}
-                onChange={(e) =>
-                  settings.setValue({
-                    ...settings.value,
-                    wrap: e.target.checked,
-                  })
-                }
-              />
-              Wrap Output
-            </Label>
-
-            <Button
-              variant="secondary"
-              onClick={() => {
-                settings.setValue({ ...settings.value, pretty: false });
-                run();
-              }}
-            >
-              Minify
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* ERROR MESSAGE */}
+      {/* ERROR BANNER */}
       {error && (
-        <div className="mb-4 rounded-[var(--radius)] border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.08)] p-4 text-sm">
-          {error}
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-start gap-2.5 animate-in fade-in">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+          <div className="flex-1 font-mono break-words-safe">{error}</div>
         </div>
       )}
 
-      {/* MAIN GRID */}
-      <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
-        <div className="flex flex-col h-full">
-          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Input</div>
-          <CodeEditor
-            className="min-h-[420px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language="json"
-          />
-        </div>
-
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output</div>
-
+      {/* SPLIT PANE */}
+      <ToolSplitPane
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              Input JSON
+            </span>
+            <span className="text-[11px] text-[rgb(var(--muted))]">
+              {input.value ? `${input.value.length} chars` : "Empty"}
+            </span>
+          </div>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              Formatted Output
+            </span>
             <Button
               size="sm"
               variant="secondary"
               onClick={copyToClipboard}
               disabled={!output}
-              className="
-      hover:border-[rgba(var(--accent),0.55)]
-      hover:bg-[rgba(var(--accent),0.08)]
-      transition
-    "
+              className="h-7 text-xs px-2.5 gap-1"
             >
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 text-emerald-500" />
+                  <span>Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3" />
+                  <span>Copy</span>
+                </>
+              )}
             </Button>
           </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[420px]"
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="json"
+            options={{ wordWrap: settings.value.wrap ? "on" : "off" }}
+          />
+        }
+        output={
+          <CodeEditor
             value={output}
             language="json"
             options={{
@@ -355,8 +290,8 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
               wordWrap: settings.value.wrap ? "on" : "off",
             }}
           />
-        </div>
-      </div>
-    </main>
+        }
+      />
+    </ToolWorkspace>
   );
 }

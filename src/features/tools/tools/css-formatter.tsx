@@ -5,10 +5,15 @@ import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import * as prettier from "prettier/standalone";
 import * as parserCss from "prettier/plugins/postcss";
 import { toast } from "sonner";
+import { Copy, Check, Play, AlertCircle, Sparkles, Trash2 } from "lucide-react";
+
+const SAMPLE_CSS = `.card{background:#1e1b4b;color:#fff;border-radius:16px;padding:24px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);display:flex;flex-direction:column;gap:12px}.card h2{font-size:24px;font-weight:700;margin:0}.card:hover{transform:translateY(-2px);transition:transform 150ms ease}`;
 
 export function CssFormatterTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
@@ -52,44 +57,107 @@ export function CssFormatterTool({ tool }: { tool: ToolDef }) {
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
+    <ToolWorkspace>
+      {/* TOOLBAR */}
+      <ToolToolbar>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Button onClick={run} size="sm" className="gap-1.5 shadow-sm">
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>Format CSS</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => input.setValue(SAMPLE_CSS)}
+            className="text-xs sm:text-sm gap-1"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Sample</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              input.setValue("");
+              setOutput("");
+              setError(null);
+            }}
+            className="text-xs sm:text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--danger))]"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Clear</span>
+          </Button>
+        </div>
+
+        <span className="text-xs text-[rgb(var(--muted))]">
+          PostCSS Parser (Client-side)
+        </span>
+      </ToolToolbar>
+
+      {/* ERROR BANNER */}
       {error && (
-        <div className="mb-4 rounded-[var(--radius)] border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.08)] p-4 text-sm text-red-500">
-          {error}
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+          <div className="flex-1 font-mono break-words-safe">{error}</div>
         </div>
       )}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col h-full">
-          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Input CSS</div>
-          <CodeEditor
-            className="min-h-[420px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language="css"
-          />
-        </div>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Formatted CSS</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+
+      {/* SPLIT PANE */}
+      <ToolSplitPane
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              Input CSS
+            </span>
+            <span className="text-[11px] text-[rgb(var(--muted))]">
+              {input.value ? `${input.value.length} chars` : "Empty"}
+            </span>
+          </div>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              Formatted CSS
+            </span>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={copyToClipboard}
+              disabled={!output}
+              className="h-7 text-xs px-2.5 gap-1"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 text-emerald-500" />
+                  <span>Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3" />
+                  <span>Copy</span>
+                </>
+              )}
             </Button>
           </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[420px]"
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="css"
+          />
+        }
+        output={
+          <CodeEditor
             value={output}
             language="css"
             options={{ readOnly: true }}
           />
-        </div>
-      </div>
-    </main>
+        }
+      />
+    </ToolWorkspace>
   );
 }

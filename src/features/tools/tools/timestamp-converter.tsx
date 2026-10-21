@@ -1,19 +1,18 @@
 "use client";
-import { Input } from "@/components/ui/input";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, Clock, Calendar, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 function detectTimestamp(value: string) {
   const n = Number(value);
   if (!Number.isFinite(n)) return null;
-
   if (value.length === 13) return n;
   if (value.length === 10) return n * 1000;
-
   return null;
 }
 
@@ -44,26 +43,43 @@ function formatRelative(date: Date) {
 }
 
 export default function TimestampConverterTool() {
-  const [input, setInput] = React.useState("");
-  const [dateInput, setDateInput] = React.useState("");
-  const [error, setError] = React.useState<string | null>(null);
-  const [result, setResult] = React.useState<any>(null);
-  const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
+  const [unixInput, setUnixInput] = useState("");
+  const [dateInput, setDateInput] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<any>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const setNow = () => {
+    const now = Date.now();
+    setUnixInput(String(Math.floor(now / 1000)));
+    const date = new Date(now);
+    setResult({
+      local: date.toLocaleString(),
+      utc: date.toUTCString(),
+      iso: date.toISOString(),
+      relative: formatRelative(date),
+      seconds: Math.floor(now / 1000),
+      milliseconds: now,
+    });
+    setError(null);
+  };
+
+  useEffect(() => {
+    setNow();
+  }, []);
 
   const convertFromTimestamp = () => {
     setError(null);
-    const ms = detectTimestamp(input.trim());
+    const ms = detectTimestamp(unixInput.trim());
 
     if (!ms) {
-      setError("Invalid timestamp (use 10 or 13 digits)");
-      setResult(null);
+      setError("Please provide a valid 10-digit (seconds) or 13-digit (ms) Unix timestamp.");
       return;
     }
 
     const date = new Date(ms);
     if (isNaN(date.getTime())) {
-      setError("Invalid date value");
-      setResult(null);
+      setError("Invalid date range calculated.");
       return;
     }
 
@@ -79,179 +95,159 @@ export default function TimestampConverterTool() {
 
   const convertFromDate = () => {
     setError(null);
-
     if (!dateInput) {
-      setError("Select a date");
+      setError("Please select a date and time to convert.");
       return;
     }
 
     const date = new Date(dateInput);
     if (isNaN(date.getTime())) {
-      setError("Invalid date");
+      setError("Invalid date format entered.");
       return;
     }
 
+    const ms = date.getTime();
     setResult({
       local: date.toLocaleString(),
       utc: date.toUTCString(),
       iso: date.toISOString(),
       relative: formatRelative(date),
-      seconds: Math.floor(date.getTime() / 1000),
-      milliseconds: date.getTime(),
+      seconds: Math.floor(ms / 1000),
+      milliseconds: ms,
     });
   };
 
-  const copy = async (value: string, key: string) => {
-    await navigator.clipboard.writeText(value);
-      toast.success("Copied to clipboard!");
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 1500);
-  };
-
-  const setNow = () => {
-    const now = Date.now();
-    setInput(String(now));
-    convertFromTimestamp();
+  const copyVal = async (key: string, val: string) => {
+    try {
+      await navigator.clipboard.writeText(val);
+      setCopiedKey(key);
+      toast.success(`Copied ${key}!`);
+      setTimeout(() => setCopiedKey(null), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      {/* Input Section */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Unix Input */}
-        <motion.div
-          initial={{ opacity: 0, x: -6 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
+    <ToolWorkspace maxWidth="default">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Convert epoch unix timestamps to readable human date times, UTC, ISO 8601, and relative offsets
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={setNow}
+          className="text-xs"
         >
-          <Card className="p-5">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Unix Timestamp</div>
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Enter 10 or 13 digit timestamp"
-              className="mt-3 w-full rounded border p-2 font-mono"
-            />
-            <div className="mt-3 flex gap-2">
-              <Button onClick={convertFromTimestamp}>Convert</Button>
-              <Button variant="secondary" onClick={setNow}>
-                Use Now
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
+          <Clock className="w-3.5 h-3.5 mr-1" />
+          Reset to Current Time
+        </Button>
+      </ToolToolbar>
 
-        {/* Date Input */}
-        <motion.div
-          initial={{ opacity: 0, x: 6 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Card className="p-5">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Date Input</div>
+      {/* Two Input Methods */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full min-w-0">
+        <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-3">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+            Unix Timestamp (10 or 13 digits)
+          </label>
+          <div className="flex gap-2">
+            <Input
+              value={unixInput}
+              onChange={(e) => setUnixInput(e.target.value)}
+              placeholder="e.g. 1711000000"
+              className="flex-1 font-mono text-sm h-10 bg-[rgb(var(--card-2))]"
+            />
+            <Button
+              type="button"
+              size="sm"
+              onClick={convertFromTimestamp}
+              className="text-xs h-10 px-3"
+            >
+              Convert
+            </Button>
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-3">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+            Human Date & Time
+          </label>
+          <div className="flex gap-2">
             <Input
               type="datetime-local"
               value={dateInput}
               onChange={(e) => setDateInput(e.target.value)}
-              className="mt-3 w-full rounded border p-2"
+              className="flex-1 font-mono text-xs sm:text-sm h-10 bg-[rgb(var(--card-2))]"
             />
-            <div className="mt-3">
-              <Button onClick={convertFromDate}>Convert</Button>
-            </div>
-          </Card>
-        </motion.div>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={convertFromDate}
+              className="text-xs h-10 px-3"
+            >
+              Convert
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Error */}
       {error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-4 rounded border border-red-400 bg-red-100 p-3 text-sm text-red-700"
-        >
-          {error}
-        </motion.div>
+        <div className="flex items-center gap-2 p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
       )}
 
-      {/* Results */}
+      {/* Result Cards */}
       {result && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Card className="mt-6 p-5 space-y-4">
-            <div className="font-medium text-lg">Result</div>
+        <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-[rgb(var(--border))] bg-[rgb(var(--card-2))] flex items-center justify-between">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Timestamp Breakdown
+            </span>
+            <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
+              {result.relative}
+            </span>
+          </div>
 
-            {Object.entries(result).map(([key, value]) => (
+          <div className="divide-y divide-[rgb(var(--border))]">
+            {[
+              { label: "Epoch Seconds", val: String(result.seconds) },
+              { label: "Epoch Milliseconds", val: String(result.milliseconds) },
+              { label: "Local Time", val: result.local },
+              { label: "UTC / GMT String", val: result.utc },
+              { label: "ISO 8601 String", val: result.iso },
+            ].map((row) => (
               <div
-                key={key}
-                className="
-        border-b border-[rgb(var(--border))]
-        pb-3
-      "
+                key={row.label}
+                className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-[rgb(var(--card-2))]/50 transition-colors"
               >
-                {/* Mobile Layout */}
-                <div className="flex flex-col gap-2 sm:hidden">
-                  <span className="text-[rgb(var(--muted))] capitalize text-xs">
-                    {key}
-                  </span>
-
-                  <span className="font-mono text-sm break-all">
-                    {String(value)}
-                  </span>
-
-                  <motion.button
-                    onClick={() => copy(String(value), key)}
-                    whileTap={{ scale: 0.95 }}
-                    className={`
-            w-fit
-            rounded-[var(--radius)]
-            border px-3 py-1 text-xs transition
-            ${
-              copiedKey === key
-                ? "border-[rgba(var(--accent),0.5)] bg-[rgba(var(--accent),0.15)] text-[rgb(var(--accent))]"
-                : "border-[rgb(var(--border))] bg-[rgb(var(--card-2))] hover:border-[rgba(var(--accent),0.55)] hover:bg-[rgba(var(--accent),0.08)]"
-            }
-          `}
-                  >
-                    {copiedKey === key ? "Copied ✓" : "Copy"}
-                  </motion.button>
-                </div>
-
-                {/* Desktop Layout */}
-                <div className="hidden sm:flex items-center justify-between gap-4">
-                  <span className="text-[rgb(var(--muted))] capitalize text-sm">
-                    {key}
-                  </span>
-
-                  <div className="flex items-center gap-4">
-                    <span className="font-mono text-sm break-all max-w-[400px]">
-                      {String(value)}
-                    </span>
-
-                    <motion.button
-                      onClick={() => copy(String(value), key)}
-                      whileTap={{ scale: 0.95 }}
-                      className={`
-              rounded-[var(--radius)]
-              border px-3 py-1 text-xs transition
-              ${
-                copiedKey === key
-                  ? "border-[rgba(var(--accent),0.5)] bg-[rgba(var(--accent),0.15)] text-[rgb(var(--accent))]"
-                  : "border-[rgb(var(--border))] bg-[rgb(var(--card-2))] hover:border-[rgba(var(--accent),0.55)] hover:bg-[rgba(var(--accent),0.08)]"
-              }
-            `}
-                    >
-                      {copiedKey === key ? "Copied ✓" : "Copy"}
-                    </motion.button>
-                  </div>
-                </div>
+                <span className="text-xs font-semibold text-[rgb(var(--muted))] sm:w-44 shrink-0">
+                  {row.label}
+                </span>
+                <span className="font-mono text-xs sm:text-sm text-[rgb(var(--fg))] break-all flex-1 select-all">
+                  {row.val}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => copyVal(row.label, row.val)}
+                  className="self-end sm:self-auto p-1.5 rounded-lg text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] hover:bg-[rgb(var(--card-2))] transition-colors"
+                  title={`Copy ${row.label}`}
+                >
+                  {copiedKey === row.label ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                </button>
               </div>
             ))}
-          </Card>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </main>
+    </ToolWorkspace>
   );
 }

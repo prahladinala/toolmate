@@ -1,38 +1,27 @@
 "use client";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Select } from "@/components/ui/select";
-
 
 import React, { useState, useEffect } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { Copy, Check, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
 export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [keywords, setKeywords] = useState("");
-  const [author, setAuthor] = useState("");
-  const [themeColor, setThemeColor] = useState("#ffffff");
-  const [allowRobotsIndex, setAllowRobotsIndex] = useState(true);
-  const [allowRobotsFollow, setAllowRobotsFollow] = useState(true);
-  const [language, setLanguage] = useState("en");
-
-  // Open Graph
-  const [ogType, setOgType] = useState("website");
-  const [ogImage, setOgImage] = useState("");
-  const [ogUrl, setOgUrl] = useState("");
-
-  const [output, setOutput] = useState("");
+  const [title, setTitle] = useState("ToolMate — Online Developer & Designer Utilities");
+  const [description, setDescription] = useState("Free, client-side, responsive developer tools, converters, formatters, and generators.");
+  const [keywords, setKeywords] = useState("developer tools, json formatter, css generators, privacy utilities");
+  const [author, setAuthor] = useState("ToolMate");
+  const [themeColor, setThemeColor] = useState("#0f172a");
+  const [ogUrl, setOgUrl] = useState("https://toolmate.co.in");
+  const [ogImage, setOgImage] = useState("https://toolmate.co.in/og-image.png");
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
+  const generateMeta = () => {
     let meta = `<!-- Primary Meta Tags -->\n`;
     if (title) meta += `<title>${title}</title>\n`;
     if (title) meta += `<meta name="title" content="${title}">\n`;
@@ -40,200 +29,169 @@ export function MetaTagGeneratorTool({ tool }: { tool: ToolDef }) {
     if (keywords) meta += `<meta name="keywords" content="${keywords}">\n`;
     if (author) meta += `<meta name="author" content="${author}">\n`;
     if (themeColor) meta += `<meta name="theme-color" content="${themeColor}">\n`;
-
-    const robotsIndex = allowRobotsIndex ? "index" : "noindex";
-    const robotsFollow = allowRobotsFollow ? "follow" : "nofollow";
-    meta += `<meta name="robots" content="${robotsIndex}, ${robotsFollow}">\n`;
-
-    if (language) meta += `<meta http-equiv="Content-Language" content="${language}">\n`;
+    meta += `<meta name="robots" content="index, follow">\n`;
 
     meta += `\n<!-- Open Graph / Facebook -->\n`;
-    meta += `<meta property="og:type" content="${ogType}">\n`;
+    meta += `<meta property="og:type" content="website">\n`;
     if (ogUrl) meta += `<meta property="og:url" content="${ogUrl}">\n`;
     if (title) meta += `<meta property="og:title" content="${title}">\n`;
     if (description) meta += `<meta property="og:description" content="${description}">\n`;
     if (ogImage) meta += `<meta property="og:image" content="${ogImage}">\n`;
 
-    meta += `\n<!-- Twitter -->\n`;
+    meta += `\n<!-- Twitter / X -->\n`;
     meta += `<meta property="twitter:card" content="summary_large_image">\n`;
     if (ogUrl) meta += `<meta property="twitter:url" content="${ogUrl}">\n`;
     if (title) meta += `<meta property="twitter:title" content="${title}">\n`;
     if (description) meta += `<meta property="twitter:description" content="${description}">\n`;
     if (ogImage) meta += `<meta property="twitter:image" content="${ogImage}">\n`;
 
-    setOutput(meta.trim());
-  }, [title, description, keywords, author, themeColor, allowRobotsIndex, allowRobotsFollow, language, ogType, ogImage, ogUrl]);
+    return meta.trim();
+  };
+
+  const output = generateMeta();
 
   const copyToClipboard = async () => {
-    if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("Copied to clipboard!");
+      toast.success("Meta tags copied to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setCopied(false);
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Meta Tag Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Generate complete HTML <code>&lt;head&gt;</code> meta tags for SEO, Facebook (Open Graph), and Twitter.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Construct production-ready SEO meta tags, OpenGraph previews, and Twitter/X summary card markup
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={copyToClipboard}
+          className="text-xs"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5 mr-1" />
+              Copy HTML Tags
+            </>
+          )}
+        </Button>
+      </ToolToolbar>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Left Col - Inputs */}
-        <Card className="p-6 space-y-6">
-          <div className="space-y-4">
-            <h3 className="font-semibold border-b border-[rgb(var(--border))] pb-2">Primary Information</h3>
-            
-            <div>
-              <Label className="text-sm font-medium">Site Title</Label>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Form Inputs */}
+        <div className="lg:col-span-6 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-3.5">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Page Title
+            </label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="text-xs sm:text-sm h-9 bg-[rgb(var(--card-2))]"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Meta Description
+            </label>
+            <Textarea
+              rows={2}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="text-xs sm:text-sm bg-[rgb(var(--card-2))]"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Canonical URL
+              </label>
               <Input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="ToolMate - Developer Utilities"
-                className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
+                value={ogUrl}
+                onChange={(e) => setOgUrl(e.target.value)}
+                className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
               />
             </div>
 
-            <div>
-              <Label className="text-sm font-medium">Site Description</Label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="A collection of the best developer tools..."
-                className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm h-20"
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Keywords (comma separated)</Label>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                OpenGraph Image URL
+              </label>
               <Input
-                type="text"
-                value={keywords}
-                onChange={(e) => setKeywords(e.target.value)}
-                placeholder="tools, developer, utilities"
-                className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
+                value={ogImage}
+                onChange={(e) => setOgImage(e.target.value)}
+                className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Author
+              </label>
+              <Input
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                className="text-xs h-9 bg-[rgb(var(--card-2))]"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium">Author</Label>
-                <Input
-                  type="text"
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  placeholder="John Doe"
-                  className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
-                />
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Language</Label>
-                <Input
-                  type="text"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  placeholder="en"
-                  className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-center">
-              <div>
-                <Label className="text-sm font-medium">Theme Color</Label>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Theme Color
+              </label>
+              <div className="flex items-center gap-2">
                 <input
                   type="color"
                   value={themeColor}
                   onChange={(e) => setThemeColor(e.target.value)}
-                  className="ml-3 mt-1 rounded cursor-pointer"
+                  className="w-8 h-8 rounded-lg cursor-pointer p-0 border border-[rgb(var(--border))] bg-transparent shrink-0"
                 />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={allowRobotsIndex} onChange={(e) => setAllowRobotsIndex(e.target.checked)} />
-                  Allow Search Engines to Index
-                </Label>
-                <Label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={allowRobotsFollow} onChange={(e) => setAllowRobotsFollow(e.target.checked)} />
-                  Allow Search Engines to Follow Links
-                </Label>
+                <span className="text-xs font-mono">{themeColor}</span>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-4">
-            <h3 className="font-semibold border-b border-[rgb(var(--border))] pb-2">Open Graph & Social</h3>
-            
-            <div>
-              <Label className="text-sm font-medium">OG Type</Label>
-              <Select
-                value={ogType}
-                onChange={(e) => setOgType(e.target.value)}
-                className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
-              >
-                <option value="website">Website</option>
-                <option value="article">Article</option>
-                <option value="profile">Profile</option>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Canonical URL</Label>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Keywords
+              </label>
               <Input
-                type="text"
-                value={ogUrl}
-                onChange={(e) => setOgUrl(e.target.value)}
-                placeholder="https://toolmate.co.in"
-                className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Social Image URL</Label>
-              <Input
-                type="text"
-                value={ogImage}
-                onChange={(e) => setOgImage(e.target.value)}
-                placeholder="https://toolmate.co.in/og-image.jpg"
-                className="mt-1 w-full rounded border p-2 bg-[rgb(var(--card-2))] text-sm"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
+                className="text-xs h-9 bg-[rgb(var(--card-2))]"
               />
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Right Col - Output */}
-        <Card className="p-0 flex flex-col h-full min-h-[500px]">
-          <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border))]">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Generated Meta Tags</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
-            </Button>
-          </div>
-          <div className="flex-1 relative">
-            <CodeEditor
-              className="absolute inset-0"
-              value={output}
-              language="html"
-              options={{ readOnly: true }}
-            />
-          </div>
-        </Card>
+        {/* Output Code */}
+        <div className="lg:col-span-6 flex flex-col min-w-0 space-y-2">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Generated HTML Meta Tags
+          </span>
+          <CodeEditor
+            value={output}
+            language="html"
+            editable={false}
+            minHeight="min-h-[350px] sm:min-h-[460px]"
+            options={{ wordWrap: "on" }}
+          />
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

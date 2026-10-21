@@ -125,36 +125,38 @@ export default async function ToolPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       
-      <main className="relative min-h-screen pt-32 pb-24 overflow-hidden">
+      <main className="relative min-h-screen pt-24 sm:pt-28 pb-16 sm:pb-24 overflow-x-clip">
         {/* Ambient Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(var(--fg),0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(var(--fg),0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
-        <div className="absolute top-0 inset-x-0 h-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
+        <div className="absolute top-0 inset-x-0 h-[400px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 
-        <div className="mx-auto max-w-6xl px-4 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-mode-both">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out fill-mode-both">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-8 flex items-center text-[13px] font-semibold text-[rgb(var(--muted))]">
+          <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6 flex items-center text-xs sm:text-[13px] font-semibold text-[rgb(var(--muted))]">
             <a href="/tools" className="hover:text-indigo-500 transition-colors">
               Tools
             </a>
-            <span className="mx-2 opacity-50">/</span>
-            <span aria-current="page" className="text-[rgb(var(--fg))]">{tool.name}</span>
+            <span className="mx-2 opacity-40">/</span>
+            <span aria-current="page" className="text-[rgb(var(--fg))] truncate max-w-[200px] sm:max-w-none">
+              {tool.name}
+            </span>
           </nav>
 
           {/* TOOL HEADER */}
-          <header className="mb-14">
-            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <header className="mb-6 sm:mb-8">
+            <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-end md:justify-between">
               <div className="max-w-3xl relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-2xl -z-10 rounded-full opacity-50" />
-                <h1 className="text-4xl md:text-[56px] font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[rgb(var(--fg))] to-[rgba(var(--fg),0.6)] leading-tight">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-2xl -z-10 rounded-full opacity-40" />
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-2 sm:mb-3 text-transparent bg-clip-text bg-gradient-to-b from-[rgb(var(--fg))] to-[rgba(var(--fg),0.75)] leading-tight">
                   {tool.name}
                 </h1>
-                <p className="text-[17px] text-[rgb(var(--muted))] leading-relaxed max-w-2xl font-medium">
+                <p className="text-sm sm:text-base text-[rgb(var(--muted))] leading-relaxed max-w-2xl font-normal">
                   {tool.seo.description}
                 </p>
               </div>
 
-              <div className="flex shrink-0 items-center gap-3">
-                <span className="hidden sm:flex rounded-full bg-[rgba(var(--fg),0.03)] border border-[rgba(var(--fg),0.06)] px-4 py-2 text-[11px] font-extrabold uppercase tracking-widest text-[rgb(var(--fg))] shadow-sm">
+              <div className="flex flex-wrap shrink-0 items-center gap-2.5 sm:gap-3">
+                <span className="inline-flex rounded-full bg-[rgba(var(--fg),0.04)] border border-[rgba(var(--fg),0.08)] px-3 py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[rgb(var(--fg))] shadow-sm">
                   {tool.category}
                 </span>
 
@@ -175,8 +177,8 @@ export default async function ToolPage({ params }: Props) {
           </header>
 
           {/* TOOL BODY */}
-          <section className="rounded-[2.5rem] bg-[rgb(var(--card))] shadow-2xl shadow-black/5 ring-1 ring-[rgba(var(--fg),0.03)] p-6 md:p-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 ease-out fill-mode-both border border-[rgba(var(--fg),0.02)] relative overflow-hidden">
-             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[rgba(var(--fg),0.1)] to-transparent" />
+          <section className="rounded-2xl sm:rounded-3xl bg-[rgb(var(--card))] shadow-xl shadow-black/5 ring-1 ring-[rgba(var(--fg),0.04)] p-4 sm:p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100 ease-out fill-mode-both border border-[rgba(var(--border),0.6)] relative">
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[rgba(var(--fg),0.1)] to-transparent" />
             <ToolRenderer tool={tool} />
           </section>
 

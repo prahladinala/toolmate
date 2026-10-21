@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, Monitor, Cpu, Wifi, HardDrive } from "lucide-react";
 import { toast } from "sonner";
 import {
   ResponsiveContainer,
@@ -14,40 +15,27 @@ import {
   Tooltip,
 } from "recharts";
 
-type SectionProps = {
-  title: string;
-  children: React.ReactNode;
-};
-
-function Section({ title, children }: SectionProps) {
-  return (
-    <Card className="p-5">
-      <div className="text-lg font-semibold">{title}</div>
-      <div className="mt-3 space-y-2 text-sm">{children}</div>
-    </Card>
-  );
-}
-
 function InfoRow({ label, value }: { label: string; value: any }) {
   return (
-    <div className="flex justify-between border-b border-[rgba(var(--border),0.4)] pb-1">
+    <div className="flex items-center justify-between py-2 border-b border-[rgb(var(--border))] last:border-0 text-xs">
       <span className="text-[rgb(var(--muted))]">{label}</span>
-      <span className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">{String(value ?? "N/A")}</span>
+      <span className="font-mono font-medium text-[rgb(var(--fg))] text-right max-w-[200px] truncate select-all">
+        {String(value ?? "N/A")}
+      </span>
     </div>
   );
 }
 
 export default function DeviceDetailsTool() {
-  const [storageInfo, setStorageInfo] = React.useState<any>(null);
-  const [webglInfo, setWebglInfo] = React.useState<string | null>(null);
+  const [storageInfo, setStorageInfo] = useState<any>(null);
+  const [webglInfo, setWebglInfo] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  React.useEffect(() => {
-    // Storage estimate
+  useEffect(() => {
     if (navigator.storage?.estimate) {
       navigator.storage.estimate().then(setStorageInfo);
     }
 
-    // WebGL GPU info
     try {
       const canvas = document.createElement("canvas");
       const gl = canvas.getContext("webgl");
@@ -58,132 +46,185 @@ export default function DeviceDetailsTool() {
           setWebglInfo(renderer);
         }
       }
-    } catch {}
+    } catch {
+      // webgl disabled or unavailable
+    }
   }, []);
 
-  const connection = (navigator as any).connection;
+  const connection = typeof navigator !== "undefined" ? (navigator as any).connection : null;
 
   const storageChart =
     storageInfo && storageInfo.quota
       ? [
           {
-            name: "Used",
-            value: storageInfo.usage / (1024 * 1024),
+            name: "Used MB",
+            value: Math.round(storageInfo.usage / (1024 * 1024)),
           },
           {
-            name: "Free",
-            value: (storageInfo.quota - storageInfo.usage) / (1024 * 1024),
+            name: "Free MB",
+            value: Math.round((storageInfo.quota - storageInfo.usage) / (1024 * 1024)),
           },
         ]
       : null;
 
-  const copyAll = async () => {
+  const copyReport = async () => {
     const full = {
       userAgent: navigator.userAgent,
       platform: navigator.platform,
       language: navigator.language,
       hardwareConcurrency: navigator.hardwareConcurrency,
       deviceMemory: (navigator as any).deviceMemory,
-      screen,
-      connection,
+      screen: {
+        width: screen.width,
+        height: screen.height,
+        pixelRatio: window.devicePixelRatio,
+        colorDepth: screen.colorDepth,
+      },
+      connection: connection
+        ? {
+            effectiveType: connection.effectiveType,
+            downlink: connection.downlink,
+            rtt: connection.rtt,
+          }
+        : null,
       storageInfo,
       webglInfo,
     };
-    await navigator.clipboard.writeText(JSON.stringify(full, null, 2));
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(full, null, 2));
+      toast.success("Device diagnostics copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      {/* HEADER */}
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-6 flex items-end justify-between"
-      >
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Device Details
-          </h1>
-          <p className="mt-2 text-sm text-[rgb(var(--muted))]">
-            Browser, hardware, connection & capability insights.
-          </p>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Inspect client environment hardware, screen specs, network status, WebGL renderer, and storage quotas
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={copyReport}
+          className="text-xs"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+              Copied Report
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5 mr-1" />
+              Copy Full Report
+            </>
+          )}
+        </Button>
+      </ToolToolbar>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full min-w-0">
+        {/* System & Hardware */}
+        <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b border-[rgb(var(--border))]">
+            <Cpu className="w-4 h-4 text-indigo-500" />
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Hardware & Engine
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <InfoRow label="CPU Logic Cores" value={navigator.hardwareConcurrency} />
+            <InfoRow label="Device RAM (GB)" value={(navigator as any).deviceMemory ?? "N/A"} />
+            <InfoRow label="GPU / WebGL Renderer" value={webglInfo || "Integrated / Software"} />
+            <InfoRow label="Operating System / Platform" value={navigator.platform} />
+            <InfoRow label="Primary Language" value={navigator.language} />
+            <InfoRow label="Online Connection" value={navigator.onLine ? "Online" : "Offline"} />
+          </div>
         </div>
 
-        <Button onClick={copyAll}>Copy Full Report</Button>
-      </motion.div>
-
-      {/* GRID */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* BASIC INFO */}
-        <Section title="Basic Info">
-          <InfoRow label="User Agent" value={navigator.userAgent} />
-          <InfoRow label="Platform" value={navigator.platform} />
-          <InfoRow label="Language" value={navigator.language} />
-          <InfoRow
-            label="Online Status"
-            value={navigator.onLine ? "Online" : "Offline"}
-          />
-        </Section>
-
-        {/* HARDWARE */}
-        <Section title="Hardware">
-          <InfoRow label="CPU Cores" value={navigator.hardwareConcurrency} />
-          <InfoRow
-            label="Device Memory (GB)"
-            value={(navigator as any).deviceMemory ?? "Unknown"}
-          />
-          <InfoRow label="GPU (WebGL)" value={webglInfo} />
-        </Section>
-
-        {/* SCREEN */}
-        <Section title="Screen">
-          <InfoRow label="Width" value={screen.width} />
-          <InfoRow label="Height" value={screen.height} />
-          <InfoRow label="Pixel Ratio" value={window.devicePixelRatio} />
-          <InfoRow label="Color Depth" value={screen.colorDepth} />
-        </Section>
-
-        {/* CONNECTION */}
-        <Section title="Connection">
-          <InfoRow
-            label="Type"
-            value={connection?.effectiveType ?? "Unknown"}
-          />
-          <InfoRow
-            label="Downlink (Mbps)"
-            value={connection?.downlink ?? "N/A"}
-          />
-          <InfoRow label="RTT (ms)" value={connection?.rtt ?? "N/A"} />
-          <InfoRow
-            label="Save Data Mode"
-            value={connection?.saveData ? "Enabled" : "Disabled"}
-          />
-        </Section>
-
-        {/* STORAGE CHART */}
-        {storageChart && (
-          <div className="lg:col-span-2">
-            <Card className="p-5">
-              <div className="text-lg font-semibold">Storage Usage (MB)</div>
-              <div className="mt-4 h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={storageChart}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar
-                      dataKey="value"
-                      fill="rgb(var(--accent))"
-                      radius={[6, 6, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
+        {/* Display & Screen */}
+        <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b border-[rgb(var(--border))]">
+            <Monitor className="w-4 h-4 text-indigo-500" />
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Display & Viewport
+            </span>
           </div>
-        )}
+
+          <div className="space-y-1">
+            <InfoRow label="Screen Resolution" value={`${screen.width} × ${screen.height}`} />
+            <InfoRow label="Available Workspace" value={`${screen.availWidth} × ${screen.availHeight}`} />
+            <InfoRow label="Device Pixel Ratio" value={`${window.devicePixelRatio}x`} />
+            <InfoRow label="Color Depth" value={`${screen.colorDepth}-bit`} />
+            <InfoRow
+              label="Orientation"
+              value={screen.orientation ? screen.orientation.type : "Landscape / Default"}
+            />
+          </div>
+        </div>
+
+        {/* Network & Connection */}
+        <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b border-[rgb(var(--border))]">
+            <Wifi className="w-4 h-4 text-indigo-500" />
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Network Telemetry
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <InfoRow label="Effective Network Type" value={connection?.effectiveType ?? "Broadband / WiFi"} />
+            <InfoRow label="Estimated Downlink" value={connection?.downlink ? `${connection.downlink} Mbps` : "N/A"} />
+            <InfoRow label="Round Trip Time (RTT)" value={connection?.rtt ? `${connection.rtt} ms` : "N/A"} />
+            <InfoRow label="Data Saver Active" value={connection?.saveData ? "Enabled" : "Disabled"} />
+          </div>
+        </div>
+
+        {/* Browser User Agent */}
+        <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b border-[rgb(var(--border))]">
+            <HardDrive className="w-4 h-4 text-indigo-500" />
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Client User-Agent
+            </span>
+          </div>
+
+          <p className="text-xs font-mono leading-relaxed text-[rgb(var(--muted))] p-3 rounded-xl bg-[rgb(var(--card-2))] break-all select-all">
+            {navigator.userAgent}
+          </p>
+        </div>
       </div>
-    </main>
+
+      {/* Storage Estimate Chart */}
+      {storageChart && (
+        <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))] block">
+            Browser Storage Quota (Megabytes)
+          </span>
+          <div className="w-full h-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={storageChart}>
+                <XAxis dataKey="name" stroke="rgb(var(--muted))" fontSize={12} />
+                <YAxis stroke="rgb(var(--muted))" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgb(var(--card))",
+                    borderColor: "rgb(var(--border))",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                  }}
+                />
+                <Bar dataKey="value" fill="#6366f1" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+    </ToolWorkspace>
   );
 }

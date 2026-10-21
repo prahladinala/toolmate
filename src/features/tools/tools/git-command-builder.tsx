@@ -1,27 +1,24 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Select } from "@/components/ui/select";
-
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, GitCommit, GitBranch, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
 export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
   const [tab, setTab] = useState<"commit" | "branch" | "reset">("commit");
-  
+
   // Commit
-  const [commitMsg, setCommitMsg] = useState("");
+  const [commitMsg, setCommitMsg] = useState("feat: implement responsive layout architecture");
   const [commitAll, setCommitAll] = useState(false);
   const [commitAmend, setCommitAmend] = useState(false);
 
   // Branch
-  const [branchName, setBranchName] = useState("");
+  const [branchName, setBranchName] = useState("feature/redesign");
   const [branchCheckout, setBranchCheckout] = useState(true);
 
   // Reset
@@ -50,124 +47,192 @@ export function GitCommandBuilderTool({ tool }: { tool: ToolDef }) {
     if (!command) return;
     try {
       await navigator.clipboard.writeText(command);
-      toast.success("Copied to clipboard!");
+      toast.success("Git command copied!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setCopied(false);
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Git Command Builder</h1>
-        <p className="text-sm text-[rgb(var(--muted))]">
-          Interactively build common git commands with flags.
-        </p>
-      </div>
-
-      <Card className="mb-6 p-4">
-        <div className="flex gap-3 overflow-x-auto">
-          <Button variant={tab === "commit" ? "primary" : "secondary"} onClick={() => setTab("commit")}>Commit</Button>
-          <Button variant={tab === "branch" ? "primary" : "secondary"} onClick={() => setTab("branch")}>Branch</Button>
-          <Button variant={tab === "reset" ? "primary" : "secondary"} onClick={() => setTab("reset")}>Reset</Button>
+    <ToolWorkspace maxWidth="default">
+      <ToolToolbar>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={tab === "commit" ? "primary" : "secondary"}
+            onClick={() => setTab("commit")}
+            className="text-xs"
+          >
+            <GitCommit className="w-3.5 h-3.5 mr-1" />
+            Commit Command
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={tab === "branch" ? "primary" : "secondary"}
+            onClick={() => setTab("branch")}
+            className="text-xs"
+          >
+            <GitBranch className="w-3.5 h-3.5 mr-1" />
+            Branch Command
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={tab === "reset" ? "primary" : "secondary"}
+            onClick={() => setTab("reset")}
+            className="text-xs"
+          >
+            <RotateCcw className="w-3.5 h-3.5 mr-1" />
+            Reset / Rollback
+          </Button>
         </div>
-      </Card>
+      </ToolToolbar>
 
-      <Card className="p-6 mb-6">
+      {/* Configuration Card */}
+      <div className="p-6 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
         {tab === "commit" && (
           <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-medium">Commit Message</Label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Commit Message
+              </label>
               <Input
                 type="text"
                 value={commitMsg}
                 onChange={(e) => setCommitMsg(e.target.value)}
-                placeholder="Fix bug in header"
-                className="mt-2 w-full rounded border p-2 bg-[rgb(var(--card-2))]"
+                placeholder="Commit message summary..."
+                className="text-xs sm:text-sm h-10 bg-[rgb(var(--card-2))]"
               />
             </div>
-            <div className="flex gap-4">
-              <Label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={commitAll} onChange={(e) => setCommitAll(e.target.checked)} />
-                Stage all modified files (-a)
-              </Label>
-              <Label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={commitAmend} onChange={(e) => setCommitAmend(e.target.checked)} />
-                Amend previous commit (--amend)
-              </Label>
+
+            <div className="flex items-center gap-6 pt-2 border-t border-[rgb(var(--border))] flex-wrap text-xs font-medium">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={commitAll}
+                  onChange={(e) => setCommitAll(e.target.checked)}
+                  className="w-4 h-4 rounded text-indigo-600 accent-indigo-500"
+                />
+                <span>Stage All Modified Files (-a)</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={commitAmend}
+                  onChange={(e) => setCommitAmend(e.target.checked)}
+                  className="w-4 h-4 rounded text-indigo-600 accent-indigo-500"
+                />
+                <span>Amend Previous Commit (--amend)</span>
+              </label>
             </div>
           </div>
         )}
 
         {tab === "branch" && (
           <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-medium">Branch Name</Label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                Branch Identifier Name
+              </label>
               <Input
                 type="text"
                 value={branchName}
-                onChange={(e) => setBranchName(e.target.value.replace(/\s+/g, "-"))}
-                placeholder="feature/new-button"
-                className="mt-2 w-full rounded border p-2 bg-[rgb(var(--card-2))]"
+                onChange={(e) => setBranchName(e.target.value)}
+                placeholder="feature/branch-name"
+                className="text-xs sm:text-sm font-mono h-10 bg-[rgb(var(--card-2))]"
               />
             </div>
-            <div className="flex gap-4">
-              <Label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={branchCheckout} onChange={(e) => setBranchCheckout(e.target.checked)} />
-                Checkout new branch immediately (-b)
-              </Label>
-            </div>
+
+            <label className="flex items-center gap-2 pt-2 border-t border-[rgb(var(--border))] cursor-pointer select-none text-xs font-medium">
+              <input
+                type="checkbox"
+                checked={branchCheckout}
+                onChange={(e) => setBranchCheckout(e.target.checked)}
+                className="w-4 h-4 rounded text-indigo-600 accent-indigo-500"
+              />
+              <span>Checkout Branch Immediately (-b)</span>
+            </label>
           </div>
         )}
 
         {tab === "reset" && (
           <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-medium">Reset Mode</Label>
-              <Select
-                value={resetMode}
-                onChange={(e) => setResetMode(e.target.value as any)}
-                className="mt-2 w-full rounded border p-2 bg-[rgb(var(--card-2))]"
-              >
-                <option value="--soft">--soft (Keep working tree & index)</option>
-                <option value="--mixed">--mixed (Keep working tree, reset index)</option>
-                <option value="--hard">--hard (Discard all changes)</option>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-sm font-medium">Target Commit / Ref</Label>
-              <Input
-                type="text"
-                value={resetTarget}
-                onChange={(e) => setResetTarget(e.target.value)}
-                placeholder="HEAD~1"
-                className="mt-2 w-full rounded border p-2 bg-[rgb(var(--card-2))]"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                  Reset Mode
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["--soft", "--mixed", "--hard"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setResetMode(m)}
+                      className={`py-1.5 px-2 rounded-xl text-xs font-mono font-medium transition-all ${
+                        resetMode === m
+                          ? "bg-[rgb(var(--primary))] text-[rgb(var(--primary-fg))] shadow-sm"
+                          : "bg-[rgb(var(--card-2))] text-[rgb(var(--muted))] border border-[rgb(var(--border))] hover:text-[rgb(var(--fg))]"
+                      }`}
+                    >
+                      {m.replace("--", "")}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+                  Target Commit / Reference
+                </label>
+                <Input
+                  type="text"
+                  value={resetTarget}
+                  onChange={(e) => setResetTarget(e.target.value)}
+                  placeholder="HEAD~1 or commit hash"
+                  className="text-xs sm:text-sm font-mono h-10 bg-[rgb(var(--card-2))]"
+                />
+              </div>
             </div>
           </div>
         )}
-      </Card>
+      </div>
 
-      <Card className="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Generated Command</div>
-          <Button size="sm" onClick={copyToClipboard}>
-            <motion.span
-              key={copied ? "copied" : "copy"}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {copied ? "Copied ✓" : "Copy Command"}
-            </motion.span>
+      {/* Generated CLI Output */}
+      <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Terminal Command
+          </span>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={copyToClipboard}
+            className="text-xs h-7 px-2"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3 mr-1" />
+                Copy Command
+              </>
+            )}
           </Button>
         </div>
-        <div className="rounded border bg-[rgb(var(--card-2))] p-4 font-mono text-lg">
+
+        <div className="p-4 rounded-xl bg-[rgb(var(--card-2))] border border-[rgb(var(--border))] font-mono text-xs sm:text-sm text-indigo-500 break-all select-all font-semibold">
           {command}
         </div>
-      </Card>
-    </main>
+      </div>
+    </ToolWorkspace>
   );
 }

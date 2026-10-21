@@ -1,12 +1,11 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, Download, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 type Settings = {
@@ -15,183 +14,236 @@ type Settings = {
   removeHyphens: boolean;
   prefix: string;
   suffix: string;
-  autoGenerate: boolean;
 };
 
-function generateUUIDv4() {
-  return crypto.randomUUID();
-}
-
 export default function UuidGeneratorTool() {
-  const [uuids, setUuids] = React.useState<string[]>([]);
-  const [copied, setCopied] = React.useState<string | null>(null);
+  const [uuids, setUuids] = useState<string[]>([]);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [copiedAll, setCopiedAll] = useState(false);
 
-  const [settings, setSettings] = React.useState<Settings>({
-    count: 1,
+  const [settings, setSettings] = useState<Settings>({
+    count: 5,
     uppercase: false,
     removeHyphens: false,
     prefix: "",
     suffix: "",
-    autoGenerate: true,
   });
 
-  const generate = React.useCallback(() => {
-    const list = Array.from({ length: settings.count }).map(() => {
-      let id = generateUUIDv4();
-
+  const generate = useCallback(() => {
+    const list = Array.from({ length: Math.min(100, Math.max(1, settings.count)) }).map(() => {
+      let id = crypto.randomUUID();
       if (settings.removeHyphens) id = id.replace(/-/g, "");
       if (settings.uppercase) id = id.toUpperCase();
-
       return `${settings.prefix}${id}${settings.suffix}`;
     });
-
     setUuids(list);
   }, [settings]);
 
-  React.useEffect(() => {
-    if (settings.autoGenerate) generate();
-  }, [settings, generate]);
+  useEffect(() => {
+    generate();
+  }, [generate]);
 
-  const copy = async (value: string, key: string) => {
-    await navigator.clipboard.writeText(value);
-      toast.success("Copied to clipboard!");
-    setCopied(key);
-    setTimeout(() => setCopied(null), 1200);
+  const copySingle = async (val: string, idx: number) => {
+    try {
+      await navigator.clipboard.writeText(val);
+      setCopiedIndex(idx);
+      toast.success("UUID copied!");
+      setTimeout(() => setCopiedIndex(null), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
   };
 
   const copyAll = async () => {
-    await navigator.clipboard.writeText(uuids.join("\n"));
-    setCopied("all");
-    setTimeout(() => setCopied(null), 1200);
+    if (uuids.length === 0) return;
+    try {
+      await navigator.clipboard.writeText(uuids.join("\n"));
+      setCopiedAll(true);
+      toast.success(`Copied all ${uuids.length} UUIDs!`);
+      setTimeout(() => setCopiedAll(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
   };
 
-  const download = () => {
+  const downloadTxt = () => {
+    if (uuids.length === 0) return;
     const blob = new Blob([uuids.join("\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "uuids.txt";
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      {/* Controls */}
-      <Card className="mt-6 p-5 space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <Label className="text-sm">Count</Label>
+    <ToolWorkspace maxWidth="default">
+      <ToolToolbar>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            onClick={generate}
+            className="text-xs"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1" />
+            Generate New
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={copyAll}
+            className="text-xs"
+          >
+            {copiedAll ? (
+              <>
+                <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+                Copied All
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 mr-1" />
+                Copy All ({uuids.length})
+              </>
+            )}
+          </Button>
+        </div>
+
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={downloadTxt}
+          className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+        >
+          <Download className="w-3.5 h-3.5 mr-1" />
+          Export TXT
+        </Button>
+      </ToolToolbar>
+
+      {/* Options Card */}
+      <div className="w-full p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Quantity (1 - 100)
+            </label>
             <Input
               type="number"
               min={1}
-              max={1000}
+              max={100}
               value={settings.count}
               onChange={(e) =>
                 setSettings({ ...settings, count: Number(e.target.value) })
               }
-              className="mt-1 w-full rounded border p-2"
+              className="text-xs h-9 bg-[rgb(var(--card-2))]"
             />
           </div>
 
-          <div>
-            <Label className="text-sm">Prefix</Label>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Custom Prefix
+            </label>
             <Input
               value={settings.prefix}
-              onChange={(e) =>
-                setSettings({ ...settings, prefix: e.target.value })
-              }
-              className="mt-1 w-full rounded border p-2"
+              onChange={(e) => setSettings({ ...settings, prefix: e.target.value })}
+              placeholder="e.g. usr_"
+              className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
             />
           </div>
 
-          <div>
-            <Label className="text-sm">Suffix</Label>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Custom Suffix
+            </label>
             <Input
               value={settings.suffix}
-              onChange={(e) =>
-                setSettings({ ...settings, suffix: e.target.value })
-              }
-              className="mt-1 w-full rounded border p-2"
+              onChange={(e) => setSettings({ ...settings, suffix: e.target.value })}
+              placeholder="e.g. _test"
+              className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
             />
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 text-sm">
-          <Label>
+        <div className="flex items-center gap-6 pt-2 border-t border-[rgb(var(--border))] flex-wrap text-xs font-medium">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={settings.uppercase}
-              onChange={(e) =>
-                setSettings({ ...settings, uppercase: e.target.checked })
-              }
-            />{" "}
-            Uppercase
-          </Label>
+              onChange={(e) => setSettings({ ...settings, uppercase: e.target.checked })}
+              className="w-4 h-4 rounded text-indigo-600 accent-indigo-500"
+            />
+            <span>UPPERCASE</span>
+          </label>
 
-          <Label>
+          <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={settings.removeHyphens}
-              onChange={(e) =>
-                setSettings({ ...settings, removeHyphens: e.target.checked })
-              }
-            />{" "}
-            Remove Hyphens
-          </Label>
-
-          <Label>
-            <input
-              type="checkbox"
-              checked={settings.autoGenerate}
-              onChange={(e) =>
-                setSettings({ ...settings, autoGenerate: e.target.checked })
-              }
-            />{" "}
-            Auto Generate
-          </Label>
+              onChange={(e) => setSettings({ ...settings, removeHyphens: e.target.checked })}
+              className="w-4 h-4 rounded text-indigo-600 accent-indigo-500"
+            />
+            <span>Remove Hyphens (-)</span>
+          </label>
         </div>
-
-        <div className="flex gap-3 flex-wrap">
-          <Button onClick={generate}>Generate</Button>
-          <Button variant="secondary" onClick={copyAll}>
-            {copied === "all" ? "Copied ✓" : "Copy All"}
-          </Button>
-          <Button variant="secondary" onClick={download}>
-            Download
-          </Button>
-        </div>
-      </Card>
-
-      {/* Output */}
-      <div className="mt-6 space-y-3">
-        {uuids.map((id, i) => (
-          <motion.div
-            key={id}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            <Card className="p-4 flex items-center justify-between">
-              <span className="font-mono text-sm break-all">{id}</span>
-
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => copy(id, id)}
-                className={`
-                  rounded border px-3 py-1 text-xs transition
-                  ${
-                    copied === id
-                      ? "border-[rgba(var(--accent),0.5)] bg-[rgba(var(--accent),0.15)] text-[rgb(var(--accent))]"
-                      : "border-[rgb(var(--border))] hover:border-[rgba(var(--accent),0.55)] hover:bg-[rgba(var(--accent),0.08)]"
-                  }
-                `}
-              >
-                {copied === id ? "Copied ✓" : "Copy"}
-              </motion.button>
-            </Card>
-          </motion.div>
-        ))}
       </div>
-    </main>
+
+      {/* Generated List */}
+      <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-[rgb(var(--border))] bg-[rgb(var(--card-2))] flex items-center justify-between">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Generated UUID v4 Pool ({uuids.length})
+          </span>
+          <button
+            type="button"
+            onClick={() => setUuids([])}
+            className="text-xs text-[rgb(var(--muted))] hover:text-red-500 flex items-center gap-1"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Clear
+          </button>
+        </div>
+
+        <div className="divide-y divide-[rgb(var(--border))] max-h-[460px] overflow-y-auto scrollbar-refined">
+          {uuids.map((id, idx) => (
+            <div
+              key={idx}
+              className="p-3 sm:p-4 flex items-center justify-between gap-2 hover:bg-[rgb(var(--card-2))]/50 transition-colors"
+            >
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <span className="font-mono text-xs text-[rgb(var(--muted))] w-6 text-right shrink-0">
+                  {idx + 1}
+                </span>
+                <span className="font-mono text-xs sm:text-sm text-[rgb(var(--fg))] break-all select-all font-medium">
+                  {id}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => copySingle(id, idx)}
+                className="p-1.5 rounded-lg text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] hover:bg-[rgb(var(--card-2))] transition-colors shrink-0"
+                title="Copy UUID"
+              >
+                {copiedIndex === idx ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+          ))}
+
+          {uuids.length === 0 && (
+            <div className="p-8 text-center text-xs text-[rgb(var(--muted))]">
+              No UUIDs generated. Click &ldquo;Generate New&rdquo; above.
+            </div>
+          )}
+        </div>
+      </div>
+    </ToolWorkspace>
   );
 }

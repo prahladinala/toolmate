@@ -1,16 +1,16 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Copy, Check } from "lucide-react";
-import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { Copy, Check, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
+
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1554050857-c84a8abdb5e2?auto=format&fit=crop&w=800&q=80";
 
 export function CssFilterGeneratorTool({ tool }: { tool: ToolDef }) {
   const [blur, setBlur] = useState(0);
@@ -22,10 +22,10 @@ export function CssFilterGeneratorTool({ tool }: { tool: ToolDef }) {
   const [opacity, setOpacity] = useState(100);
   const [saturate, setSaturate] = useState(100);
   const [sepia, setSepia] = useState(0);
-  
-  const [imageUrl, setImageUrl] = useState("https://images.unsplash.com/photo-1554050857-c84a8abdb5e2?auto=format&fit=crop&w=800&q=80");
+  const [imageUrl, setImageUrl] = useState(DEFAULT_IMAGE);
+  const [copied, setCopied] = useState(false);
 
-  const filters = [];
+  const filters: string[] = [];
   if (blur > 0) filters.push(`blur(${blur}px)`);
   if (brightness !== 100) filters.push(`brightness(${brightness}%)`);
   if (contrast !== 100) filters.push(`contrast(${contrast}%)`);
@@ -37,13 +37,18 @@ export function CssFilterGeneratorTool({ tool }: { tool: ToolDef }) {
   if (sepia > 0) filters.push(`sepia(${sepia}%)`);
 
   const filterValue = filters.length > 0 ? filters.join(" ") : "none";
-  const cssOutput = `filter: ${filterValue};`;
+  const cssOutput = `filter: ${filterValue};
+-webkit-filter: ${filterValue};`;
 
   const copyCss = async () => {
     try {
       await navigator.clipboard.writeText(cssOutput);
-      toast.success("CSS copied to clipboard!");
-    } catch (e) {}
+      toast.success("Filter CSS copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
   };
 
   const handleReset = () => {
@@ -59,70 +64,120 @@ export function CssFilterGeneratorTool({ tool }: { tool: ToolDef }) {
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">CSS Filter Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Apply visual effects like blur, brightness, and contrast to images via CSS filters.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Visually stack blur, brightness, contrast, hue, and sepia CSS filters
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={handleReset}
+          className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+        >
+          <RotateCcw className="w-3.5 h-3.5 mr-1" />
+          Reset Filters
+        </Button>
+      </ToolToolbar>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-6 space-y-4">
-          <div>
-            <Label className="text-sm font-medium block mb-2">Test Image URL</Label>
-            <Input 
-              type="text" 
-              value={imageUrl} 
-              onChange={(e) => setImageUrl(e.target.value)} 
-              className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]"
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Sliders Column */}
+        <div className="lg:col-span-5 flex flex-col min-w-0 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Sample Image URL
+            </label>
+            <Input
+              type="text"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              className="text-xs font-mono h-9 bg-[rgb(var(--card-2))]"
             />
           </div>
-          
-          <div className="flex justify-end pt-2">
-            <Button size="sm" variant="ghost" onClick={handleReset}>Reset Filters</Button>
-          </div>
 
-          {[
-            { label: "Blur", val: blur, set: setBlur, min: 0, max: 20, unit: "px" },
-            { label: "Brightness", val: brightness, set: setBrightness, min: 0, max: 200, unit: "%" },
-            { label: "Contrast", val: contrast, set: setContrast, min: 0, max: 200, unit: "%" },
-            { label: "Grayscale", val: grayscale, set: setGrayscale, min: 0, max: 100, unit: "%" },
-            { label: "Hue Rotate", val: hueRotate, set: setHueRotate, min: 0, max: 360, unit: "deg" },
-            { label: "Invert", val: invert, set: setInvert, min: 0, max: 100, unit: "%" },
-            { label: "Opacity", val: opacity, set: setOpacity, min: 0, max: 100, unit: "%" },
-            { label: "Saturate", val: saturate, set: setSaturate, min: 0, max: 200, unit: "%" },
-            { label: "Sepia", val: sepia, set: setSepia, min: 0, max: 100, unit: "%" },
-          ].map((slider) => (
-            <div key={slider.label}>
-              <div className="flex justify-between items-center mb-1">
-                <Label className="text-sm font-medium">{slider.label}</Label>
-                <span className="text-xs text-[rgb(var(--muted))]">{slider.val}{slider.unit}</span>
+          <div className="space-y-3.5 pt-2 border-t border-[rgb(var(--border))]">
+            {[
+              { label: "Blur", val: blur, set: setBlur, min: 0, max: 20, unit: "px" },
+              { label: "Brightness", val: brightness, set: setBrightness, min: 0, max: 200, unit: "%" },
+              { label: "Contrast", val: contrast, set: setContrast, min: 0, max: 200, unit: "%" },
+              { label: "Grayscale", val: grayscale, set: setGrayscale, min: 0, max: 100, unit: "%" },
+              { label: "Hue Rotate", val: hueRotate, set: setHueRotate, min: 0, max: 360, unit: "deg" },
+              { label: "Invert", val: invert, set: setInvert, min: 0, max: 100, unit: "%" },
+              { label: "Opacity", val: opacity, set: setOpacity, min: 0, max: 100, unit: "%" },
+              { label: "Saturate", val: saturate, set: setSaturate, min: 0, max: 200, unit: "%" },
+              { label: "Sepia", val: sepia, set: setSepia, min: 0, max: 100, unit: "%" },
+            ].map((slider) => (
+              <div key={slider.label} className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-medium text-[rgb(var(--fg))]">{slider.label}</span>
+                  <span className="font-mono text-[rgb(var(--muted))]">
+                    {slider.val}{slider.unit}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={slider.min}
+                  max={slider.max}
+                  value={slider.val}
+                  onChange={(e) => slider.set(Number(e.target.value))}
+                  className="w-full h-1.5 bg-[rgb(var(--card-2))] rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                />
               </div>
-              <input type="range" min={slider.min} max={slider.max} value={slider.val} onChange={(e) => slider.set(Number(e.target.value))} className="w-full accent-[rgb(var(--accent))]" />
-            </div>
-          ))}
-          
-          <CopyButton value={cssOutput} text="Copy CSS" className="w-full mt-4" />
-        </Card>
+            ))}
+          </div>
+        </div>
 
-        <Card className="p-0 flex flex-col h-full min-h-[400px] overflow-hidden">
-          <div className="flex-1 flex items-center justify-center p-6 bg-[rgb(var(--card-2))] overflow-hidden">
-             {/* eslint-disable-next-line @next/next/no-img-element */}
-             <img 
-               src={imageUrl} 
-               alt="Test" 
-               className="max-w-full max-h-[400px] object-cover rounded-lg shadow-md"
-               style={{ filter: filterValue }}
-               width={800}
-               height={400}
-             />
+        {/* Live Preview & CSS Code */}
+        <div className="lg:col-span-7 flex flex-col min-w-0 space-y-6">
+          <div className="w-full min-h-[300px] sm:min-h-[360px] rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] flex items-center justify-center p-4 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imageUrl}
+              alt="Filter Preview Target"
+              className="max-w-full max-h-[360px] object-cover rounded-xl shadow-md transition-all duration-100"
+              style={{ filter: filterValue }}
+              onError={(e) => {
+                // fallback to default image if user enters invalid url
+                (e.target as HTMLImageElement).src = DEFAULT_IMAGE;
+              }}
+            />
           </div>
-          <div className="h-40 relative border-t border-[rgb(var(--border))]">
-             <CodeEditor value={cssOutput} language="css" options={{ readOnly: true }} className="absolute inset-0" />
+
+          <div className="space-y-2 w-full min-w-0">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+                Generated CSS
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={copyCss}
+                className="text-xs h-7 px-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3 mr-1" />
+                    Copy CSS
+                  </>
+                )}
+              </Button>
+            </div>
+            <CodeEditor
+              value={cssOutput}
+              language="css"
+              editable={false}
+              minHeight="min-h-[120px]"
+            />
           </div>
-        </Card>
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

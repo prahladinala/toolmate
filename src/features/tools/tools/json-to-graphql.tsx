@@ -1,15 +1,32 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
 
 import React, { useState, useEffect, useCallback } from "react";
 import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, RotateCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+
+const DEFAULT_JSON = JSON.stringify(
+  {
+    id: "usr_101",
+    name: "Alex Morgan",
+    age: 28,
+    isVerified: true,
+    profile: {
+      bio: "Software Architect",
+      website: "https://example.com",
+    },
+    tags: ["developer", "typescript", "react"],
+  },
+  null,
+  2
+);
 
 function generateGraphQLSchema(jsonObj: any, rootTypeName = "Root"): string {
   const types = new Map<string, string[]>();
@@ -40,9 +57,9 @@ function generateGraphQLSchema(jsonObj: any, rootTypeName = "Root"): string {
   }
 
   function parseObject(obj: any, typeName: string) {
-    if (types.has(typeName)) return; // Avoid circular/duplicate
+    if (types.has(typeName)) return;
     const fields: string[] = [];
-    types.set(typeName, fields); // placeholder to avoid infinite recursion
+    types.set(typeName, fields);
 
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -64,11 +81,11 @@ function generateGraphQLSchema(jsonObj: any, rootTypeName = "Root"): string {
 
 export function JsonToGraphqlTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
-  const input = usePersistedState<string>(inputKey, "");
+  const input = usePersistedState<string>(inputKey, DEFAULT_JSON);
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [rootName, setRootName] = useState("RootType");
+  const [rootName, setRootName] = useState("User");
 
   const convert = useCallback(() => {
     if (!input.value.trim()) {
@@ -79,7 +96,7 @@ export function JsonToGraphqlTool({ tool }: { tool: ToolDef }) {
     try {
       const parsed = JSON.parse(input.value);
       if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-        throw new Error("Input must be a JSON object.");
+        throw new Error("Input must be a valid JSON object.");
       }
       const schema = generateGraphQLSchema(parsed, rootName || "Root");
       setOutput(schema);
@@ -97,66 +114,102 @@ export function JsonToGraphqlTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("Copied to clipboard!");
+      toast.success("Copied GraphQL schema to clipboard!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setCopied(false);
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6 flex flex-wrap gap-4 items-center">
-        <Label className="text-sm font-medium">Root Type Name:</Label>
-        <Input
-          type="text"
-          value={rootName}
-          onChange={(e) => setRootName(e.target.value)}
-          className="rounded border p-1.5 text-sm bg-[rgb(var(--card-2))]"
-          placeholder="RootType"
-        />
-        <Button size="sm" onClick={convert}>Generate</Button>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <div className="flex items-center gap-2 flex-wrap">
+          <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider">
+            Root Type:
+          </label>
+          <Input
+            type="text"
+            value={rootName}
+            onChange={(e) => setRootName(e.target.value)}
+            className="w-32 h-8 text-xs font-mono bg-[rgb(var(--card-2))]"
+            placeholder="User"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => input.setValue(DEFAULT_JSON)}
+            className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+          >
+            <RotateCcw className="w-3.5 h-3.5 mr-1" />
+            Reset Sample
+          </Button>
+        </div>
+      </ToolToolbar>
 
       {error && (
-        <div className="mb-4 rounded-[var(--radius)] border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.08)] p-4 text-sm text-red-500 whitespace-pre-wrap font-mono">
-          {error}
+        <div className="flex items-center gap-2 p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col h-full">
-          <div className="font-medium mb-3">Input JSON</div>
-          <CodeEditor
-            className="min-h-[500px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language="json"
-          />
-        </div>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">GraphQL Schema</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+      <ToolSplitPane
+        defaultMobileView="both"
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            JSON Input
+          </span>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              GraphQL Schema
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={copyToClipboard}
+              disabled={!output}
+              className="text-xs h-7 px-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3 mr-1" />
+                  Copy Schema
+                </>
+              )}
             </Button>
           </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[500px]"
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="json"
+            minHeight="min-h-[300px] sm:min-h-[420px]"
+          />
+        }
+        output={
+          <CodeEditor
             value={output}
             language="graphql"
-            options={{ readOnly: true }}
+            editable={false}
+            minHeight="min-h-[300px] sm:min-h-[420px]"
           />
-        </div>
-      </div>
-    </main>
+        }
+      />
+    </ToolWorkspace>
   );
 }

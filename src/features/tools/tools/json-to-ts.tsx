@@ -5,9 +5,30 @@ import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import JsonToTS from "json-to-ts";
 import { toast } from "sonner";
+import { Copy, Check, Play, AlertCircle, Sparkles, Trash2 } from "lucide-react";
+
+const SAMPLE_JSON = `{
+  "userId": 101,
+  "username": "prahladinala",
+  "profile": {
+    "displayName": "Prahlad Inala",
+    "avatarUrl": "https://toolmate.co.in/avatar.png",
+    "isVerified": true
+  },
+  "roles": ["admin", "developer"],
+  "settings": {
+    "theme": "dark",
+    "notifications": {
+      "email": true,
+      "push": false
+    }
+  }
+}`;
 
 export function JsonToTsTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
@@ -40,7 +61,7 @@ export function JsonToTsTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("Copied to clipboard!");
+      toast.success("TypeScript interfaces copied!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -49,44 +70,107 @@ export function JsonToTsTool({ tool }: { tool: ToolDef }) {
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
+    <ToolWorkspace>
+      {/* TOOLBAR */}
+      <ToolToolbar>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Button onClick={run} size="sm" className="gap-1.5 shadow-sm">
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>Generate Types</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => input.setValue(SAMPLE_JSON)}
+            className="text-xs sm:text-sm gap-1"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Sample JSON</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              input.setValue("");
+              setOutput("");
+              setError(null);
+            }}
+            className="text-xs sm:text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--danger))]"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Clear</span>
+          </Button>
+        </div>
+
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Strict TypeScript Type-Generation Engine
+        </span>
+      </ToolToolbar>
+
+      {/* ERROR BANNER */}
       {error && (
-        <div className="mb-4 rounded-[var(--radius)] border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.08)] p-4 text-sm text-red-500">
-          {error}
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+          <div className="flex-1 font-mono break-words-safe">{error}</div>
         </div>
       )}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col h-full">
-          <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Input JSON</div>
-          <CodeEditor
-            className="min-h-[420px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language="json"
-          />
-        </div>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output TypeScript Interfaces</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+
+      {/* SPLIT PANE */}
+      <ToolSplitPane
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              Input JSON Payload
+            </span>
+            <span className="text-[11px] text-[rgb(var(--muted))]">
+              {input.value ? `${input.value.length} chars` : "Empty"}
+            </span>
+          </div>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              Generated TypeScript Interfaces
+            </span>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={copyToClipboard}
+              disabled={!output}
+              className="h-7 text-xs px-2.5 gap-1"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 text-emerald-500" />
+                  <span>Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3" />
+                  <span>Copy</span>
+                </>
+              )}
             </Button>
           </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[420px]"
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="json"
+          />
+        }
+        output={
+          <CodeEditor
             value={output}
             language="typescript"
             options={{ readOnly: true }}
           />
-        </div>
-      </div>
-    </main>
+        }
+      />
+    </ToolWorkspace>
   );
 }

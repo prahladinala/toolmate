@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import type { ToolDef } from "../registry";
 import { Excalidraw } from "@excalidraw/excalidraw";
-import { Card } from "@/components/ui/card";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { ThemeContext } from "@/features/theme/theme-provider";
 
 export default function WhiteboardAppTool({ tool }: { tool: ToolDef }) {
-  const { theme } = React.useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -19,17 +20,16 @@ export default function WhiteboardAppTool({ tool }: { tool: ToolDef }) {
   }, [theme.mode]);
 
   return (
-    <main className="mx-auto max-w-[1400px] px-4 py-8 h-[90vh] flex flex-col">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold mb-1">Simple Whiteboard</h1>
-        <p className="text-sm text-[rgb(var(--muted))]">
-          Draw, add sticky notes, and brainstorm natively using the embedded Excalidraw engine.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="full" className="space-y-4">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Collaborative sketching, diagramming, flowcharts, and wireframing powered by embedded Excalidraw
+        </span>
+      </ToolToolbar>
 
-      <Card className="flex-1 w-full overflow-hidden relative shadow-lg border-[rgba(var(--border),0.5)]">
+      <div className="w-full h-[calc(100vh-13rem)] min-h-[550px] rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm overflow-hidden relative">
         <Excalidraw theme={isDark ? "dark" : "light"} />
-      </Card>
-    </main>
+      </div>
+    </ToolWorkspace>
   );
 }

@@ -5,13 +5,23 @@ import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, RotateCcw } from "lucide-react";
 import { evaluate } from "mathjs";
 import { toast } from "sonner";
 
+const DEFAULT_MATH = `1.2 * (2 + 4.5)
+100 cm to m
+sin(45 deg) ^ 2
+sqrt(144) + 2^4
+5.08 cm to inch
+det([[-1, 2], [3, 1]])`;
+
 export function MathEvaluatorTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
-  const input = usePersistedState<string>(inputKey, "1.2 * (2 + 4.5)\n100 cm to m\nsin(45 deg) ^ 2");
+  const input = usePersistedState<string>(inputKey, DEFAULT_MATH);
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -26,7 +36,6 @@ export function MathEvaluatorTool({ tool }: { tool: ToolDef }) {
       if (!line.trim()) return "";
       try {
         const res = evaluate(line);
-        // Format functions or arrays to string
         if (typeof res === "function") return "Function";
         return String(res);
       } catch (err: any) {
@@ -45,56 +54,86 @@ export function MathEvaluatorTool({ tool }: { tool: ToolDef }) {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("Copied to clipboard!");
+      toast.success("Evaluated results copied!");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setCopied(false);
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Math Expression Evaluator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Evaluate mathematical expressions, unit conversions, and functions line-by-line using <strong>mathjs</strong>.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Real-time multi-line mathematical expression evaluation, units conversion, trigonometry, and matrices
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={() => input.setValue(DEFAULT_MATH)}
+          className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+        >
+          <RotateCcw className="w-3.5 h-3.5 mr-1" />
+          Reset Samples
+        </Button>
+      </ToolToolbar>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col h-full">
-          <div className="font-medium mb-3">Input Expressions</div>
-          <CodeEditor
-            className="min-h-[500px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language="plaintext"
-            options={{ lineNumbers: "on" }}
-          />
-        </div>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output Results</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+      <ToolSplitPane
+        defaultMobileView="both"
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Expressions (One per line)
+          </span>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              Evaluated Results
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={copyToClipboard}
+              disabled={!output}
+              className="text-xs h-7 px-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3 mr-1" />
+                  Copy
+                </>
+              )}
             </Button>
           </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[500px]"
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language="plaintext"
+            minHeight="min-h-[300px] sm:min-h-[420px]"
+            options={{ wordWrap: "on" }}
+          />
+        }
+        output={
+          <CodeEditor
             value={output}
             language="plaintext"
-            options={{ readOnly: true, lineNumbers: "on" }}
+            editable={false}
+            minHeight="min-h-[300px] sm:min-h-[420px]"
+            options={{ wordWrap: "on" }}
           />
-        </div>
-      </div>
-    </main>
+        }
+      />
+    </ToolWorkspace>
   );
 }

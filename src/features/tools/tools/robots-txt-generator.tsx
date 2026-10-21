@@ -1,20 +1,22 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Copy, Check } from "lucide-react";
-import { toast } from "sonner";
 
 import React, { useState } from "react";
 import type { ToolDef } from "../registry";
 import { Button } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { Plus, Trash2, Copy, Check, Download } from "lucide-react";
+import { toast } from "sonner";
 
 export function RobotsTxtGeneratorTool({ tool }: { tool: ToolDef }) {
-  const [rules, setRules] = useState([{ agent: "*", allow: "", disallow: "/cgi-bin/, /admin/" }]);
-  const [sitemap, setSitemap] = useState("");
+  const [rules, setRules] = useState([
+    { agent: "*", allow: "/", disallow: "/admin/, /api/, /private/" },
+    { agent: "Googlebot", allow: "/", disallow: "" },
+  ]);
+  const [sitemap, setSitemap] = useState("https://toolmate.co.in/sitemap.xml");
+  const [copied, setCopied] = useState(false);
 
   const addRule = () => {
     setRules([...rules, { agent: "", allow: "", disallow: "" }]);
@@ -32,23 +34,27 @@ export function RobotsTxtGeneratorTool({ tool }: { tool: ToolDef }) {
 
   const generateTxt = () => {
     let out = "";
-    rules.forEach(r => {
-      if (r.agent) out += `User-agent: ${r.agent}\n`;
-      if (r.allow) {
-        r.allow.split(",").forEach(a => {
-          if (a.trim()) out += `Allow: ${a.trim()}\n`;
-        });
+    rules.forEach((r) => {
+      if (r.agent.trim()) {
+        out += `User-agent: ${r.agent.trim()}\n`;
+        if (r.allow) {
+          r.allow.split(",").forEach((a) => {
+            if (a.trim()) out += `Allow: ${a.trim()}\n`;
+          });
+        }
+        if (r.disallow) {
+          r.disallow.split(",").forEach((d) => {
+            if (d.trim()) out += `Disallow: ${d.trim()}\n`;
+          });
+        }
+        out += "\n";
       }
-      if (r.disallow) {
-        r.disallow.split(",").forEach(d => {
-          if (d.trim()) out += `Disallow: ${d.trim()}\n`;
-        });
-      }
-      out += "\n";
     });
+
     if (sitemap.trim()) {
       out += `Sitemap: ${sitemap.trim()}\n`;
     }
+
     return out.trim();
   };
 
@@ -57,66 +63,176 @@ export function RobotsTxtGeneratorTool({ tool }: { tool: ToolDef }) {
   const copyTxt = async () => {
     try {
       await navigator.clipboard.writeText(output);
-      toast.success("robots.txt copied to clipboard!");
-    } catch (e) {}
+      toast.success("robots.txt copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const downloadFile = () => {
+    const blob = new Blob([output], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "robots.txt";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Downloaded robots.txt!");
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">robots.txt Generator</h1>
-        <p className="text-sm text-[rgb(var(--muted))] max-w-2xl">
-          Instantly generate a robots.txt file to tell search engine crawlers which URLs they can access.
-        </p>
-      </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Configure search engine crawler access rules, directory exclusions, and XML sitemaps
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={copyTxt}
+            className="text-xs"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 mr-1" />
+                Copy
+              </>
+            )}
+          </Button>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-          
-          {rules.map((rule, i) => (
-            <div key={i} className="p-4 rounded border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] relative">
-              <Button 
-                onClick={() => removeRule(i)}
-                className="absolute top-2 right-2 text-xs text-red-500 hover:underline"
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={downloadFile}
+            className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+          >
+            <Download className="w-3.5 h-3.5 mr-1" />
+            Download robots.txt
+          </Button>
+        </div>
+      </ToolToolbar>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0">
+        {/* Rules Builder */}
+        <div className="lg:col-span-6 p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-4">
+          <div className="space-y-1.5 pb-3 border-b border-[rgb(var(--border))]">
+            <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+              Sitemap URL
+            </label>
+            <Input
+              type="text"
+              value={sitemap}
+              onChange={(e) => setSitemap(e.target.value)}
+              placeholder="https://example.com/sitemap.xml"
+              className="text-xs sm:text-sm font-mono h-9 bg-[rgb(var(--card-2))]"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+                Crawler Directives ({rules.length})
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={addRule}
+                className="text-xs h-7 px-2"
               >
-                Remove
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                Add Agent
               </Button>
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs font-medium block mb-1">User-Agent</Label>
-                  <Input type="text" value={rule.agent} onChange={(e) => updateRule(i, "agent", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. *, Googlebot, Bingbot" />
-                </div>
-                <div>
-                  <Label className="text-xs font-medium block mb-1">Allow (comma separated paths)</Label>
-                  <Input type="text" value={rule.allow} onChange={(e) => updateRule(i, "allow", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. /public/, /images/" />
-                </div>
-                <div>
-                  <Label className="text-xs font-medium block mb-1">Disallow (comma separated paths)</Label>
-                  <Input type="text" value={rule.disallow} onChange={(e) => updateRule(i, "disallow", e.target.value)} className="w-full rounded border p-1.5 text-sm" placeholder="e.g. /admin/, /private/" />
-                </div>
-              </div>
             </div>
-          ))}
 
-          <Button variant="secondary" onClick={addRule} className="w-full">+ Add Another Rule</Button>
+            <div className="space-y-3 max-h-[380px] overflow-y-auto scrollbar-refined pr-1">
+              {rules.map((rule, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--card-2))] space-y-3 relative"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-indigo-500">
+                      Rule #{idx + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeRule(idx)}
+                      disabled={rules.length <= 1}
+                      className="text-[rgb(var(--muted))] hover:text-red-500 disabled:opacity-30 transition-colors"
+                      title="Remove Rule"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
 
-          <div className="pt-4 border-t border-[rgb(var(--border))]">
-             <Label className="text-sm font-medium block mb-1">Sitemap URL (Optional)</Label>
-             <Input type="text" value={sitemap} onChange={(e) => setSitemap(e.target.value)} className="w-full rounded border p-2 text-sm bg-[rgb(var(--card-2))]" placeholder="https://example.com/sitemap.xml" />
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-[11px] font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block mb-1">
+                        User-agent
+                      </label>
+                      <Input
+                        value={rule.agent}
+                        onChange={(e) => updateRule(idx, "agent", e.target.value)}
+                        placeholder="* or Googlebot"
+                        className="text-xs font-mono h-8 bg-[rgb(var(--card))]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[11px] font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block mb-1">
+                          Allow
+                        </label>
+                        <Input
+                          value={rule.allow}
+                          onChange={(e) => updateRule(idx, "allow", e.target.value)}
+                          placeholder="/"
+                          className="text-xs font-mono h-8 bg-[rgb(var(--card))]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block mb-1">
+                          Disallow
+                        </label>
+                        <Input
+                          value={rule.disallow}
+                          onChange={(e) => updateRule(idx, "disallow", e.target.value)}
+                          placeholder="/admin/, /api/"
+                          className="text-xs font-mono h-8 bg-[rgb(var(--card))]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
 
-          <Button onClick={copyTxt} className="w-full">Copy robots.txt</Button>
-        </Card>
-
-        <Card className="p-0 flex flex-col h-full min-h-[400px] overflow-hidden">
-          <div className="p-3 border-b border-[rgb(var(--border))] font-medium text-sm flex justify-between items-center bg-[rgb(var(--card-2))]">
-             <span>Generated Output</span>
-          </div>
-          <div className="flex-1 relative">
-             <CodeEditor value={output} language="plaintext" options={{ readOnly: true }} className="absolute inset-0" />
-          </div>
-        </Card>
+        {/* Output Editor */}
+        <div className="lg:col-span-6 flex flex-col min-w-0 space-y-2">
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Live robots.txt Preview
+          </span>
+          <CodeEditor
+            value={output}
+            language="plaintext"
+            editable={false}
+            minHeight="min-h-[350px] sm:min-h-[460px]"
+          />
+        </div>
       </div>
-    </main>
+    </ToolWorkspace>
   );
 }

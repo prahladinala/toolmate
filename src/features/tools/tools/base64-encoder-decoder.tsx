@@ -1,22 +1,24 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { toast } from "sonner";
+import { Copy, Check, Download, Upload, AlertCircle, RefreshCw } from "lucide-react";
 
 type Mode = "encode" | "decode";
 
 export default function Base64Tool() {
-  const [mode, setMode] = React.useState<Mode>("encode");
-  const [input, setInput] = React.useState("");
-  const [output, setOutput] = React.useState("");
-  const [mimeType, setMimeType] = React.useState<string | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
-  const [copied, setCopied] = React.useState<string | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<Mode>("encode");
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [mimeType, setMimeType] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const cleanBase64 = (str: string) =>
     str.replace(/^data:.*;base64,/, "").trim();
@@ -39,7 +41,7 @@ export default function Base64Tool() {
     btoa(
       new TextEncoder()
         .encode(str)
-        .reduce((data, byte) => data + String.fromCharCode(byte), ""),
+        .reduce((data, byte) => data + String.fromCharCode(byte), "")
     );
 
   const decodeBinary = (base64: string) => {
@@ -51,7 +53,7 @@ export default function Base64Tool() {
     setError(null);
     setMimeType(null);
 
-    if (!input) {
+    if (!input.trim()) {
       setOutput("");
       return;
     }
@@ -60,7 +62,7 @@ export default function Base64Tool() {
       try {
         setOutput(encodeUTF8(input));
       } catch {
-        setError("Encoding failed.");
+        setError("Encoding failed. Ensure text contains valid characters.");
       }
     } else {
       try {
@@ -77,20 +79,25 @@ export default function Base64Tool() {
           setOutput(cleaned);
         }
       } catch {
-        setError("Invalid Base64 string.");
+        setError("Invalid Base64 string format.");
       }
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     run();
   }, [input, mode]);
 
   const copy = async (value: string, key: string) => {
-    await navigator.clipboard.writeText(value);
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
       toast.success("Copied to clipboard!");
-    setCopied(key);
-    setTimeout(() => setCopied(null), 1200);
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1200);
+    } catch {
+      setCopied(null);
+    }
   };
 
   const downloadFile = () => {
@@ -125,105 +132,157 @@ export default function Base64Tool() {
   };
 
   return (
-    <div className="w-full space-y-8">
-      {/* Sleek Mode Toggle */}
-      <div className="flex justify-center">
-        <div className="inline-flex items-center p-1 bg-[rgba(var(--fg),0.03)] rounded-full border border-[rgba(var(--fg),0.05)]">
-          <Button
+    <ToolWorkspace>
+      {/* TOOLBAR */}
+      <ToolToolbar>
+        {/* Mode Switcher */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[rgb(var(--card-2))] border border-[rgb(var(--border))]">
+          <button
+            type="button"
             onClick={() => setMode("encode")}
-            className={`px-8 py-2.5 rounded-full text-[13px] font-bold uppercase tracking-wider transition-all duration-300 ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               mode === "encode"
-                ? "bg-[rgb(var(--fg))] text-[rgb(var(--bg))] shadow-md"
+                ? "bg-[rgb(var(--accent))] text-[rgb(var(--on-accent))] shadow-sm"
                 : "text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
             }`}
           >
             Encode
-          </Button>
-          <Button
+          </button>
+          <button
+            type="button"
             onClick={() => setMode("decode")}
-            className={`px-8 py-2.5 rounded-full text-[13px] font-bold uppercase tracking-wider transition-all duration-300 ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               mode === "decode"
-                ? "bg-[rgb(var(--fg))] text-[rgb(var(--bg))] shadow-md"
+                ? "bg-[rgb(var(--accent))] text-[rgb(var(--on-accent))] shadow-sm"
                 : "text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
             }`}
           >
             Decode
+          </button>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            onChange={(e) =>
+              e.target.files && handleFileUpload(e.target.files[0])
+            }
+          />
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            className="text-xs gap-1.5"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span>Upload File</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setInput("");
+              setOutput("");
+              setError(null);
+            }}
+            className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--danger))]"
+          >
+            Clear
           </Button>
         </div>
-      </div>
+      </ToolToolbar>
 
+      {/* ERROR BANNER */}
       {error && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-500 flex items-center gap-3 font-medium">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-          {error}
-        </motion.div>
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3.5 text-xs sm:text-sm text-red-600 dark:text-red-400 flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+          <div className="flex-1 font-mono break-words-safe">{error}</div>
+        </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Input Column */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="text-[13px] font-bold uppercase tracking-widest text-[rgb(var(--muted))] flex items-center gap-2">
-              Input
-              <span className="px-2 py-0.5 rounded-full bg-[rgba(var(--fg),0.05)] text-[10px]">{input.length} chars</span>
-            </div>
-            <Button onClick={() => copy(input, "input")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
-              {copied === "input" ? "Copied ✓" : "Copy"}
-            </Button>
+      {/* SPLIT PANE */}
+      <ToolSplitPane
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              {mode === "encode" ? "Plain Text / Input" : "Base64 Input"}
+            </span>
+            <span className="text-[11px] text-[rgb(var(--muted))]">
+              {input ? `${input.length} chars` : "Empty"}
+            </span>
           </div>
-
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--muted))]">
+              {mode === "encode" ? "Base64 Output" : "Decoded Result"}
+            </span>
+            <div className="flex items-center gap-1.5">
+              {mode === "decode" && output && mimeType !== "text/plain" && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={downloadFile}
+                  className="h-7 text-xs px-2 gap-1"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Download</span>
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => copy(output, "output")}
+                disabled={!output}
+                className="h-7 text-xs px-2.5 gap-1"
+              >
+                {copied === "output" ? (
+                  <>
+                    <Check className="w-3 h-3 text-emerald-500" />
+                    <span>Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        }
+        input={
           <CodeEditor
             value={input}
-            onChange={(v) => setInput(v || "")}
-            className="!min-h-[400px]"
+            onChange={(val) => setInput(val || "")}
             language="plaintext"
+            options={{ wordWrap: "on" }}
           />
-
-          <div className="flex items-center gap-3">
-             <input ref={fileInputRef} type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
-             <Button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-[rgba(var(--fg),0.1)] text-sm font-medium text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))] hover:border-[rgba(var(--fg),0.3)] hover:bg-[rgba(var(--fg),0.02)] transition-all">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                Upload File Instead
-             </Button>
-          </div>
-        </div>
-
-        {/* Output Column */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="text-[13px] font-bold uppercase tracking-widest text-[rgb(var(--muted))]">Output</div>
-            <Button onClick={() => copy(output, "output")} className="text-xs font-semibold hover:text-[rgb(var(--accent))] transition-colors">
-              {copied === "output" ? "Copied ✓" : "Copy"}
-            </Button>
-          </div>
-
-          {/* Smart Display */}
-          {mode === "decode" && mimeType?.startsWith("image/") ? (
-            <div className="min-h-[400px] flex items-center justify-center rounded-xl ring-1 ring-[rgba(var(--fg),0.06)] shadow-inner bg-[#0D1117] overflow-hidden p-8">
-              <img src={`data:${mimeType};base64,${output}`} className="max-w-full max-h-[340px] rounded object-contain shadow-2xl" alt="Decoded Preview" />
-            </div>
-          ) : mode === "decode" && mimeType === "application/pdf" ? (
-            <div className="min-h-[400px] rounded-xl ring-1 ring-[rgba(var(--fg),0.06)] shadow-inner bg-[#0D1117] overflow-hidden">
-              <iframe src={`data:${mimeType};base64,${output}`} className="w-full h-full min-h-[400px]" />
+        }
+        output={
+          mode === "decode" && mimeType?.startsWith("image/") ? (
+            <div className="w-full min-h-[260px] sm:min-h-[340px] lg:min-h-[420px] flex items-center justify-center rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-6 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`data:${mimeType};base64,${output}`}
+                className="max-w-full max-h-[320px] rounded-lg object-contain shadow-md"
+                alt="Decoded Preview"
+              />
             </div>
           ) : (
             <CodeEditor
               value={output}
-              editable={false}
-              className="!min-h-[400px]"
               language="plaintext"
+              options={{ readOnly: true, wordWrap: "on" }}
             />
-          )}
-
-          {mode === "decode" && output && (
-            <Button onClick={downloadFile} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[rgb(var(--fg))] text-[rgb(var(--bg))] text-sm font-bold shadow-lg hover:shadow-[rgb(var(--fg))]/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-              Download Decoded File
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+          )
+        }
+      />
+    </ToolWorkspace>
   );
 }
-

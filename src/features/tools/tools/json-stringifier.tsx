@@ -5,15 +5,28 @@ import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { Copy, Check, RotateCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 type Mode = "stringify" | "parse";
 
+const SAMPLE_JSON = JSON.stringify(
+  {
+    message: "Hello World!",
+    status: "success",
+    timestamp: 1711000000,
+    features: ["fast", "safe"],
+  },
+  null,
+  2
+);
+
 export function JsonStringifierTool({ tool }: { tool: ToolDef }) {
   const inputKey = `toolmate:${tool.slug}:input`;
-  const input = usePersistedState<string>(inputKey, "");
+  const input = usePersistedState<string>(inputKey, SAMPLE_JSON);
   const [mode, setMode] = useState<Mode>("stringify");
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,11 +40,9 @@ export function JsonStringifierTool({ tool }: { tool: ToolDef }) {
     }
     try {
       if (mode === "stringify") {
-        // Parse the input JSON to ensure it's valid before stringifying
         const parsed = JSON.parse(input.value);
-        setOutput(JSON.stringify(JSON.stringify(parsed))); // Double stringify to get the escaped string
+        setOutput(JSON.stringify(JSON.stringify(parsed)));
       } else {
-        // First parse unescapes the string, but we might need to parse twice depending on input
         let parsed = JSON.parse(input.value);
         if (typeof parsed === "string") {
           parsed = JSON.parse(parsed);
@@ -56,68 +67,107 @@ export function JsonStringifierTool({ tool }: { tool: ToolDef }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      setCopied(false);
+      toast.error("Failed to copy");
     }
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      {/* Mode Toggle */}
-      <Card className="mb-6 p-4">
-        <div className="flex gap-3">
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <div className="flex items-center gap-2">
           <Button
+            type="button"
+            size="sm"
             variant={mode === "stringify" ? "primary" : "secondary"}
             onClick={() => setMode("stringify")}
+            className="text-xs"
           >
-            Stringify Object
+            Escape & Stringify
           </Button>
           <Button
+            type="button"
+            size="sm"
             variant={mode === "parse" ? "primary" : "secondary"}
             onClick={() => setMode("parse")}
+            className="text-xs"
           >
-            Parse Stringified
+            Unescape & Format
           </Button>
         </div>
-      </Card>
+
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={() => input.setValue(SAMPLE_JSON)}
+          className="text-xs text-[rgb(var(--muted))] hover:text-[rgb(var(--fg))]"
+        >
+          <RotateCcw className="w-3.5 h-3.5 mr-1" />
+          Reset Sample
+        </Button>
+      </ToolToolbar>
 
       {error && (
-        <div className="mb-4 rounded-[var(--radius)] border border-[rgba(var(--danger),0.4)] bg-[rgba(var(--danger),0.08)] p-4 text-sm text-red-500 whitespace-pre-wrap font-mono">
-          {error}
+        <div className="flex items-center gap-2 p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col h-full">
-          <div className="font-medium mb-3">Input {mode === "stringify" ? "JSON Object" : "Stringified JSON"}</div>
-          <CodeEditor
-            className="min-h-[400px]"
-            value={input.value}
-            onChange={(value) => input.setValue(value || "")}
-            language={mode === "stringify" ? "json" : "plaintext"}
-          />
-        </div>
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-[13px] text-[rgb(var(--muted))] uppercase tracking-wider mb-2 ml-1">Output {mode === "stringify" ? "Stringified JSON" : "JSON Object"}</div>
-            <Button size="sm" variant="secondary" onClick={copyToClipboard} disabled={!output}>
-              <motion.span
-                key={copied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {copied ? "Copied ✓" : "Copy"}
-              </motion.span>
+      <ToolSplitPane
+        defaultMobileView="both"
+        hasOutput={Boolean(output)}
+        inputHeader={
+          <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+            Input {mode === "stringify" ? "JSON Object" : "Escaped JSON String"}
+          </span>
+        }
+        outputHeader={
+          <div className="flex items-center justify-between w-full">
+            <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+              {mode === "stringify" ? "Escaped String" : "Parsed JSON Object"}
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={copyToClipboard}
+              disabled={!output}
+              className="text-xs h-7 px-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3 mr-1 text-emerald-500" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3 mr-1" />
+                  Copy
+                </>
+              )}
             </Button>
           </div>
+        }
+        input={
           <CodeEditor
-            className="min-h-[400px]"
+            value={input.value}
+            onChange={(val) => input.setValue(val || "")}
+            language={mode === "stringify" ? "json" : "plaintext"}
+            minHeight="min-h-[300px] sm:min-h-[420px]"
+            options={{ wordWrap: "on" }}
+          />
+        }
+        output={
+          <CodeEditor
             value={output}
             language={mode === "stringify" ? "plaintext" : "json"}
-            options={{ readOnly: true }}
+            editable={false}
+            minHeight="min-h-[300px] sm:min-h-[420px]"
+            options={{ wordWrap: "on" }}
           />
-        </div>
-      </div>
-    </main>
+        }
+      />
+    </ToolWorkspace>
   );
 }

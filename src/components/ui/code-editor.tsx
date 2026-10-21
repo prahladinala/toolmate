@@ -9,14 +9,22 @@ import { json } from "@codemirror/lang-json";
 import { css } from "@codemirror/lang-css";
 import { EditorView } from "@codemirror/view";
 import { ThemeContext } from "@/features/theme/theme-provider";
+import { cn } from "@/lib/utils/cn";
 
-export interface CodeEditorProps extends Omit<ReactCodeMirrorProps, 'theme'> {
+export interface CodeEditorProps extends Omit<ReactCodeMirrorProps, "theme"> {
   className?: string;
   language?: string;
   options?: any;
+  minHeight?: string;
 }
 
-export function CodeEditor({ className, language, options, ...props }: CodeEditorProps) {
+export function CodeEditor({
+  className,
+  language,
+  options,
+  minHeight,
+  ...props
+}: CodeEditorProps) {
   const { theme } = useContext(ThemeContext);
   const [isDark, setIsDark] = useState(false);
 
@@ -30,25 +38,43 @@ export function CodeEditor({ className, language, options, ...props }: CodeEdito
 
   const getLanguageExtension = () => {
     switch (language?.toLowerCase()) {
-      case "html": return [html()];
-      case "javascript": 
+      case "html":
+        return [html()];
+      case "javascript":
       case "typescript":
       case "js":
-      case "ts": return [javascript({ jsx: true, typescript: true })];
-      case "json": return [json()];
-      case "css": return [css()];
-      default: return [];
+      case "ts":
+        return [javascript({ jsx: true, typescript: true })];
+      case "json":
+        return [json()];
+      case "css":
+        return [css()];
+      default:
+        return [];
     }
   };
 
+  const isWrap = options?.wordWrap === "on" || options?.lineWrapping === true;
+  const extensions = isWrap
+    ? [...getLanguageExtension(), EditorView.lineWrapping]
+    : getLanguageExtension();
+
   return (
     <div
-      className={`relative min-h-[420px] h-full w-full overflow-hidden rounded-xl border border-[rgba(var(--fg),0.1)] bg-white dark:bg-[#0d1117] z-10 flex flex-col shadow-sm ${className || ""}`}
+      style={minHeight ? { minHeight } : undefined}
+      className={cn(
+        "relative w-full min-w-0 max-w-full rounded-xl overflow-hidden",
+        "border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm",
+        "flex flex-col transition-colors duration-150",
+        // Responsive min-height defaults if no explicit minHeight is supplied
+        !minHeight && "min-h-[260px] sm:min-h-[340px] lg:min-h-[420px]",
+        className
+      )}
     >
-      <div className="absolute inset-0">
+      <div className="flex-1 w-full min-w-0 h-full overflow-hidden flex flex-col">
         <CodeMirror
           theme={isDark ? githubDark : githubLight}
-          extensions={options?.wordWrap === "on" ? [...getLanguageExtension(), EditorView.lineWrapping] : getLanguageExtension()}
+          extensions={extensions}
           basicSetup={{
             lineNumbers: true,
             highlightActiveLineGutter: true,
@@ -75,7 +101,12 @@ export function CodeEditor({ className, language, options, ...props }: CodeEdito
             completionKeymap: true,
             lintKeymap: true,
           }}
-          className="flex-1 w-full h-full text-[14px] font-mono leading-relaxed [&>.cm-editor]:h-full [&_.cm-scroller]:font-mono [&_.cm-scroller]:p-4"
+          className={cn(
+            "flex-1 w-full min-w-0 text-[13px] sm:text-[14px] font-mono leading-relaxed",
+            "[&>.cm-editor]:h-full [&>.cm-editor]:min-h-[inherit]",
+            "[&_.cm-scroller]:font-mono [&_.cm-scroller]:p-3 sm:[&_.cm-scroller]:p-4",
+            "[&_.cm-scroller]:overflow-auto [&_.cm-scroller]:max-w-full"
+          )}
           editable={options?.readOnly ? false : undefined}
           {...props}
         />

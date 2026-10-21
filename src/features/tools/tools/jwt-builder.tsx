@@ -1,39 +1,43 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { Copy, Check, Key, AlertCircle } from "lucide-react";
 import CryptoJS from "crypto-js";
 import { toast } from "sonner";
 
 function base64url(source: CryptoJS.lib.WordArray) {
   let encodedSource = CryptoJS.enc.Base64.stringify(source);
-  encodedSource = encodedSource.replace(/=+$/, '');
-  encodedSource = encodedSource.replace(/\+/g, '-');
-  encodedSource = encodedSource.replace(/\//g, '_');
+  encodedSource = encodedSource.replace(/=+$/, "");
+  encodedSource = encodedSource.replace(/\+/g, "-");
+  encodedSource = encodedSource.replace(/\//g, "_");
   return encodedSource;
 }
 
 const DEFAULT_HEADER = {
   alg: "HS256",
-  typ: "JWT"
+  typ: "JWT",
 };
 
 const DEFAULT_PAYLOAD = {
-  sub: "1234567890",
+  sub: "usr_1024",
   name: "John Doe",
-  iat: 1516239022
+  role: "admin",
+  iat: Math.floor(Date.now() / 1000),
+  exp: Math.floor(Date.now() / 1000) + 3600,
 };
 
 export default function JWTBuilder() {
   const [headerStr, setHeaderStr] = useState(JSON.stringify(DEFAULT_HEADER, null, 2));
   const [payloadStr, setPayloadStr] = useState(JSON.stringify(DEFAULT_PAYLOAD, null, 2));
-  const [secret, setSecret] = useState("your-256-bit-secret");
+  const [secret, setSecret] = useState("my-super-secret-key-32-chars");
   const [jwt, setJwt] = useState("");
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const buildJwt = useCallback(() => {
     try {
@@ -42,7 +46,7 @@ export default function JWTBuilder() {
       const payloadObj = JSON.parse(payloadStr);
 
       if (headerObj.alg !== "HS256") {
-        throw new Error("Currently, only HS256 algorithm is supported by this builder.");
+        throw new Error("Only HS256 algorithm is currently supported by this interactive builder.");
       }
 
       const stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(headerObj));
@@ -66,75 +70,120 @@ export default function JWTBuilder() {
     buildJwt();
   }, [buildJwt]);
 
+  const copyJwt = async () => {
+    if (!jwt) return;
+    try {
+      await navigator.clipboard.writeText(jwt);
+      toast.success("JWT token copied!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
   return (
-    <main className="w-full max-w-6xl mx-auto space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          <Card className="p-4 space-y-4 shadow-sm border border-[rgba(var(--fg),0.1)]">
-            <div className="space-y-2">
-              <Label className="text-red-500 font-semibold">HEADER: ALGORITHM & TOKEN TYPE</Label>
-              <CodeEditor 
-                value={headerStr} 
-                onChange={setHeaderStr} 
-                language="json" 
-                className="!min-h-[150px] !h-[150px]"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-purple-500 font-semibold">PAYLOAD: DATA</Label>
-              <CodeEditor 
-                value={payloadStr} 
-                onChange={setPayloadStr} 
-                language="json" 
-                className="!min-h-[200px] !h-[200px]"
-              />
-            </div>
+    <ToolWorkspace maxWidth="wide">
+      <ToolToolbar>
+        <span className="text-xs text-[rgb(var(--muted))]">
+          Construct and sign HMAC-SHA256 (HS256) JSON Web Tokens in real time
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={copyJwt}
+          disabled={!jwt}
+          className="text-xs"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5 mr-1" />
+              Copy Token
+            </>
+          )}
+        </Button>
+      </ToolToolbar>
 
-            <div className="space-y-2">
-              <Label className="text-cyan-500 font-semibold">VERIFY SIGNATURE (HS256)</Label>
-              <div className="bg-muted/30 p-3 rounded-lg border font-mono text-sm space-y-2">
-                <div>HMACSHA256(</div>
-                <div className="pl-4 text-muted-foreground">base64UrlEncode(header) + "." +</div>
-                <div className="pl-4 text-muted-foreground">base64UrlEncode(payload),</div>
-                <Input 
-                  value={secret} 
-                  onChange={(e) => setSecret(e.target.value)} 
-                  placeholder="your-256-bit-secret" 
-                  className="font-mono text-cyan-500 bg-background"
-                />
-                <div>)</div>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card className="p-4 space-y-4 shadow-sm border border-[rgba(var(--fg),0.1)] h-full flex flex-col">
-            <Label className="font-semibold text-lg">Generated JWT</Label>
-            {error ? (
-              <div className="text-destructive font-mono text-sm bg-destructive/10 p-4 rounded-xl flex-1">
-                {error}
-              </div>
-            ) : (
-              <div className="font-mono text-lg break-all p-4 rounded-xl bg-background border flex-1 leading-relaxed">
-                <span className="text-red-500">{jwt.split(".")[0]}</span>
-                <span className="text-muted-foreground">.</span>
-                <span className="text-purple-500">{jwt.split(".")[1]}</span>
-                <span className="text-muted-foreground">.</span>
-                <span className="text-cyan-500">{jwt.split(".")[2]}</span>
-              </div>
-            )}
-            <Button 
-              className="w-full" 
-              disabled={!!error}
-              onClick={() => navigator.clipboard.writeText(jwt)}
-            >
-              Copy to Clipboard
-            </Button>
-          </Card>
+      {/* Secret Bar */}
+      <div className="p-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-1.5">
+        <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider block">
+          HMAC-SHA256 Signing Secret
+        </label>
+        <div className="flex items-center gap-2">
+          <Key className="w-4 h-4 text-indigo-500 shrink-0" />
+          <Input
+            value={secret}
+            onChange={(e) => setSecret(e.target.value)}
+            className="text-xs sm:text-sm font-mono h-10 bg-[rgb(var(--card-2))]"
+            placeholder="Signing key secret..."
+          />
         </div>
       </div>
-    </main>
+
+      {error && (
+        <div className="flex items-center gap-2 p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* Inputs Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full min-w-0">
+        <div className="flex flex-col min-w-0 w-full space-y-2">
+          <span className="font-semibold text-xs tracking-wider uppercase text-rose-500">
+            Header (JSON)
+          </span>
+          <CodeEditor
+            value={headerStr}
+            onChange={(v) => setHeaderStr(v || "")}
+            language="json"
+            minHeight="min-h-[160px] sm:min-h-[200px]"
+          />
+        </div>
+
+        <div className="flex flex-col min-w-0 w-full space-y-2">
+          <span className="font-semibold text-xs tracking-wider uppercase text-purple-500">
+            Payload Claims (JSON)
+          </span>
+          <CodeEditor
+            value={payloadStr}
+            onChange={(v) => setPayloadStr(v || "")}
+            language="json"
+            minHeight="min-h-[160px] sm:min-h-[200px]"
+          />
+        </div>
+      </div>
+
+      {/* Generated Token */}
+      <div className="p-5 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] shadow-sm space-y-2">
+        <span className="font-semibold text-xs tracking-wider uppercase text-[rgb(var(--muted))]">
+          Signed JWT Token
+        </span>
+        <div className="p-4 rounded-xl bg-[rgb(var(--card-2))] border border-[rgb(var(--border))] font-mono text-xs sm:text-sm break-all select-all font-semibold leading-relaxed">
+          {jwt ? (
+            (() => {
+              const parts = jwt.split(".");
+              return (
+                <>
+                  <span className="text-rose-500">{parts[0]}</span>
+                  <span className="text-[rgb(var(--fg))]">.</span>
+                  <span className="text-purple-500">{parts[1]}</span>
+                  <span className="text-[rgb(var(--fg))]">.</span>
+                  <span className="text-cyan-500">{parts[2]}</span>
+                </>
+              );
+            })()
+          ) : (
+            <span className="text-[rgb(var(--muted))] font-normal">Resolving valid JWT...</span>
+          )}
+        </div>
+      </div>
+    </ToolWorkspace>
   );
 }
