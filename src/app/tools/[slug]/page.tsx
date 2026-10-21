@@ -6,6 +6,7 @@ import { ToolVisitTracker } from "@/features/tools/ToolVisitTracker";
 import { ShareButton } from "@/features/tools/ShareButton";
 import { DonationBanner } from "@/components/donation/DonationBanner";
 import { EngagementModal } from "@/components/donation/EngagementModal";
+import { DONATION_CONFIG } from "@/config/donation";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -180,12 +181,16 @@ export default async function ToolPage({ params }: Props) {
           </section>
 
           {/* STATIC DONATION BUTTONS / BANNER */}
-          <div className="mt-12">
-            <DonationBanner />
-          </div>
+          {DONATION_CONFIG.isEnabled && (
+            <div className="mt-12">
+              <DonationBanner />
+            </div>
+          )}
 
           {/* TIME-TRIGGERED ENGAGEMENT FEEDBACK & PAYMENT MODAL */}
-          <EngagementModal toolName={tool.name} />
+          {DONATION_CONFIG.isEnabled && (
+            <EngagementModal toolName={tool.name} />
+          )}
         </div>
       </main>
     </>

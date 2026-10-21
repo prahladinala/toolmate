@@ -5,6 +5,7 @@ import { X, Sparkles, Heart } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { DonationButtons } from "./DonationButtons";
 import { useEngagementPopup } from "@/hooks/useEngagementPopup";
+import { DONATION_CONFIG } from "@/config/donation";
 
 interface EngagementModalProps {
   toolName?: string;
@@ -16,7 +17,7 @@ export function EngagementModal({
   enabled = true,
 }: EngagementModalProps) {
   const { isOpen, step, handleFeedback, handleClose } = useEngagementPopup({
-    enabled,
+    enabled: enabled && DONATION_CONFIG.isEnabled,
   });
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +42,7 @@ export function EngagementModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !DONATION_CONFIG.isEnabled) return null;
 
   return (
     <div

@@ -2,6 +2,7 @@ import React from "react";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { DonationButtons } from "./DonationButtons";
+import { DONATION_CONFIG } from "@/config/donation";
 
 interface DonationBannerProps {
   className?: string;
@@ -12,6 +13,9 @@ export function DonationBanner({
   className,
   variant = "card",
 }: DonationBannerProps) {
+  if (!DONATION_CONFIG.isEnabled) {
+    return null;
+  }
   if (variant === "minimal") {
     return (
       <div

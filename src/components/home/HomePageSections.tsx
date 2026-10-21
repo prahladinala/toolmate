@@ -4,6 +4,7 @@ import FeaturedSection from "./FeaturedSection";
 import { EcosystemSection } from "./EcosystemSection";
 import TrustSection from "./TrustSection";
 import { DonationBanner } from "@/components/donation/DonationBanner";
+import { DONATION_CONFIG } from "@/config/donation";
 
 export default function HomePageSections() {
   return (
@@ -21,11 +22,13 @@ export default function HomePageSections() {
       <DeveloperSection />
 
       {/* SUPPORT & DONATION */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <DonationBanner />
-        </div>
-      </section>
+      {DONATION_CONFIG.isEnabled && (
+        <section className="py-16 px-4">
+          <div className="max-w-4xl mx-auto">
+            <DonationBanner />
+          </div>
+        </section>
+      )}
 
       {/* TRUST */}
       <TrustSection />

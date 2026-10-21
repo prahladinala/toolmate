@@ -75,7 +75,7 @@ export function useEngagementPopup(options: UseEngagementPopupOptions = {}) {
   );
 
   useEffect(() => {
-    if (!enabled || typeof window === "undefined") return;
+    if (!enabled || !DONATION_CONFIG.isEnabled || typeof window === "undefined") return;
 
     if (isAlreadyDismissed()) return;
 
