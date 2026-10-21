@@ -91,6 +91,39 @@ const MarkdownTableGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./to
 
 
 
+
+const ImageCompressorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/image-compressor").then(m => m.ImageCompressorTool), { ssr: false });
+const BackgroundRemoverTool = dynamic<{ tool: ToolDef }>(() => import("./tools/background-remover").then(m => m.BackgroundRemoverTool), { ssr: false });
+const BackgroundChangerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/background-changer").then(m => m.BackgroundChangerTool), { ssr: false });
+const PortraitBlurTool = dynamic<{ tool: ToolDef }>(() => import("./tools/portrait-blur").then(m => m.PortraitBlurTool), { ssr: false });
+const PassportPhotoTool = dynamic<{ tool: ToolDef }>(() => import("./tools/passport-photo").then(m => m.PassportPhotoTool), { ssr: false });
+const StickerMakerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/sticker-maker").then(m => m.StickerMakerTool), { ssr: false });
+const HeadshotGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/headshot-generator").then(m => m.HeadshotGeneratorTool), { ssr: false });
+const ImageConverterTool = dynamic<{ tool: ToolDef }>(() => import("./tools/image-converter").then(m => m.ImageConverterTool), { ssr: false });
+const BatchImageConverterTool = dynamic<{ tool: ToolDef }>(() => import("./tools/batch-convert").then(m => m.BatchImageConverterTool), { ssr: false });
+const HeicToJpgTool = dynamic<{ tool: ToolDef }>(() => import("./tools/heic-to-jpg").then(m => m.HeicToJpgTool), { ssr: false });
+const JpegToPngTool = dynamic<{ tool: ToolDef }>(() => import("./tools/jpeg-to-png").then(m => m.JpegToPngTool), { ssr: false });
+const JpegToWebpTool = dynamic<{ tool: ToolDef }>(() => import("./tools/jpeg-to-webp").then(m => m.JpegToWebpTool), { ssr: false });
+const WebpToPngTool = dynamic<{ tool: ToolDef }>(() => import("./tools/webp-to-png").then(m => m.WebpToPngTool), { ssr: false });
+const PngToWebpTool = dynamic<{ tool: ToolDef }>(() => import("./tools/png-to-webp").then(m => m.PngToWebpTool), { ssr: false });
+const AvifToJpgTool = dynamic<{ tool: ToolDef }>(() => import("./tools/avif-to-jpg").then(m => m.AvifToJpgTool), { ssr: false });
+
+const MergePdfTool = dynamic<{ tool: ToolDef }>(() => import("./tools/merge-pdf").then(m => m.MergePdfTool), { ssr: false });
+const SplitPdfTool = dynamic<{ tool: ToolDef }>(() => import("./tools/split-pdf").then(m => m.SplitPdfTool), { ssr: false });
+const CompressPdfTool = dynamic<{ tool: ToolDef }>(() => import("./tools/compress-pdf").then(m => m.CompressPdfTool), { ssr: false });
+const PdfToImagesTool = dynamic<{ tool: ToolDef }>(() => import("./tools/pdf-to-images").then(m => m.PdfToImagesTool), { ssr: false });
+const ImagesToPdfTool = dynamic<{ tool: ToolDef }>(() => import("./tools/images-to-pdf").then(m => m.ImagesToPdfTool), { ssr: false });
+const RotatePdfTool = dynamic<{ tool: ToolDef }>(() => import("./tools/rotate-pdf").then(m => m.RotatePdfTool), { ssr: false });
+const PdfPageNumbersTool = dynamic<{ tool: ToolDef }>(() => import("./tools/pdf-page-numbers").then(m => m.PdfPageNumbersTool), { ssr: false });
+const PdfWatermarkTool = dynamic<{ tool: ToolDef }>(() => import("./tools/pdf-watermark").then(m => m.PdfWatermarkTool), { ssr: false });
+const ReorderPdfTool = dynamic<{ tool: ToolDef }>(() => import("./tools/reorder-pdf").then(m => m.ReorderPdfTool), { ssr: false });
+const RemovePdfPagesTool = dynamic<{ tool: ToolDef }>(() => import("./tools/remove-pdf-pages").then(m => m.RemovePdfPagesTool), { ssr: false });
+
+const JsonToStructTool = dynamic<{ tool: ToolDef }>(() => import("./tools/json-to-struct").then(m => m.JsonToStructTool));
+const YamlValidatorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/yaml-validator").then(m => m.YamlValidatorTool));
+const ExplainVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/explain-visualizer").then(m => m.ExplainVisualizerTool));
+const JsonDiffTool = dynamic<{ tool: ToolDef }>(() => import("./tools/json-diff").then(m => m.JsonDiffTool));
+
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
   "svg-background-generator": SvgBackgroundGeneratorTool,
@@ -174,6 +207,38 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "gitignore-generator": GitignoreGeneratorTool,
   "meta-tag-generator": MetaTagGeneratorTool,
   "markdown-to-html": MarkdownToHtmlTool,
+  "image-compressor": ImageCompressorTool,
+  "background-remover": BackgroundRemoverTool,
+  "background-changer": BackgroundChangerTool,
+  "portrait-blur": PortraitBlurTool,
+  "passport-photo": PassportPhotoTool,
+  "sticker-maker": StickerMakerTool,
+  "headshot-generator": HeadshotGeneratorTool,
+  "image-converter": ImageConverterTool,
+  "batch-convert": BatchImageConverterTool,
+  "heic-to-jpg": HeicToJpgTool,
+  "jpeg-to-png": JpegToPngTool,
+  "jpeg-to-webp": JpegToWebpTool,
+  "webp-to-png": WebpToPngTool,
+  "png-to-webp": PngToWebpTool,
+  "avif-to-jpg": AvifToJpgTool,
+
+  "merge-pdf": MergePdfTool,
+  "split-pdf": SplitPdfTool,
+  "compress-pdf": CompressPdfTool,
+  "pdf-to-images": PdfToImagesTool,
+  "images-to-pdf": ImagesToPdfTool,
+  "rotate-pdf": RotatePdfTool,
+  "pdf-page-numbers": PdfPageNumbersTool,
+  "pdf-watermark": PdfWatermarkTool,
+  "reorder-pdf": ReorderPdfTool,
+  "remove-pdf-pages": RemovePdfPagesTool,
+
+  "json-to-struct": JsonToStructTool,
+  "yaml-validator": YamlValidatorTool,
+  "explain-visualizer": ExplainVisualizerTool,
+  "json-diff": JsonDiffTool,
+
 };
 
 // Helper: pick suggestions by category first, then fallback to others.

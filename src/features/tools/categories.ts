@@ -5,5 +5,7 @@ export const CATEGORIES = [
   "Information",
   "Design",
   "Security",
+  "PDF",
+  "Images",
 ] as const;
 export type Category = (typeof CATEGORIES)[number];

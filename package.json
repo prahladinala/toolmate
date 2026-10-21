@@ -43,6 +43,8 @@
     "markdown-it": "^14.2.0",
     "next": "16.1.6",
     "papaparse": "^5.5.4",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.4.299",
     "prettier": "^3.8.4",
     "prismjs": "^1.30.0",
     "qrcode": "^1.5.4",

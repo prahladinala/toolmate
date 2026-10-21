@@ -995,7 +995,798 @@ export const TOOLS: ToolDef[] = [
     "persistSettings": true,
     "persistOutput": false
   }
-}
+},
+  {
+    "slug": "image-compressor",
+    "name": "Image Compressor",
+    "shortDescription": "Compress JPEG, PNG, and WebP images in your browser without uploading.",
+    "category": "Images",
+    "tags": [
+      "Image",
+      "Compress",
+      "Optimize",
+      "WebP",
+      "PNG",
+      "JPEG"
+    ],
+    "seo": {
+      "title": "Image Compressor — 100% Client-Side Image Compression | ToolMate",
+      "description": "Compress JPEG, PNG, and WebP images in your browser without quality loss. Safe, private, and fast.",
+      "keywords": [
+        "image compressor",
+        "compress png",
+        "compress jpeg",
+        "compress webp",
+        "reduce image size"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "background-remover",
+    "name": "AI Background Remover",
+    "shortDescription": "Remove background from photos and logos instantly with transparent PNG export.",
+    "category": "Images",
+    "tags": [
+      "Image",
+      "Background Remover",
+      "Transparent PNG",
+      "Cutout"
+    ],
+    "seo": {
+      "title": "AI Background Remover — Free Online Background Removal | ToolMate",
+      "description": "Remove photo backgrounds instantly in your browser. Download high-resolution transparent PNG images for free.",
+      "keywords": [
+        "background remover",
+        "remove background from image",
+        "transparent background png",
+        "photo cutout"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "background-changer",
+    "name": "Background Changer",
+    "shortDescription": "Replace photo backgrounds with colors, modern gradients, or studio backdrops.",
+    "category": "Images",
+    "tags": [
+      "Image",
+      "Background Changer",
+      "Gradients",
+      "Studio"
+    ],
+    "seo": {
+      "title": "Background Changer — Replace Photo Backgrounds Online | ToolMate",
+      "description": "Replace photo backgrounds with solid colors, vibrant gradients, or custom backdrops directly in your browser.",
+      "keywords": [
+        "background changer",
+        "change photo background",
+        "replace background online",
+        "photo backdrop"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "portrait-blur",
+    "name": "Portrait Blur (Bokeh Effect)",
+    "shortDescription": "Create professional DSLR bokeh blur while keeping subjects sharp.",
+    "category": "Images",
+    "tags": [
+      "Image",
+      "Portrait",
+      "Bokeh",
+      "Blur",
+      "Depth of Field"
+    ],
+    "seo": {
+      "title": "Portrait Blur & Bokeh Effect Maker — ToolMate",
+      "description": "Add professional depth-of-field and smooth bokeh blur to portrait photos. 100% client-side.",
+      "keywords": [
+        "portrait blur",
+        "bokeh effect",
+        "blur background",
+        "depth of field online"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "passport-photo",
+    "name": "Passport Photo Maker",
+    "shortDescription": "Create official passport and visa photos with printable 4x6 inch sheets.",
+    "category": "Images",
+    "tags": [
+      "Image",
+      "Passport",
+      "Visa",
+      "Biometric",
+      "Print"
+    ],
+    "seo": {
+      "title": "Passport Photo Maker — Official Biometric Photos & 4x6 Sheets | ToolMate",
+      "description": "Create compliant passport photos for US, UK, India, Schengen, Canada, and Australia with 300 DPI 4x6 print sheets.",
+      "keywords": [
+        "passport photo maker",
+        "visa photo maker",
+        "2x2 inch photo",
+        "passport photo printable sheet"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "sticker-maker",
+    "name": "Custom Sticker Maker",
+    "shortDescription": "Turn photos and graphics into die-cut stickers with white border contours.",
+    "category": "Images",
+    "tags": [
+      "Image",
+      "Sticker",
+      "Die-Cut",
+      "Contour",
+      "PNG"
+    ],
+    "seo": {
+      "title": "Custom Sticker Maker — Die-Cut Outline & Shadow | ToolMate",
+      "description": "Create custom stickers with die-cut white borders, soft drop shadows, and transparent PNG downloads.",
+      "keywords": [
+        "sticker maker",
+        "die cut sticker generator",
+        "photo to sticker",
+        "sticker border generator"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "headshot-generator",
+    "name": "Professional Headshot Generator",
+    "shortDescription": "Enhance portrait photos with studio lighting grades for LinkedIn and resumes.",
+    "category": "Images",
+    "tags": [
+      "Image",
+      "Headshot",
+      "LinkedIn",
+      "Resume",
+      "Studio"
+    ],
+    "seo": {
+      "title": "Professional Headshot Generator — Studio Lighting & Crop | ToolMate",
+      "description": "Enhance personal photos into studio-quality executive headshots for LinkedIn, resumes, and corporate bios.",
+      "keywords": [
+        "headshot generator",
+        "linkedin photo enhancer",
+        "professional profile picture maker"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "image-converter",
+    "name": "Universal Image Converter",
+    "shortDescription": "Convert between JPG, PNG, WebP, AVIF, HEIC, and BMP formats instantly.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "Image",
+      "Format",
+      "WebP",
+      "PNG",
+      "JPG"
+    ],
+    "seo": {
+      "title": "Universal Image Converter — Free Online Image Format Converter | ToolMate",
+      "description": "Convert images between JPG, PNG, WebP, AVIF, HEIC, and BMP online. 100% private and fast.",
+      "keywords": [
+        "image converter",
+        "convert image format",
+        "jpg to png",
+        "png to webp",
+        "universal image converter"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "batch-convert",
+    "name": "Batch Image Converter",
+    "shortDescription": "Convert multiple images at once to JPG, PNG, or WebP with bulk download.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "Batch",
+      "Image",
+      "Bulk",
+      "WebP"
+    ],
+    "seo": {
+      "title": "Batch Image Converter — Convert Multiple Images Online | ToolMate",
+      "description": "Bulk convert multiple images simultaneously to WebP, PNG, or JPG. Fast client-side batch processing.",
+      "keywords": [
+        "batch image converter",
+        "bulk image convert",
+        "convert multiple images online"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "heic-to-jpg",
+    "name": "HEIC to JPG Converter",
+    "shortDescription": "Convert Apple iPhone HEIC and HEIF photos to standard JPG format.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "HEIC",
+      "JPG",
+      "iPhone",
+      "Apple"
+    ],
+    "seo": {
+      "title": "HEIC to JPG Converter — Convert iPhone Photos Online | ToolMate",
+      "description": "Convert Apple HEIC photos to JPG format instantly in your browser without uploading your files.",
+      "keywords": [
+        "heic to jpg",
+        "convert heic to jpg",
+        "heic converter",
+        "iphone photo converter"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "jpeg-to-png",
+    "name": "JPEG to PNG Converter",
+    "shortDescription": "Convert JPEG and JPG images to lossless PNG format.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "JPEG",
+      "PNG",
+      "Lossless"
+    ],
+    "seo": {
+      "title": "JPEG to PNG Converter — Lossless Image Conversion | ToolMate",
+      "description": "Convert JPG and JPEG files to transparent lossless PNG format online for free.",
+      "keywords": [
+        "jpeg to png",
+        "jpg to png converter",
+        "convert jpeg to png"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "jpeg-to-webp",
+    "name": "JPEG to WebP Converter",
+    "shortDescription": "Convert JPEG images to WebP format to reduce website payload sizes.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "JPEG",
+      "WebP",
+      "Compression"
+    ],
+    "seo": {
+      "title": "JPEG to WebP Converter — Reduce File Size by 35% | ToolMate",
+      "description": "Convert JPEG images to modern WebP format for faster web page loads and reduced bandwidth.",
+      "keywords": [
+        "jpeg to webp",
+        "jpg to webp converter",
+        "convert jpeg to webp"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "webp-to-png",
+    "name": "WebP to PNG Converter",
+    "shortDescription": "Convert WebP images into universal lossless PNG files.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "WebP",
+      "PNG"
+    ],
+    "seo": {
+      "title": "WebP to PNG Converter — Instant Free Conversion | ToolMate",
+      "description": "Convert modern WebP images to standard PNG files compatible with all software and platforms.",
+      "keywords": [
+        "webp to png",
+        "convert webp to png",
+        "webp image converter"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "png-to-webp",
+    "name": "PNG to WebP Converter",
+    "shortDescription": "Convert PNG images to WebP format to save up to 80% file size.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "PNG",
+      "WebP",
+      "Optimize"
+    ],
+    "seo": {
+      "title": "PNG to WebP Converter — Save Up to 80% Size | ToolMate",
+      "description": "Convert heavy PNG graphics to lightweight WebP format with alpha channel transparency preserved.",
+      "keywords": [
+        "png to webp",
+        "convert png to webp",
+        "png compression webp"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "avif-to-jpg",
+    "name": "AVIF to JPG Converter",
+    "shortDescription": "Convert modern AVIF image files into universal standard JPG photos.",
+    "category": "Converters",
+    "tags": [
+      "Converter",
+      "AVIF",
+      "JPG"
+    ],
+    "seo": {
+      "title": "AVIF to JPG Converter — Convert AVIF Images Online | ToolMate",
+      "description": "Convert AVIF image files to standard JPG format for full compatibility across devices.",
+      "keywords": [
+        "avif to jpg",
+        "convert avif to jpg",
+        "avif converter"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "merge-pdf",
+    "name": "Merge PDF",
+    "shortDescription": "Combine multiple PDF documents into a single document with custom ordering.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Merge",
+      "Combine",
+      "Document"
+    ],
+    "seo": {
+      "title": "Merge PDF Online — Combine Multiple PDFs for Free | ToolMate",
+      "description": "Combine multiple PDF documents into one single PDF file. Drag and drop reordering, 100% private in-browser.",
+      "keywords": [
+        "merge pdf",
+        "combine pdf",
+        "pdf merger online",
+        "join pdf files"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "split-pdf",
+    "name": "Split PDF",
+    "shortDescription": "Split PDF into multiple files by custom page ranges or extract all pages.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Split",
+      "Extract",
+      "Pages"
+    ],
+    "seo": {
+      "title": "Split PDF Online — Extract PDF Pages for Free | ToolMate",
+      "description": "Split a PDF file into separate documents by page ranges or extract each page into individual files.",
+      "keywords": [
+        "split pdf",
+        "extract pdf pages",
+        "pdf splitter online",
+        "separate pdf"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "compress-pdf",
+    "name": "Compress PDF",
+    "shortDescription": "Reduce PDF document file size while preserving reading quality.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Compress",
+      "Optimize",
+      "Reduce Size"
+    ],
+    "seo": {
+      "title": "Compress PDF Online — Reduce PDF File Size | ToolMate",
+      "description": "Optimize and reduce PDF document file size for easier emailing and storage. 100% client-side security.",
+      "keywords": [
+        "compress pdf",
+        "reduce pdf size",
+        "pdf compressor online",
+        "shrink pdf file"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "pdf-to-images",
+    "name": "PDF to Images",
+    "shortDescription": "Convert PDF pages into high-resolution JPG or PNG pictures.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Images",
+      "JPG",
+      "PNG",
+      "Convert"
+    ],
+    "seo": {
+      "title": "PDF to Images Converter — Convert PDF to JPG or PNG | ToolMate",
+      "description": "Convert every page of your PDF into high-resolution JPG or PNG images. Fast and private in-browser.",
+      "keywords": [
+        "pdf to images",
+        "convert pdf to jpg",
+        "pdf to png converter",
+        "extract images from pdf"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "images-to-pdf",
+    "name": "Images to PDF",
+    "shortDescription": "Convert JPG, PNG, and WebP images into a single professional PDF.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Images to PDF",
+      "Combine",
+      "A4"
+    ],
+    "seo": {
+      "title": "Images to PDF Converter — Turn Photos into PDF | ToolMate",
+      "description": "Convert multiple JPG, PNG, or WebP images into a single PDF document with custom margins and page formats.",
+      "keywords": [
+        "images to pdf",
+        "jpg to pdf",
+        "photos to pdf converter",
+        "convert images to pdf"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "rotate-pdf",
+    "name": "Rotate PDF",
+    "shortDescription": "Rotate PDF pages 90°, 180°, or 270° permanently per page or for all pages.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Rotate",
+      "Orientation"
+    ],
+    "seo": {
+      "title": "Rotate PDF Online — Rotate PDF Pages Permanently | ToolMate",
+      "description": "Rotate individual PDF pages or the entire document by 90, 180, or 270 degrees clockwise online.",
+      "keywords": [
+        "rotate pdf",
+        "rotate pdf pages",
+        "pdf orientation changer"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "pdf-page-numbers",
+    "name": "Add Page Numbers to PDF",
+    "shortDescription": "Stamp formatted page numbers on your PDF document with custom positions.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Page Numbers",
+      "Pagination",
+      "Stamp"
+    ],
+    "seo": {
+      "title": "Add Page Numbers to PDF — Online PDF Pagination | ToolMate",
+      "description": "Add clean, formatted page numbers to your PDF documents with customizable alignment, formatting, and fonts.",
+      "keywords": [
+        "add page numbers to pdf",
+        "pdf page numbering",
+        "paginate pdf online"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "pdf-watermark",
+    "name": "Add Watermark to PDF",
+    "shortDescription": "Stamp custom text watermarks across every page of your PDF.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Watermark",
+      "Security",
+      "Stamp"
+    ],
+    "seo": {
+      "title": "Add Watermark to PDF Online — Protect Documents | ToolMate",
+      "description": "Stamp diagonal or horizontal text watermarks like CONFIDENTIAL or DRAFT onto every page of your PDF.",
+      "keywords": [
+        "add watermark to pdf",
+        "pdf watermark online",
+        "stamp pdf document"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "reorder-pdf",
+    "name": "Reorder PDF Pages",
+    "shortDescription": "Visually rearrange and resequence PDF pages with thumbnail cards.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Reorder",
+      "Rearrange",
+      "Sort Pages"
+    ],
+    "seo": {
+      "title": "Reorder PDF Pages — Rearrange PDF Pages Online | ToolMate",
+      "description": "Change the page sequence of your PDF document with intuitive visual reordering controls.",
+      "keywords": [
+        "reorder pdf pages",
+        "rearrange pdf",
+        "organize pdf pages"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "remove-pdf-pages",
+    "name": "Remove PDF Pages",
+    "shortDescription": "Select and delete unwanted pages from any PDF document.",
+    "category": "PDF",
+    "tags": [
+      "PDF",
+      "Delete Pages",
+      "Remove Pages"
+    ],
+    "seo": {
+      "title": "Remove PDF Pages — Delete Unwanted Pages from PDF | ToolMate",
+      "description": "Select unwanted pages visually and remove them from your PDF file permanently.",
+      "keywords": [
+        "remove pdf pages",
+        "delete pages from pdf",
+        "delete pdf page online"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "json-to-struct",
+    "name": "JSON to Code Structs & Models",
+    "shortDescription": "Generate Go structs, Rust serde, TypeScript, Python Pydantic, and Kotlin models from JSON.",
+    "category": "Developer",
+    "tags": [
+      "JSON",
+      "Go",
+      "Rust",
+      "TypeScript",
+      "Python",
+      "Pydantic",
+      "Kotlin",
+      "Java",
+      "C#",
+      "Swift"
+    ],
+    "seo": {
+      "title": "JSON to Code Structs — Go, Rust, TypeScript, Python, Kotlin | ToolMate",
+      "description": "Convert JSON objects into Go structs, Rust serde models, TypeScript interfaces, Python Pydantic classes, and Kotlin serialization.",
+      "keywords": [
+        "json to struct",
+        "json to go struct",
+        "json to rust serde",
+        "json to pydantic",
+        "json to kotlin"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "yaml-validator",
+    "name": "YAML Validator & Linter",
+    "shortDescription": "Validate YAML syntax, detect exact error lines and columns, and preview equivalent JSON.",
+    "category": "Developer",
+    "tags": [
+      "YAML",
+      "Validate",
+      "Lint",
+      "Syntax",
+      "JSON"
+    ],
+    "seo": {
+      "title": "YAML Validator & Linter — Check YAML Syntax Online | ToolMate",
+      "description": "Validate YAML syntax with exact line and column error reporting, code formatting, and real-time JSON preview.",
+      "keywords": [
+        "yaml validator",
+        "validate yaml",
+        "yaml linter",
+        "yaml syntax checker"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "explain-visualizer",
+    "name": "EXPLAIN Plan Visualizer",
+    "shortDescription": "Visualize PostgreSQL & MySQL EXPLAIN query execution plans with cost heatmaps.",
+    "category": "Developer",
+    "tags": [
+      "Database",
+      "SQL",
+      "Postgres",
+      "MySQL",
+      "EXPLAIN",
+      "Performance",
+      "Visualizer"
+    ],
+    "seo": {
+      "title": "EXPLAIN Plan Visualizer — PostgreSQL & MySQL Query Profiler | ToolMate",
+      "description": "Visualize PostgreSQL and MySQL EXPLAIN execution plans. Identify slow sequential scans, high-cost joins, and query bottlenecks.",
+      "keywords": [
+        "explain visualizer",
+        "postgres explain analyze visualizer",
+        "mysql explain visualizer",
+        "query plan profiler"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "json-diff",
+    "name": "JSON Diff & Compare",
+    "shortDescription": "Compare two JSON objects and see deep structural differences highlighted.",
+    "category": "Developer",
+    "tags": [
+      "JSON",
+      "Diff",
+      "Compare",
+      "Developer"
+    ],
+    "seo": {
+      "title": "JSON Diff Tool — Compare Two JSON Objects Online | ToolMate",
+      "description": "Compare two JSON documents with deep structural difference highlighting for added, removed, and modified keys.",
+      "keywords": [
+        "json diff",
+        "compare json objects",
+        "json comparison tool",
+        "json difference finder"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  }
 ];
 
 export function getTool(slug: string) {
