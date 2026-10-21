@@ -9,6 +9,7 @@ import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import * as yaml from "js-yaml";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 import { toast } from "sonner";
 import { Copy, Check, Play, AlertCircle, Sparkles, Trash2 } from "lucide-react";
 
@@ -46,7 +47,7 @@ export function JsonToYamlTool({ tool }: { tool: ToolDef }) {
       return;
     }
     try {
-      const parsed = JSON.parse(input.value);
+      const parsed = parseRobustJSON(input.value);
       const yamlStr = yaml.dump(parsed);
       setOutput(yamlStr);
       setError(null);

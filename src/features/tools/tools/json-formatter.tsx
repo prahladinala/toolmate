@@ -4,14 +4,14 @@ import React from "react";
 import type { ToolDef } from "../registry";
 import { usePersistedState } from "../persistence";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { parseRobustJSON, sortObjectKeys } from "@/lib/json/json-utils";
 import { toast } from "sonner";
-import { Check, Copy, Play, Trash2, Sparkles, AlertCircle } from "lucide-react";
+import { Check, Copy, Play, Trash2, Sparkles, AlertCircle, Minimize2 } from "lucide-react";
 
 type Settings = {
   pretty: boolean;
@@ -39,27 +39,13 @@ const SAMPLE_JSON = `{
   }
 }`;
 
-function sortObjectKeys(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map(sortObjectKeys);
-  } else if (obj && typeof obj === "object") {
-    return Object.keys(obj)
-      .sort()
-      .reduce((acc: any, key) => {
-        acc[key] = sortObjectKeys(obj[key]);
-        return acc;
-      }, {});
-  }
-  return obj;
-}
-
 function formatJSON(
   input: string,
   settings: Settings
 ): { output: string; error?: string } {
   if (!input.trim()) return { output: "" };
   try {
-    const parsed = JSON.parse(input);
+    const parsed = parseRobustJSON(input);
     let value = parsed;
 
     if (settings.sortKeys) {
@@ -67,7 +53,7 @@ function formatJSON(
     }
 
     const out = settings.pretty
-      ? JSON.stringify(value, null, settings.indent)
+      ? JSON.stringify(value, null, settings.indent || 2)
       : JSON.stringify(value);
 
     return { output: out };
@@ -77,8 +63,8 @@ function formatJSON(
 }
 
 export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
-  const inputKey = `toolmate:${tool.slug}:input:v3`;
-  const settingsKey = `toolmate:${tool.slug}:settings:v3`;
+  const inputKey = `toolmate:${tool.slug}:input:v4`;
+  const settingsKey = `toolmate:${tool.slug}:settings:v4`;
 
   const input = usePersistedState<string>(inputKey, "");
   const settings = usePersistedState<Settings>(settingsKey, {
@@ -93,16 +79,32 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
   const [error, setError] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
 
-  const run = React.useCallback(() => {
-    const result = formatJSON(input.value, settings.value);
-    if (result.error) {
-      setError(result.error);
-      setOutput("");
-    } else {
-      setError(null);
-      setOutput(result.output);
-    }
-  }, [input.value, settings.value]);
+  const executeFormat = React.useCallback(
+    (customSettings?: Settings) => {
+      const s = customSettings || settings.value;
+      const result = formatJSON(input.value, s);
+      if (result.error) {
+        setError(result.error);
+        setOutput("");
+      } else {
+        setError(null);
+        setOutput(result.output);
+      }
+    },
+    [input.value, settings.value]
+  );
+
+  const handleFormat = () => {
+    const updated = { ...settings.value, pretty: true };
+    settings.setValue(updated);
+    executeFormat(updated);
+  };
+
+  const handleMinify = () => {
+    const updated = { ...settings.value, pretty: false };
+    settings.setValue(updated);
+    executeFormat(updated);
+  };
 
   const copyToClipboard = async () => {
     if (!output) return;
@@ -121,8 +123,10 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
   };
 
   React.useEffect(() => {
-    if (settings.value.autoRun) run();
-  }, [input.value, settings.value, run]);
+    if (settings.value.autoRun) {
+      executeFormat();
+    }
+  }, [input.value, settings.value.pretty, settings.value.indent, settings.value.sortKeys, executeFormat]);
 
   return (
     <ToolWorkspace>
@@ -130,21 +134,24 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
       <ToolToolbar>
         {/* Left Actions */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <Button onClick={run} size="sm" className="gap-1.5 shadow-sm">
+          <Button
+            onClick={handleFormat}
+            variant={settings.value.pretty ? "primary" : "secondary"}
+            size="sm"
+            className="gap-1.5 shadow-sm font-semibold"
+          >
             <Play className="w-3.5 h-3.5 fill-current" />
             <span>Format</span>
           </Button>
 
           <Button
-            variant="secondary"
+            variant={!settings.value.pretty ? "primary" : "secondary"}
             size="sm"
-            onClick={() => {
-              settings.setValue({ ...settings.value, pretty: false });
-              run();
-            }}
-            className="text-xs sm:text-sm"
+            onClick={handleMinify}
+            className="text-xs sm:text-sm font-semibold gap-1.5"
           >
-            Minify
+            <Minimize2 className="w-3.5 h-3.5" />
+            <span>Minify</span>
           </Button>
 
           <Button
@@ -175,17 +182,19 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
         {/* Right Settings */}
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5">
-            <span className="text-[rgb(var(--muted))] text-xs">Indent:</span>
+            <span className="text-[rgb(var(--muted))] text-xs font-medium">Indent:</span>
             <Select
               size="sm"
               value={settings.value.indent}
-              onChange={(e) =>
-                settings.setValue({
+              onChange={(e) => {
+                const updated = {
                   ...settings.value,
                   indent: Number(e.target.value),
                   pretty: true,
-                })
-              }
+                };
+                settings.setValue(updated);
+                executeFormat(updated);
+              }}
               className="w-16 h-8 text-xs py-1"
             >
               <option value={2}>2</option>
@@ -194,22 +203,24 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
             </Select>
           </div>
 
-          <label className="flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm text-[rgb(var(--fg))]">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm text-[rgb(var(--fg))] select-none">
             <input
               type="checkbox"
               checked={settings.value.sortKeys}
-              onChange={(e) =>
-                settings.setValue({
+              onChange={(e) => {
+                const updated = {
                   ...settings.value,
                   sortKeys: e.target.checked,
-                })
-              }
+                };
+                settings.setValue(updated);
+                executeFormat(updated);
+              }}
               className="rounded accent-[rgb(var(--accent))]"
             />
             <span>Sort Keys</span>
           </label>
 
-          <label className="flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm text-[rgb(var(--fg))]">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs sm:text-sm text-[rgb(var(--fg))] select-none">
             <input
               type="checkbox"
               checked={settings.value.wrap}
@@ -284,9 +295,9 @@ export function JsonFormatterTool({ tool }: { tool: ToolDef }) {
         output={
           <CodeEditor
             value={output}
+            editable={false}
             language="json"
             options={{
-              readOnly: true,
               wordWrap: settings.value.wrap ? "on" : "off",
             }}
           />

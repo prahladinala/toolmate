@@ -6,6 +6,7 @@ import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 import {
   GitCompare,
   RotateCcw,
@@ -93,8 +94,8 @@ export function JsonDiffTool() {
 
   const diffResult = useMemo(() => {
     try {
-      const o1 = JSON.parse(leftJson);
-      const o2 = JSON.parse(rightJson);
+      const o1 = parseRobustJSON(leftJson);
+      const o2 = parseRobustJSON(rightJson);
       const diffs = compareObjects(o1, o2);
       return { isValid: true, diffs, error: null };
     } catch (err: any) {

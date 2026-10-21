@@ -5,6 +5,7 @@ import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 import {
   Database,
   RotateCcw,
@@ -143,7 +144,7 @@ export function ExplainVisualizerTool() {
 
   const planTree = useMemo<ExplainNode | null>(() => {
     try {
-      const parsed = JSON.parse(input);
+      const parsed = parseRobustJSON(input);
       const root = Array.isArray(parsed) ? parsed[0]?.Plan || parsed[0] : parsed.Plan || parsed;
       return normalizePlanNode(root);
     } catch {

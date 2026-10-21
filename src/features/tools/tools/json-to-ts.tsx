@@ -9,6 +9,7 @@ import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import JsonToTS from "json-to-ts";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 import { toast } from "sonner";
 import { Copy, Check, Play, AlertCircle, Sparkles, Trash2 } from "lucide-react";
 
@@ -44,7 +45,7 @@ export function JsonToTsTool({ tool }: { tool: ToolDef }) {
       return;
     }
     try {
-      const parsed = JSON.parse(input.value);
+      const parsed = parseRobustJSON(input.value);
       const tsInterfaces = JsonToTS(parsed).join("\n\n");
       setOutput(tsInterfaces);
       setError(null);

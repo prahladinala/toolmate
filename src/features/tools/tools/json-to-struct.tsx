@@ -6,6 +6,7 @@ import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 import { Copy, Check, RotateCcw, Code2, Sparkles } from "lucide-react";
 
 type Language = "go" | "rust" | "typescript" | "python" | "kotlin" | "java" | "csharp" | "swift";
@@ -53,7 +54,7 @@ function toSnakeCase(str: string): string {
 
 function generateCode(jsonStr: string, lang: Language, rootName: string): string {
   try {
-    const data = JSON.parse(jsonStr);
+    const data = parseRobustJSON(jsonStr);
     const rootPascal = toPascalCase(rootName || "Root");
 
     switch (lang) {

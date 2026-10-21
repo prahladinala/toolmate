@@ -9,6 +9,7 @@ import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import Papa from "papaparse";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 import { toast } from "sonner";
 import { Copy, Check, Play, AlertCircle, Sparkles, Trash2, Download } from "lucide-react";
 
@@ -32,8 +33,9 @@ export function JsonToCsvTool({ tool }: { tool: ToolDef }) {
       return;
     }
     try {
-      const parsed = JSON.parse(input.value);
-      const csv = Papa.unparse(parsed);
+      const parsed = parseRobustJSON(input.value);
+      const dataToUnparse = Array.isArray(parsed) ? parsed : [parsed];
+      const csv = Papa.unparse(dataToUnparse);
       setOutput(csv);
       setError(null);
     } catch (err: any) {

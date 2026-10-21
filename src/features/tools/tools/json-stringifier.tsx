@@ -8,6 +8,7 @@ import { CodeEditor } from "@/components/ui/code-editor";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 import { Copy, Check, RotateCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,12 +41,16 @@ export function JsonStringifierTool({ tool }: { tool: ToolDef }) {
     }
     try {
       if (mode === "stringify") {
-        const parsed = JSON.parse(input.value);
+        const parsed = parseRobustJSON(input.value);
         setOutput(JSON.stringify(JSON.stringify(parsed)));
       } else {
-        let parsed = JSON.parse(input.value);
+        let parsed = parseRobustJSON(input.value);
         if (typeof parsed === "string") {
-          parsed = JSON.parse(parsed);
+          try {
+            parsed = parseRobustJSON(parsed);
+          } catch {
+            // Keep as string
+          }
         }
         setOutput(JSON.stringify(parsed, null, 2));
       }

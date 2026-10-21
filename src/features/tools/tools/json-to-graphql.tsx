@@ -11,6 +11,7 @@ import { ToolSplitPane } from "@/components/tools/ToolSplitPane";
 import { ToolToolbar } from "@/components/tools/ToolToolbar";
 import { Copy, Check, RotateCcw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { parseRobustJSON } from "@/lib/json/json-utils";
 
 const DEFAULT_JSON = JSON.stringify(
   {
@@ -94,7 +95,7 @@ export function JsonToGraphqlTool({ tool }: { tool: ToolDef }) {
       return;
     }
     try {
-      const parsed = JSON.parse(input.value);
+      const parsed = parseRobustJSON(input.value);
       if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
         throw new Error("Input must be a valid JSON object.");
       }
