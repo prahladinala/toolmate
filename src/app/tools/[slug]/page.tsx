@@ -7,6 +7,12 @@ import { ShareButton } from "@/features/tools/ShareButton";
 import { DonationBanner } from "@/components/donation/DonationBanner";
 import { EngagementModal } from "@/components/donation/EngagementModal";
 import { DONATION_CONFIG } from "@/config/donation";
+import {
+  getToolSeoData,
+  getRelatedTools,
+  getApplicationCategory,
+} from "@/features/tools/seo-content";
+import { ToolSeoSection } from "@/components/tools/ToolSeoSection";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,34 +25,47 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const tool = getTool(slug);
-  if (!tool) return { title: "Not found — ToolMate - Prahlad Inala" };
+  if (!tool) {
+    return {
+      title: { absolute: "Not Found — ToolMate" },
+    };
+  }
 
   const keywords = [
     ...(tool.seo.keywords || []),
+    tool.name.toLowerCase(),
+    `${tool.name.toLowerCase()} online`,
+    `free ${tool.name.toLowerCase()}`,
+    `${tool.name.toLowerCase()} tool`,
     "toolmate",
-    "prahlad inala",
-    "toolmate prahlad inala",
-    `toolmate ${tool.name.toLowerCase()}`,
-    `${tool.name.toLowerCase()} toolmate`,
-    "toolmate developer tools",
-    "online developer tool"
+    "online developer tool",
+    "free developer utilities",
   ];
 
+  const canonicalUrl = `https://toolmate.co.in/tools/${tool.slug}`;
+  const seoTitle = tool.seo.title.includes("ToolMate")
+    ? tool.seo.title
+    : `${tool.seo.title} — ToolMate`;
+
   return {
-    title: `${tool.name} — Free Online Tool`,
-    description: `${tool.seo.description} Use ${tool.name} online for free on ToolMate by Prahlad Inala. Fast, private, and browser-based.`,
+    title: {
+      absolute: seoTitle,
+    },
+    description: `${tool.seo.description} Fast, free, and 100% private in-browser utility on ToolMate. No server uploads or installation required.`,
     keywords: keywords,
-    alternates: { canonical: `https://toolmate.co.in/tools/${tool.slug}` },
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title: `${tool.name} | ToolMate - Prahlad Inala`,
+      title: seoTitle,
       description: tool.seo.description,
-      url: `https://toolmate.co.in/tools/${tool.slug}`,
-      siteName: "ToolMate - Prahlad Inala",
+      url: canonicalUrl,
+      siteName: "ToolMate",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${tool.name} | ToolMate - Prahlad Inala`,
+      title: seoTitle,
       description: tool.seo.description,
     },
     robots: {
@@ -57,6 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         follow: true,
         "max-image-preview": "large",
         "max-snippet": -1,
+        "max-video-preview": -1,
       },
     },
   };
@@ -67,29 +87,36 @@ export default async function ToolPage({ params }: Props) {
   const tool = getTool(slug);
   if (!tool) notFound();
 
-  const jsonLd = {
+  const seoData = getToolSeoData(tool);
+  const relatedTools = getRelatedTools(tool, 6);
+  const appCategory = getApplicationCategory(tool.category);
+
+  // 1. WebApplication Schema
+  const webAppSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: `${tool.name} — ToolMate`,
-    alternateName: [`ToolMate ${tool.name}`, `${tool.name} ToolMate`, `ToolMate Prahlad Inala ${tool.name}`],
+    alternateName: [`ToolMate ${tool.name}`, `${tool.name} ToolMate`],
     description: tool.seo.description,
     url: `https://toolmate.co.in/tools/${tool.slug}`,
-    applicationCategory: "DeveloperApplication",
+    applicationCategory: appCategory,
     operatingSystem: "All",
     browserRequirements: "Requires JavaScript. Requires HTML5.",
+    featureList: seoData.features.map((f) => `${f.title}: ${f.text}`),
     provider: {
-      "@type": "Person",
-      name: "Prahlad Inala",
-      url: "https://toolmate.co.in"
+      "@type": "Organization",
+      name: "ToolMate",
+      url: "https://toolmate.co.in",
     },
     offers: {
       "@type": "Offer",
       price: "0",
-      priceCurrency: "USD"
-    }
+      priceCurrency: "USD",
+    },
   };
 
-  const breadcrumbLd = {
+  // 2. Breadcrumb Schema
+  const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
@@ -97,34 +124,76 @@ export default async function ToolPage({ params }: Props) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://toolmate.co.in"
+        item: "https://toolmate.co.in",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Tools",
-        item: "https://toolmate.co.in/tools"
+        item: "https://toolmate.co.in/tools",
       },
       {
         "@type": "ListItem",
         position: 3,
+        name: tool.category,
+        item: `https://toolmate.co.in/tools`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
         name: tool.name,
-        item: `https://toolmate.co.in/tools/${tool.slug}`
-      }
-    ]
+        item: `https://toolmate.co.in/tools/${tool.slug}`,
+      },
+    ],
+  };
+
+  // 3. FAQ Schema
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: seoData.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
+  // 4. HowTo Schema
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `How to use ${tool.name}`,
+    description: seoData.overview,
+    step: seoData.howTo.map((step) => ({
+      "@type": "HowToStep",
+      position: step.step,
+      name: step.title,
+      text: step.text,
+    })),
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      />
+
       <main className="relative min-h-screen pt-24 sm:pt-28 pb-16 sm:pb-24 overflow-x-clip">
         {/* Ambient Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(var(--fg),0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(var(--fg),0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
@@ -132,12 +201,20 @@ export default async function ToolPage({ params }: Props) {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out fill-mode-both">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-4 sm:mb-6 flex items-center text-xs sm:text-[13px] font-semibold text-[rgb(var(--muted))]">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-4 sm:mb-6 flex items-center text-xs sm:text-[13px] font-semibold text-[rgb(var(--muted))]"
+          >
             <a href="/tools" className="hover:text-indigo-500 transition-colors">
               Tools
             </a>
             <span className="mx-2 opacity-40">/</span>
-            <span aria-current="page" className="text-[rgb(var(--fg))] truncate max-w-[200px] sm:max-w-none">
+            <span className="opacity-75">{tool.category}</span>
+            <span className="mx-2 opacity-40">/</span>
+            <span
+              aria-current="page"
+              className="text-[rgb(var(--fg))] truncate max-w-[200px] sm:max-w-none"
+            >
               {tool.name}
             </span>
           </nav>
@@ -166,8 +243,8 @@ export default async function ToolPage({ params }: Props) {
                   category={tool.category}
                   shortDescription={tool.shortDescription}
                 />
-                
-                <ShareButton 
+
+                <ShareButton
                   toolName={tool.name}
                   toolSlug={tool.slug}
                   shortDescription={tool.shortDescription}
@@ -182,9 +259,16 @@ export default async function ToolPage({ params }: Props) {
             <ToolRenderer tool={tool} />
           </section>
 
+          {/* RICH SEO DOCUMENTATION & INTERNAL LINKING SECTION */}
+          <ToolSeoSection
+            tool={tool}
+            seoData={seoData}
+            relatedTools={relatedTools}
+          />
+
           {/* STATIC DONATION BUTTONS / BANNER */}
           {DONATION_CONFIG.isEnabled && (
-            <div className="mt-12">
+            <div className="mt-16">
               <DonationBanner />
             </div>
           )}

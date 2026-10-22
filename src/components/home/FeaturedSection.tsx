@@ -154,6 +154,41 @@ export default function FeaturedSection() {
             </ScrollReveal>
           ))}
         </div>
+
+        {/* QUICK CATEGORY DIRECTORY */}
+        <div className="relative z-10 mt-16 pt-12 border-t border-[rgba(var(--fg),0.06)]">
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-bold text-[rgb(var(--fg))]">
+              Browse 100+ Developer Tools by Category
+            </h3>
+            <p className="text-xs sm:text-sm text-[rgb(var(--muted))] mt-1">
+              Fast, privacy-focused browser utilities designed for daily development workflows.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            {[
+              { name: "Developer Tools", count: 38 },
+              { name: "Converters", count: 16 },
+              { name: "Design & CSS", count: 18 },
+              { name: "PDF Utilities", count: 10 },
+              { name: "Image Processing", count: 7 },
+              { name: "Security & Crypto", count: 2 },
+              { name: "Generators", count: 3 },
+              { name: "Information & Specs", count: 6 },
+            ].map((cat) => (
+              <Link
+                key={cat.name}
+                href="/tools"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[rgb(var(--card))] border border-[rgba(var(--fg),0.08)] text-xs font-semibold text-[rgb(var(--fg))] hover:border-indigo-500/40 hover:text-indigo-500 transition-all shadow-sm"
+              >
+                <span>{cat.name}</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(var(--fg),0.05)] text-[rgb(var(--muted))]">
+                  {cat.count}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
     </>
   );

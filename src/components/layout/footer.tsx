@@ -20,9 +20,9 @@ export function Footer() {
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-[14px] text-[rgb(var(--fg))] tracking-tight">Platform</h4>
             <div className="flex flex-col gap-2.5">
-              <Link href="/tools" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">All Tools</Link>
-              <Link href="#" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Categories</Link>
-              <Link href="#" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Search</Link>
+              <Link href="/tools" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">All 100+ Tools</Link>
+              <Link href="/tools" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Categories</Link>
+              <Link href="/" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Home</Link>
             </div>
           </div>
           
@@ -73,11 +73,13 @@ export function Footer() {
           </div>
           
           <div className="flex flex-col gap-4">
-            <h4 className="font-bold text-[14px] text-[rgb(var(--fg))] tracking-tight">Legal</h4>
+            <h4 className="font-bold text-[14px] text-[rgb(var(--fg))] tracking-tight">Popular Tools</h4>
             <div className="flex flex-col gap-2.5">
-              <Link href="#" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Privacy Policy</Link>
-              <Link href="#" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Terms of Service</Link>
-              <Link href="#" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Contact</Link>
+              <Link href="/tools/json-formatter" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">JSON Formatter</Link>
+              <Link href="/tools/uuid-generator" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">UUID Generator</Link>
+              <Link href="/tools/base64-encoder-decoder" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">Base64 Encoder</Link>
+              <Link href="/tools/sql-formatter" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">SQL Formatter</Link>
+              <Link href="/tools/qr-code-generator" className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors">QR Code Generator</Link>
             </div>
           </div>
         </div>
