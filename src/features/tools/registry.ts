@@ -1786,6 +1786,121 @@ export const TOOLS: ToolDef[] = [
       "persistSettings": true,
       "persistOutput": true
     }
+  },
+  {
+    "slug": "eslint-config-generator",
+    "name": "ESLint Config Generator",
+    "shortDescription": "Generate modern Flat Config (eslint.config.mjs) or Legacy ESLint rules with interactive checkboxes, TypeScript, and React support.",
+    "category": "Developer",
+    "tags": ["ESLint", "Linter", "JavaScript", "TypeScript", "React", "Next.js"],
+    "seo": {
+      "title": "ESLint Config Generator — Create eslint.config.mjs & .eslintrc Online | ToolMate",
+      "description": "Generate modern ESLint 9+ flat config or legacy .eslintrc with TypeScript, React, Next.js, and best practice rules.",
+      "keywords": [
+        "eslint config generator",
+        "eslint flat config generator",
+        "eslint.config.mjs generator",
+        "create eslint config",
+        "eslint react typescript"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "prettier-config-generator",
+    "name": "Prettier Config Generator",
+    "shortDescription": "Generate .prettierrc config files with interactive option toggles, Tailwind plugin support, and multi-format preview.",
+    "category": "Developer",
+    "tags": ["Prettier", "Formatter", "Code Style", "Tailwind", "Developer"],
+    "seo": {
+      "title": "Prettier Config Generator — Create .prettierrc JSON, JS & YAML | ToolMate",
+      "description": "Customize print width, semicolons, quotes, trailing commas, and plugins with the interactive Prettier config generator.",
+      "keywords": [
+        "prettier config generator",
+        "prettierrc generator",
+        "create .prettierrc",
+        "prettier options online",
+        "prettier tailwind plugin"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "stylelint-config-generator",
+    "name": "Stylelint Config Generator",
+    "shortDescription": "Generate .stylelintrc config with SCSS, Tailwind, Recess property ordering, and strict CSS linting rules.",
+    "category": "Developer",
+    "tags": ["Stylelint", "CSS", "SCSS", "Tailwind", "Linter"],
+    "seo": {
+      "title": "Stylelint Config Generator — Create .stylelintrc Online | ToolMate",
+      "description": "Generate Stylelint configurations for CSS, SCSS, and Tailwind with property ordering and linting error prevention.",
+      "keywords": [
+        "stylelint config generator",
+        "stylelintrc generator",
+        "css linter config",
+        "stylelint tailwind scss",
+        "stylelint recess order"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "commitlint-config-generator",
+    "name": "Commitlint Config Generator",
+    "shortDescription": "Generate commitlint.config.js for Conventional Commits with interactive rules, live validator, and Husky hook setup.",
+    "category": "Developer",
+    "tags": ["Commitlint", "Git", "Conventional Commits", "Husky", "CI/CD"],
+    "seo": {
+      "title": "Commitlint Config Generator — Conventional Commits & Husky | ToolMate",
+      "description": "Create commitlint.config.js and Husky commit-msg hooks. Validate conventional commit messages in real-time.",
+      "keywords": [
+        "commitlint config generator",
+        "conventional commits config",
+        "commitlint husky setup",
+        "git commit message linter",
+        "commitlint rules"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "editorconfig-generator",
+    "name": "EditorConfig Generator",
+    "shortDescription": "Generate cross-editor .editorconfig files for consistent indentation, line endings, and language overrides.",
+    "category": "Developer",
+    "tags": ["EditorConfig", "VS Code", "Formatting", "Git", "Developer"],
+    "seo": {
+      "title": "EditorConfig Generator — Create .editorconfig Online | ToolMate",
+      "description": "Generate clean .editorconfig files for VS Code, JetBrains, and GitHub with indent, line ending, and language rules.",
+      "keywords": [
+        "editorconfig generator",
+        "create .editorconfig",
+        "editorconfig online",
+        "vscode editorconfig",
+        "indentation config"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
   }
 ];
 

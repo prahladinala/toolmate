@@ -1,5 +1,5 @@
 import React from "react";
-import { FileText, Layout, ExternalLink, Sparkles, CheckCircle2 } from "lucide-react";
+import { FileText, Layout, ExternalLink, Sparkles, CheckCircle2, GraduationCap, Calculator } from "lucide-react";
 
 export function EcosystemSection() {
   const products = [
@@ -30,6 +30,34 @@ export function EcosystemSection() {
       accent: "text-indigo-500",
       borderHover: "hover:border-indigo-500/40",
       cta: "Explore UI Library",
+    },
+    {
+      title: "ToolMate Interview",
+      subtitle: "Interview Questions & Preparation",
+      description:
+        "Ace tech and coding interviews with curated interview questions and answers, system design discussions, and structured preparation tracks.",
+      url: "https://interview.toolmate.co.in",
+      icon: GraduationCap,
+      badge: "Interview Prep",
+      features: ["Curated Q&A Banks", "Coding & System Design", "Step-by-Step Solutions"],
+      gradient: "from-blue-500/10 via-indigo-500/5 to-transparent",
+      accent: "text-blue-500",
+      borderHover: "hover:border-blue-500/40",
+      cta: "Start Interview Prep",
+    },
+    {
+      title: "ToolMate Finance",
+      subtitle: "Finance Calculations & Tools",
+      description:
+        "Streamline your financial calculations with intuitive tools for loans, EMIs, investments, compounding, taxes, and smart wealth planning.",
+      url: "https://finance.toolmate.co.in",
+      icon: Calculator,
+      badge: "Coming Soon",
+      features: ["Loan & EMI Calculators", "Investment & ROI Models", "Tax & Wealth Estimates"],
+      gradient: "from-amber-500/10 via-orange-500/5 to-transparent",
+      accent: "text-amber-500",
+      borderHover: "hover:border-amber-500/40",
+      cta: "Coming Soon",
     },
   ];
 
@@ -67,7 +95,11 @@ export function EcosystemSection() {
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(var(--fg),0.04)] border border-[rgba(var(--fg),0.08)] text-[rgb(var(--fg))] shadow-inner group-hover:scale-110 transition-transform">
                         <Icon className={`w-6 h-6 ${product.accent}`} />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[rgba(var(--fg),0.04)] text-[rgb(var(--muted))] border border-[rgba(var(--fg),0.06)]">
+                      <span className={`text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
+                        product.badge === "Coming Soon"
+                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                          : "bg-[rgba(var(--fg),0.04)] text-[rgb(var(--muted))] border-[rgba(var(--fg),0.06)]"
+                      }`}>
                         {product.badge}
                       </span>
                     </div>
@@ -92,7 +124,7 @@ export function EcosystemSection() {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-4 flex items-center gap-2 text-sm font-bold text-indigo-500 group-hover:translate-x-1 transition-transform">
+                  <div className={`mt-8 pt-4 flex items-center gap-2 text-sm font-bold ${product.accent} group-hover:translate-x-1 transition-transform`}>
                     <span>{product.cta}</span>
                     <ExternalLink className="w-4 h-4" />
                   </div>

@@ -5,6 +5,45 @@ import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 const featured = TOOLS.slice(0, 6);
 
+const ECOSYSTEM_CAROUSEL_ITEMS = [
+  {
+    title: "Toolmate UI",
+    badge: "Ecosystem",
+    badgeClasses: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+    gradient: "from-indigo-500/10 to-purple-500/10",
+    description: "Beautifully designed, accessible, and customizable React components and templates.",
+    cta: "Explore UI Library",
+    url: "https://ui.toolmate.co.in",
+  },
+  {
+    title: "Toolmate Resume",
+    badge: "Ecosystem",
+    badgeClasses: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+    gradient: "from-emerald-500/10 to-teal-500/10",
+    description: "Build ATS-friendly, professional resumes in minutes with our drag-and-drop builder.",
+    cta: "Build Your Resume",
+    url: "https://resume.toolmate.co.in",
+  },
+  {
+    title: "Toolmate Interview",
+    badge: "Ecosystem",
+    badgeClasses: "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400",
+    gradient: "from-blue-500/10 to-indigo-500/10",
+    description: "Master your interview preparation with curated questions, detailed answers, and guides.",
+    cta: "Prepare for Interviews",
+    url: "https://interview.toolmate.co.in",
+  },
+  {
+    title: "Toolmate Finance",
+    badge: "Coming Soon",
+    badgeClasses: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
+    gradient: "from-amber-500/10 to-orange-500/10",
+    description: "Smart calculators for loans, taxes, investments, compound interest, and finance calculations.",
+    cta: "Coming Soon",
+    url: "https://finance.toolmate.co.in",
+  },
+];
+
 export default function FeaturedSection() {
   return (
     <>
@@ -14,7 +53,7 @@ export default function FeaturedSection() {
           to { transform: translateX(-50%); }
         }
         .animate-infinite-scroll {
-          animation: infinite-scroll 30s linear infinite;
+          animation: infinite-scroll 40s linear infinite;
           width: max-content;
         }
         .animate-infinite-scroll:hover {
@@ -46,43 +85,35 @@ export default function FeaturedSection() {
           <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[rgb(var(--bg))] to-transparent z-10 pointer-events-none" />
           
           <div className="flex gap-6 animate-infinite-scroll pl-6">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(4)].map((_, i) => (
               <React.Fragment key={i}>
-                <a href="https://ui.toolmate.co.in" target="_blank" rel="noopener noreferrer" className="block w-[320px] md:w-[400px] shrink-0 outline-none">
-                  <div className="group relative overflow-hidden p-6 h-full transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] hover:ring-[rgba(var(--fg),0.1)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] rounded-3xl">
-                    <div className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none" />
-                    <div className="relative z-10">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="font-bold text-xl tracking-tight">Toolmate UI</div>
-                        <span className="rounded-full bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest">Ecosystem</span>
-                      </div>
-                      <p className="mt-3 text-[15px] text-[rgb(var(--muted))] leading-relaxed line-clamp-2">
-                        Beautifully designed, accessible, and customizable React components and templates.
-                      </p>
-                      <div className="mt-6 flex items-center text-sm font-bold text-[rgb(var(--fg))] opacity-70 group-hover:opacity-100 transition-opacity">
-                        Explore UI Library <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-                
-                <a href="https://resume.toolmate.co.in" target="_blank" rel="noopener noreferrer" className="block w-[320px] md:w-[400px] shrink-0 outline-none">
-                  <div className="group relative overflow-hidden p-6 h-full transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] hover:ring-[rgba(var(--fg),0.1)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] rounded-3xl">
-                    <div className="absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none" />
-                    <div className="relative z-10">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="font-bold text-xl tracking-tight">Toolmate Resume</div>
-                        <span className="rounded-full bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest">Ecosystem</span>
-                      </div>
-                      <p className="mt-3 text-[15px] text-[rgb(var(--muted))] leading-relaxed line-clamp-2">
-                        Build ATS-friendly, professional resumes in minutes with our drag-and-drop builder.
-                      </p>
-                      <div className="mt-6 flex items-center text-sm font-bold text-[rgb(var(--fg))] opacity-70 group-hover:opacity-100 transition-opacity">
-                        Build Your Resume <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+                {ECOSYSTEM_CAROUSEL_ITEMS.map((item) => (
+                  <a
+                    key={`${i}-${item.title}`}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-[320px] md:w-[400px] shrink-0 outline-none"
+                  >
+                    <div className="group relative overflow-hidden p-6 h-full transition-all duration-500 bg-[rgb(var(--card))] shadow-[0_4px_24px_rgba(0,0,0,0.03)] ring-1 ring-[rgba(var(--fg),0.04)] hover:ring-[rgba(var(--fg),0.1)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(255,255,255,0.02)] rounded-3xl">
+                      <div className={`absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r ${item.gradient} pointer-events-none`} />
+                      <div className="relative z-10">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="font-bold text-xl tracking-tight">{item.title}</div>
+                          <span className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest ${item.badgeClasses}`}>
+                            {item.badge}
+                          </span>
+                        </div>
+                        <p className="mt-3 text-[15px] text-[rgb(var(--muted))] leading-relaxed line-clamp-2">
+                          {item.description}
+                        </p>
+                        <div className="mt-6 flex items-center text-sm font-bold text-[rgb(var(--fg))] opacity-70 group-hover:opacity-100 transition-opacity">
+                          {item.cta} <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </a>
+                  </a>
+                ))}
               </React.Fragment>
             ))}
           </div>

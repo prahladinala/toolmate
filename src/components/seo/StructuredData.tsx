@@ -23,7 +23,9 @@ export default function StructuredData() {
     logo: "https://toolmate.co.in/icon-512x512.png",
     sameAs: [
       "https://resume.toolmate.co.in",
-      "https://ui.toolmate.co.in"
+      "https://ui.toolmate.co.in",
+      "https://interview.toolmate.co.in",
+      "https://finance.toolmate.co.in"
     ],
     hasPart: [
       {
@@ -39,6 +41,20 @@ export default function StructuredData() {
         url: "https://ui.toolmate.co.in",
         description: "Modern, copy-paste React and Tailwind CSS UI components and design system for modern web apps.",
         applicationCategory: "DeveloperApplication"
+      },
+      {
+        "@type": "WebApplication",
+        name: "ToolMate Interview — Interview Questions & Preparation",
+        url: "https://interview.toolmate.co.in",
+        description: "Curated interview questions and answers, coding challenges, and comprehensive preparation guides.",
+        applicationCategory: "EducationalApplication"
+      },
+      {
+        "@type": "WebApplication",
+        name: "ToolMate Finance — Financial Calculators & Planning",
+        url: "https://finance.toolmate.co.in",
+        description: "Calculators and tools for loans, investments, taxes, and financial planning.",
+        applicationCategory: "FinanceApplication"
       }
     ]
   };

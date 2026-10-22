@@ -123,6 +123,11 @@ const JsonToStructTool = dynamic<{ tool: ToolDef }>(() => import("./tools/json-t
 const YamlValidatorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/yaml-validator").then(m => m.YamlValidatorTool));
 const ExplainVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/explain-visualizer").then(m => m.ExplainVisualizerTool));
 const JsonDiffTool = dynamic<{ tool: ToolDef }>(() => import("./tools/json-diff").then(m => m.JsonDiffTool));
+const PrettierConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/prettier-config-generator").then(m => m.PrettierConfigGeneratorTool));
+const EslintConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/eslint-config-generator").then(m => m.EslintConfigGeneratorTool));
+const StylelintConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/stylelint-config-generator").then(m => m.StylelintConfigGeneratorTool));
+const CommitlintConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/commitlint-config-generator").then(m => m.CommitlintConfigGeneratorTool));
+const EditorconfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/editorconfig-generator").then(m => m.EditorconfigGeneratorTool));
 
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
@@ -238,6 +243,11 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "yaml-validator": YamlValidatorTool,
   "explain-visualizer": ExplainVisualizerTool,
   "json-diff": JsonDiffTool,
+  "eslint-config-generator": EslintConfigGeneratorTool,
+  "prettier-config-generator": PrettierConfigGeneratorTool,
+  "stylelint-config-generator": StylelintConfigGeneratorTool,
+  "commitlint-config-generator": CommitlintConfigGeneratorTool,
+  "editorconfig-generator": EditorconfigGeneratorTool,
 
 };
 

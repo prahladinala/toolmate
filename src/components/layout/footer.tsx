@@ -49,6 +49,26 @@ export function Footer() {
                 <span>ToolMate UI</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 font-semibold">Library</span>
               </a>
+              <a 
+                href="https://interview.toolmate.co.in" 
+                target="_blank" 
+                rel="noopener" 
+                title="ToolMate Interview — Interview Questions & Preparation"
+                className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>ToolMate Interview</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500 font-semibold">Prep</span>
+              </a>
+              <a 
+                href="https://finance.toolmate.co.in" 
+                target="_blank" 
+                rel="noopener" 
+                title="ToolMate Finance — Finance Calculations & Tools"
+                className="text-[14px] text-[rgb(var(--muted))] hover:text-indigo-500 transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>ToolMate Finance</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-semibold">Soon</span>
+              </a>
             </div>
           </div>
           
