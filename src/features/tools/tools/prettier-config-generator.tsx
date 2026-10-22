@@ -403,7 +403,7 @@ export function PrettierConfigGeneratorTool({ tool }: { tool: ToolDef }) {
             />
 
             {/* Options List */}
-            <div className="space-y-2.5 max-h-[640px] overflow-y-auto pr-1">
+            <div className="space-y-2.5 max-h-[640px] overflow-y-auto scrollbar-refined pr-2">
               {filteredOptions.length === 0 ? (
                 <div className="p-8 text-center rounded-xl border border-dashed border-[rgb(var(--border))] text-[rgb(var(--muted))] text-xs">
                   No matching options found for &quot;{searchQuery}&quot;

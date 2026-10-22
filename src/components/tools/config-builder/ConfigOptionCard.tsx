@@ -119,7 +119,7 @@ export function ConfigOptionCard({
                 <Code2 className="w-3 h-3" />
                 <span>Example</span>
               </div>
-              <pre className="text-[11px] font-mono p-2.5 rounded-lg bg-[rgb(var(--card-2))] border border-[rgb(var(--border))] text-[rgb(var(--fg))] overflow-x-auto whitespace-pre leading-relaxed">
+              <pre className="text-[11px] font-mono p-2.5 rounded-lg bg-[rgb(var(--card-2))] border border-[rgb(var(--border))] text-[rgb(var(--fg))] overflow-x-auto scrollbar-refined whitespace-pre leading-relaxed">
                 {option.example}
               </pre>
             </div>

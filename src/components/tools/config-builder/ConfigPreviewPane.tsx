@@ -90,7 +90,7 @@ export function ConfigPreviewPane({
       {/* Top Bar: Format Selector & Actions */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3 sm:px-4 sm:py-3 border-b border-[rgb(var(--border))] bg-[rgb(var(--card-2))]">
         {/* Format Selector Pills */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {formats.map((f) => {
             const isSelected = f.id === activeFormat?.id;
             return (

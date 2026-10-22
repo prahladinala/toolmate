@@ -4,6 +4,7 @@
    Base tokens (Light mode)
 ------------------------------ */
 :root {
+  color-scheme: light;
   /* Surfaces */
   --bg: 255 255 255;
   --fg: 17 24 39; /* slate-900 */
@@ -39,6 +40,7 @@
    Dark mode overrides
 ------------------------------ */
 html.dark {
+  color-scheme: dark;
   --bg: 10 10 10;
   --fg: 245 245 245;
   --muted: 163 163 163; /* neutral-400 */
@@ -240,20 +242,91 @@ canvas {
   word-break: break-word;
 }
 
-/* Subtle modern scrollbar */
+/* =========================================
+   UNIVERSAL SLEEK SCROLLBAR SYSTEM
+   (Linear/Apple/Vercel Aesthetic)
+========================================= */
+
+/* Firefox & Standard W3C Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--fg), 0.18) transparent;
+}
+
+/* WebKit / Chromium / Edge / Safari */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--fg), 0.18);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--fg), 0.35);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(var(--fg), 0.5);
+}
+
+/* Eliminate chunky native Windows retro arrow buttons */
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dedicated refined scrollbar class with high-definition styling */
+.scrollbar-refined {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--fg), 0.22) transparent;
+}
+
 .scrollbar-refined::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 .scrollbar-refined::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .scrollbar-refined::-webkit-scrollbar-thumb {
-  background: rgba(var(--fg), 0.15);
+  background: rgba(var(--fg), 0.2);
   border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
+
 .scrollbar-refined::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--fg), 0.3);
+  background: rgba(var(--fg), 0.38);
+}
+
+/* Utility to completely hide scrollbar while preserving smooth touch/mousewheel scrolling */
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* =========================================
