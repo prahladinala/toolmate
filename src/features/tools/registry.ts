@@ -1901,6 +1901,98 @@ export const TOOLS: ToolDef[] = [
       "persistSettings": true,
       "persistOutput": true
     }
+  },
+  {
+    "slug": "tsconfig-generator",
+    "name": "TSConfig Generator",
+    "shortDescription": "Generate production-ready tsconfig.json files for Next.js, React, Node.js, and libraries with interactive strictness flags.",
+    "category": "Developer",
+    "tags": ["TypeScript", "TSConfig", "Compiler", "JavaScript", "Developer"],
+    "seo": {
+      "title": "TSConfig Generator — Create tsconfig.json Online | ToolMate",
+      "description": "Generate optimized tsconfig.json files with interactive options for strict type-checking, bundler module resolution, and path aliases.",
+      "keywords": [
+        "tsconfig generator",
+        "create tsconfig.json",
+        "typescript config generator",
+        "tsconfig online",
+        "nextjs tsconfig"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "jsconfig-generator",
+    "name": "JSConfig Generator",
+    "shortDescription": "Generate jsconfig.json files for VS Code with path aliases (@/*), JSDoc type checking (checkJs), and React support.",
+    "category": "Developer",
+    "tags": ["JavaScript", "JSConfig", "VS Code", "Path Aliases", "Developer"],
+    "seo": {
+      "title": "JSConfig Generator — Create jsconfig.json Online | ToolMate",
+      "description": "Generate jsconfig.json files for VS Code to enable path aliases, IntelliSense, and JSDoc type-checking in JavaScript projects.",
+      "keywords": [
+        "jsconfig generator",
+        "create jsconfig.json",
+        "vscode jsconfig",
+        "javascript path aliases",
+        "jsconfig online"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "htaccess-generator",
+    "name": ".htaccess Generator",
+    "shortDescription": "Generate Apache .htaccess files with HTTPS redirects, SPA routing, security headers, Gzip, and browser caching.",
+    "category": "Developer",
+    "tags": ["Apache", "htaccess", "Redirect", "Security", "Server"],
+    "seo": {
+      "title": ".htaccess Generator — Apache Rewrite & Security Rules | ToolMate",
+      "description": "Create Apache .htaccess configuration files with HTTPS redirection, SPA routing, Gzip compression, and security headers.",
+      "keywords": [
+        "htaccess generator",
+        "create .htaccess",
+        "apache rewrite generator",
+        "htaccess https redirect",
+        "htaccess spa routing"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
+  },
+  {
+    "slug": "nginx-config-generator",
+    "name": "Nginx Config Generator",
+    "shortDescription": "Generate Nginx server block configs for Next.js/Node reverse proxy, SPA fallback, SSL, and static asset caching.",
+    "category": "Developer",
+    "tags": ["Nginx", "Reverse Proxy", "Server", "DevOps", "SSL"],
+    "seo": {
+      "title": "Nginx Config Generator — Reverse Proxy & Server Block | ToolMate",
+      "description": "Generate Nginx reverse proxy configs for Next.js, Node.js, and SPAs with SSL, WebSocket, and static asset caching.",
+      "keywords": [
+        "nginx config generator",
+        "nginx reverse proxy generator",
+        "create nginx.conf",
+        "nextjs nginx config",
+        "nginx ssl config"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": true
+    }
   }
 ];
 

@@ -128,6 +128,10 @@ const EslintConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./too
 const StylelintConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/stylelint-config-generator").then(m => m.StylelintConfigGeneratorTool));
 const CommitlintConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/commitlint-config-generator").then(m => m.CommitlintConfigGeneratorTool));
 const EditorconfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/editorconfig-generator").then(m => m.EditorconfigGeneratorTool));
+const TsconfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/tsconfig-generator").then(m => m.TsconfigGeneratorTool));
+const JsconfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/jsconfig-generator").then(m => m.JsconfigGeneratorTool));
+const HtaccessGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/htaccess-generator").then(m => m.HtaccessGeneratorTool));
+const NginxConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/nginx-config-generator").then(m => m.NginxConfigGeneratorTool));
 
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
@@ -248,6 +252,10 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "stylelint-config-generator": StylelintConfigGeneratorTool,
   "commitlint-config-generator": CommitlintConfigGeneratorTool,
   "editorconfig-generator": EditorconfigGeneratorTool,
+  "tsconfig-generator": TsconfigGeneratorTool,
+  "jsconfig-generator": JsconfigGeneratorTool,
+  "htaccess-generator": HtaccessGeneratorTool,
+  "nginx-config-generator": NginxConfigGeneratorTool,
 
 };
 
