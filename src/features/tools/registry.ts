@@ -1993,6 +1993,57 @@ export const TOOLS: ToolDef[] = [
       "persistSettings": true,
       "persistOutput": true
     }
+  },
+  {
+    "slug": "llm-tokenizer",
+    "name": "LLM Tokenizer Visualizer & Model Comparator",
+    "shortDescription": "Visual token highlights, token IDs, byte inspector, and real-time token savings comparator for OpenAI GPT-4o, Claude 3.5, and LLaMA.",
+    "category": "Developer",
+    "tags": ["AI", "LLM", "Tokenizer", "GPT-4o", "Claude", "Tokens", "Byte-Pair-Encoding"],
+    "seo": {
+      "title": "LLM Tokenizer Visualizer & Model Comparator — ToolMate",
+      "description": "Interactive client-side LLM tokenizer. Visually inspect token IDs, colored segments, and compare token efficiency between GPT-4o, Claude, and LLaMA models.",
+      "keywords": [
+        "llm tokenizer",
+        "tiktoken online",
+        "gpt 4o tokenizer",
+        "claude tokenizer",
+        "token visualizer",
+        "token counter",
+        "compare llm tokens",
+        "o200k base tokenizer"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "llm-pricing-calculator",
+    "name": "LLM Context & Pricing Calculator",
+    "shortDescription": "Interactive cost estimator and context window visualizer comparing GPT-4o, Claude 3.5 Sonnet, DeepSeek R1, and Gemini 1.5.",
+    "category": "Developer",
+    "tags": ["AI", "LLM", "Pricing", "Calculator", "Tokens", "Cost", "Context Window"],
+    "seo": {
+      "title": "LLM Context & Pricing Calculator — ToolMate",
+      "description": "Calculate and compare API pricing and context window utilization across top AI models like GPT-4o, Claude 3.5, DeepSeek R1, and Gemini.",
+      "keywords": [
+        "llm pricing calculator",
+        "ai api cost calculator",
+        "gpt 4o cost",
+        "claude 3.5 pricing",
+        "deepseek r1 api cost",
+        "token cost calculator",
+        "llm context window calculator"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
   }
 ];
 

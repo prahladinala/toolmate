@@ -133,6 +133,9 @@ const JsconfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/j
 const HtaccessGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/htaccess-generator").then(m => m.HtaccessGeneratorTool));
 const NginxConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/nginx-config-generator").then(m => m.NginxConfigGeneratorTool));
 
+const LlmTokenizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/llm-tokenizer").then(m => m.LlmTokenizerTool));
+const LlmPricingCalculatorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/llm-pricing-calculator").then(m => m.LlmPricingCalculatorTool));
+
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
   "svg-background-generator": SvgBackgroundGeneratorTool,
@@ -256,6 +259,9 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "jsconfig-generator": JsconfigGeneratorTool,
   "htaccess-generator": HtaccessGeneratorTool,
   "nginx-config-generator": NginxConfigGeneratorTool,
+  "llm-tokenizer": LlmTokenizerTool,
+  "llm-pricing-calculator": LlmPricingCalculatorTool,
+
 
 };
 

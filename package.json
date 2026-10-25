@@ -36,6 +36,7 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^12.34.0",
     "html-entities": "^2.6.0",
+    "js-tiktoken": "^1.0.21",
     "js-yaml": "^5.0.0",
     "json-to-ts": "^2.1.0",
     "jsonc-parser": "^3.3.1",
