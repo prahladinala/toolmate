@@ -559,8 +559,8 @@ export const TOOLS: ToolDef[] = [
   },
   {
     slug: "app-icon-generator",
-    name: "App Icon Generator",
-    shortDescription: "Generate standard iOS and Android app icons from a single image.",
+    name: "App Icon & Favicon Generator Suite",
+    shortDescription: "Generate complete icon bundles for Web (Favicons & Manifest), iOS App Store, and Android from a single image.",
     category: "Design",
     tags: ["App Icon", "iOS", "Android", "Mobile"],
     seo: { title: "App Icon Generator for iOS & Android — ToolMate", description: "Upload an image and instantly download a ZIP containing all iOS and Android standard icon sizes.", keywords: ["app icon generator", "android icon generator", "ios icon generator"] },
@@ -2154,6 +2154,75 @@ export const TOOLS: ToolDef[] = [
         "fluid clamp generator",
         "tailwind fluid font size",
         "responsive clamp formula"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "tailwind-palette-studio",
+    "name": "Tailwind Color Palette Studio & Contrast Auditor",
+    "shortDescription": "Generate complete 11-step Tailwind color palettes (50–950) with perceptual color science and WCAG 2.1 contrast audits.",
+    "category": "Design",
+    "tags": ["Tailwind", "Colors", "Palette", "WCAG", "Contrast", "Design System"],
+    "seo": {
+      "title": "Tailwind Color Palette Studio & Contrast Auditor — ToolMate",
+      "description": "Generate custom Tailwind CSS 50–950 color shade scales with perceptual lightness curves, live WCAG contrast checking, and instant config exports.",
+      "keywords": [
+        "tailwind palette generator",
+        "tailwind color generator",
+        "tailwind shades generator",
+        "wcag contrast palette",
+        "color palette studio"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "docker-compose-visualizer",
+    "name": "Docker Compose Visualizer & Topology",
+    "shortDescription": "Parse docker-compose.yml and render an interactive container network topology, port mappings, volumes, and security checks.",
+    "category": "Developer",
+    "tags": ["Docker", "Compose", "Topology", "DevOps", "Containers", "Architecture"],
+    "seo": {
+      "title": "Docker Compose Visualizer & Network Topology — ToolMate",
+      "description": "Interactive visualizer for docker-compose.yml files. Inspect service dependencies, network topologies, volume mounts, and security audits.",
+      "keywords": [
+        "docker compose visualizer",
+        "visualize docker compose",
+        "docker topology generator",
+        "docker architecture diagram",
+        "docker compose linter"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "har-waterfall-visualizer",
+    "name": "HAR (HTTP Archive) Waterfall Visualizer",
+    "shortDescription": "Client-side HTTP archive analyzer. Visualize network waterfalls, page load timings, TTFB, and payload breakdowns with 100% privacy.",
+    "category": "Developer",
+    "tags": ["HAR", "Performance", "Waterfall", "Network", "DevTools", "Speed"],
+    "seo": {
+      "title": "HAR (HTTP Archive) Waterfall Visualizer — ToolMate",
+      "description": "Free in-browser HAR analyzer and waterfall timeline visualizer. Inspect network requests, TTFB, latency, and asset sizes with complete client-side privacy.",
+      "keywords": [
+        "har visualizer",
+        "har viewer",
+        "http archive viewer",
+        "har waterfall online",
+        "web performance analyzer"
       ]
     },
     "persistence": {

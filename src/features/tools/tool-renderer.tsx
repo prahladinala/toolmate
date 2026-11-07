@@ -142,6 +142,10 @@ const CurlToCodeTool = dynamic<{ tool: ToolDef }>(() => import("./tools/curl-to-
 const EnvVaultTool = dynamic<{ tool: ToolDef }>(() => import("./tools/env-vault").then(m => m.EnvVaultTool));
 const FluidClampCalculatorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/fluid-clamp-calculator").then(m => m.FluidClampCalculatorTool));
 
+const TailwindPaletteStudioTool = dynamic<{ tool: ToolDef }>(() => import("./tools/tailwind-palette-studio").then(m => m.TailwindPaletteStudioTool));
+const DockerComposeVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/docker-compose-visualizer").then(m => m.DockerComposeVisualizerTool));
+const HarWaterfallVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/har-waterfall-visualizer").then(m => m.HarWaterfallVisualizerTool));
+
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
   "svg-background-generator": SvgBackgroundGeneratorTool,
@@ -272,6 +276,10 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "curl-to-code": CurlToCodeTool,
   "env-vault": EnvVaultTool,
   "fluid-clamp-calculator": FluidClampCalculatorTool,
+  "tailwind-palette-studio": TailwindPaletteStudioTool,
+  "docker-compose-visualizer": DockerComposeVisualizerTool,
+  "har-waterfall-visualizer": HarWaterfallVisualizerTool,
+
 
 
 
