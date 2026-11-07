@@ -136,6 +136,12 @@ const NginxConfigGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tool
 const LlmTokenizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/llm-tokenizer").then(m => m.LlmTokenizerTool));
 const LlmPricingCalculatorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/llm-pricing-calculator").then(m => m.LlmPricingCalculatorTool));
 
+const PromptDiffTool = dynamic<{ tool: ToolDef }>(() => import("./tools/prompt-diff").then(m => m.PromptDiffTool));
+const LlmToolBuilderTool = dynamic<{ tool: ToolDef }>(() => import("./tools/llm-tool-builder").then(m => m.LlmToolBuilderTool));
+const CurlToCodeTool = dynamic<{ tool: ToolDef }>(() => import("./tools/curl-to-code").then(m => m.CurlToCodeTool));
+const EnvVaultTool = dynamic<{ tool: ToolDef }>(() => import("./tools/env-vault").then(m => m.EnvVaultTool));
+const FluidClampCalculatorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/fluid-clamp-calculator").then(m => m.FluidClampCalculatorTool));
+
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
   "svg-background-generator": SvgBackgroundGeneratorTool,
@@ -261,6 +267,12 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "nginx-config-generator": NginxConfigGeneratorTool,
   "llm-tokenizer": LlmTokenizerTool,
   "llm-pricing-calculator": LlmPricingCalculatorTool,
+  "prompt-diff": PromptDiffTool,
+  "llm-tool-builder": LlmToolBuilderTool,
+  "curl-to-code": CurlToCodeTool,
+  "env-vault": EnvVaultTool,
+  "fluid-clamp-calculator": FluidClampCalculatorTool,
+
 
 
 };

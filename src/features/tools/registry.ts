@@ -2044,6 +2044,123 @@ export const TOOLS: ToolDef[] = [
       "persistSettings": true,
       "persistOutput": false
     }
+  },
+  {
+    "slug": "prompt-diff",
+    "name": "Prompt Diff & Semantic Token Inspector",
+    "shortDescription": "Compare prompt versions side-by-side with color-coded word and token diffs, exact token savings, and cost delta per 1M calls.",
+    "category": "Developer",
+    "tags": ["AI", "Prompt Engineering", "Diff", "Tokens", "LLM", "GPT-4o"],
+    "seo": {
+      "title": "Prompt Diff & Semantic Token Inspector — ToolMate",
+      "description": "Compare AI system prompt revisions side-by-side. Calculate exact token deltas, highlight additions/deletions, and estimate API cost savings.",
+      "keywords": [
+        "prompt diff",
+        "system prompt comparison",
+        "llm prompt tokens diff",
+        "prompt token counter",
+        "prompt optimization tool"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "llm-tool-builder",
+    "name": "OpenAI & Claude Tool Calling Schema Builder",
+    "shortDescription": "Visually build, validate, and export function calling schemas for OpenAI, Anthropic Claude, JSON Schema draft-07, and TypeScript.",
+    "category": "Developer",
+    "tags": ["AI", "LLM", "JSON Schema", "OpenAI", "Claude", "Function Calling"],
+    "seo": {
+      "title": "OpenAI & Claude Tool Calling Schema Builder — ToolMate",
+      "description": "Visual builder for LLM function calling and tool schemas. Supports OpenAI strict mode, Anthropic Claude input_schema, and TypeScript types.",
+      "keywords": [
+        "openai function schema builder",
+        "claude tools builder",
+        "llm tool calling generator",
+        "json schema tool generator",
+        "structured outputs schema builder"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "curl-to-code",
+    "name": "cURL to Multi-Language Code Converter",
+    "shortDescription": "Convert cURL commands to modern Fetch (TypeScript/JS), Axios, Python requests, Python httpx, Go, Rust, and PHP.",
+    "category": "Converters",
+    "tags": ["cURL", "Fetch", "Axios", "Python", "Go", "Rust", "API", "HTTP"],
+    "seo": {
+      "title": "cURL to Code Converter (Fetch, Python, Go, Rust) — ToolMate",
+      "description": "Convert cURL commands into clean, production-ready code in TypeScript fetch, Axios, Python requests, Go net/http, Rust, and PHP.",
+      "keywords": [
+        "curl to fetch",
+        "curl to python",
+        "curl to axios",
+        "curl to code",
+        "convert curl online",
+        "curl to rust"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "env-vault",
+    "name": "Env Variable & Secret Formatter",
+    "shortDescription": "Sanitize, sort, mask secrets, and convert .env files to JSON, Shell export, Docker flags, or Kubernetes Secrets.",
+    "category": "Developer",
+    "tags": ["Env", "Secrets", "Docker", "Kubernetes", "DevOps", "Config"],
+    "seo": {
+      "title": "Env Variable & Secret Formatter — ToolMate",
+      "description": "Format, sort, deduplicate, and mask sensitive values in .env files. Convert between .env, JSON, Shell export, and Kubernetes Secrets.",
+      "keywords": [
+        "env formatter",
+        "format .env file",
+        "mask env secrets",
+        "env to json",
+        "env to kubernetes secret",
+        "sort env keys"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "fluid-clamp-calculator",
+    "name": "Fluid Typography & Spacing Calculator (clamp())",
+    "shortDescription": "Calculate CSS clamp() formulas for responsive typography and spacing with interactive live viewport simulation.",
+    "category": "Design",
+    "tags": ["CSS", "clamp", "Fluid Typography", "Responsive", "Tailwind", "Design"],
+    "seo": {
+      "title": "Fluid Typography & Spacing Calculator (clamp()) — ToolMate",
+      "description": "Generate perfect fluid CSS clamp() values for typography and spacing with real-time responsive viewport simulation.",
+      "keywords": [
+        "css clamp calculator",
+        "fluid typography generator",
+        "fluid clamp generator",
+        "tailwind fluid font size",
+        "responsive clamp formula"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
   }
 ];
 
