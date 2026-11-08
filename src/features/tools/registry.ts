@@ -2345,6 +2345,75 @@ export const TOOLS: ToolDef[] = [
       "persistSettings": true,
       "persistOutput": false
     }
+  },
+  {
+    "slug": "prompt-trimmer",
+    "name": "System Prompt Trimmer & Compression Advisor",
+    "shortDescription": "Compress LLM system prompts, trim conversational filler, remove markdown bloat, and calculate token & cost reductions.",
+    "category": "Developer",
+    "tags": ["AI", "LLM", "Prompt Engineering", "Token Compression", "Cost Optimization"],
+    "seo": {
+      "title": "System Prompt Trimmer & Token Compression Advisor — ToolMate",
+      "description": "Optimize AI system prompts with automated compression rules. Trim politeness fillers, redundant markdown, and passive voice to save tokens and reduce LLM inference costs.",
+      "keywords": [
+        "system prompt trimmer",
+        "prompt compression",
+        "token optimizer",
+        "reduce llm prompt tokens",
+        "prompt cost savings"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "cert-decoder",
+    "name": "X.509 / SSL Certificate Decoder",
+    "shortDescription": "Decode PEM certificates client-side to inspect Subject, Issuer, SANs, validity period, fingerprints, and SSL expiration warnings.",
+    "category": "Security",
+    "tags": ["SSL", "TLS", "Certificate", "X.509", "Security", "Cryptography"],
+    "seo": {
+      "title": "X.509 / SSL Certificate Decoder Online — ToolMate",
+      "description": "Inspect and parse SSL/TLS X.509 certificates client-side. Check Subject, Issuer, SANs, expiration countdown, and SHA-256 fingerprints with 100% in-browser privacy.",
+      "keywords": [
+        "ssl certificate decoder",
+        "x509 parser online",
+        "pem decoder",
+        "check cert expiration",
+        "tls certificate inspector"
+      ]
+    },
+    "persistence": {
+      "persistInput": false,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "cors-simulator",
+    "name": "CORS Preflight Simulator & Debugger",
+    "shortDescription": "Simulate browser CORS preflight OPTIONS handshakes, diagnose missing headers or wildcard credential issues, and export server fixes.",
+    "category": "Developer",
+    "tags": ["CORS", "Preflight", "HTTP Headers", "API", "Network", "Debugging"],
+    "seo": {
+      "title": "CORS Preflight Simulator & Debugger Online — ToolMate",
+      "description": "Simulate browser CORS preflight requests, audit Access-Control-Allow headers, diagnose blocked fetch calls, and export Next.js/Express/Nginx fixes.",
+      "keywords": [
+        "cors simulator",
+        "cors preflight tester",
+        "cors debugger online",
+        "access-control-allow-origin tester",
+        "fix cors error"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
   }
 ];
 

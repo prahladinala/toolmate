@@ -150,6 +150,9 @@ const VectorVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/ve
 const RegexRailroadTool = dynamic<{ tool: ToolDef }>(() => import("./tools/regex-railroad").then(m => m.RegexRailroadTool));
 const CspGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/csp-generator").then(m => m.CspGeneratorTool));
 const SvgOptimizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/svg-optimizer").then(m => m.SvgOptimizerTool));
+const PromptTrimmerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/prompt-trimmer").then(m => m.PromptTrimmerTool));
+const CertDecoderTool = dynamic<{ tool: ToolDef }>(() => import("./tools/cert-decoder").then(m => m.CertDecoderTool));
+const CorsSimulatorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/cors-simulator").then(m => m.CorsSimulatorTool));
 
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
@@ -288,6 +291,9 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "regex-railroad": RegexRailroadTool,
   "csp-generator": CspGeneratorTool,
   "svg-optimizer": SvgOptimizerTool,
+  "prompt-trimmer": PromptTrimmerTool,
+  "cert-decoder": CertDecoderTool,
+  "cors-simulator": CorsSimulatorTool,
 
 
 
