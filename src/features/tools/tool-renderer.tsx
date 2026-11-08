@@ -85,7 +85,7 @@ const CssFilterGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/
 const JwtBuilderTool = dynamic<{ tool: ToolDef }>(() => import('./tools/jwt-builder'));
 const CssKeyframesTool = dynamic<{ tool: ToolDef }>(() => import('./tools/css-keyframes'));
 const MockDataGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/mock-data-generator'));
-const CronBuilderTool = dynamic<{ tool: ToolDef }>(() => import('./tools/cron-builder'));
+const CronBuilderTool = dynamic<{ tool: ToolDef }>(() => import('./tools/cron-builder').then(m => m.CronBuilderTool));
 const WcagContrastCheckerTool = dynamic<{ tool: ToolDef }>(() => import('./tools/wcag-contrast-checker'));
 const MarkdownTableGeneratorTool = dynamic<{ tool: ToolDef }>(() => import('./tools/markdown-table-generator'));
 
@@ -145,6 +145,11 @@ const FluidClampCalculatorTool = dynamic<{ tool: ToolDef }>(() => import("./tool
 const TailwindPaletteStudioTool = dynamic<{ tool: ToolDef }>(() => import("./tools/tailwind-palette-studio").then(m => m.TailwindPaletteStudioTool));
 const DockerComposeVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/docker-compose-visualizer").then(m => m.DockerComposeVisualizerTool));
 const HarWaterfallVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/har-waterfall-visualizer").then(m => m.HarWaterfallVisualizerTool));
+
+const VectorVisualizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/vector-visualizer").then(m => m.VectorVisualizerTool));
+const RegexRailroadTool = dynamic<{ tool: ToolDef }>(() => import("./tools/regex-railroad").then(m => m.RegexRailroadTool));
+const CspGeneratorTool = dynamic<{ tool: ToolDef }>(() => import("./tools/csp-generator").then(m => m.CspGeneratorTool));
+const SvgOptimizerTool = dynamic<{ tool: ToolDef }>(() => import("./tools/svg-optimizer").then(m => m.SvgOptimizerTool));
 
 const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "blob-generator": BlobGeneratorTool,
@@ -279,6 +284,11 @@ const MAP: Record<string, React.ComponentType<{ tool: ToolDef }>> = {
   "tailwind-palette-studio": TailwindPaletteStudioTool,
   "docker-compose-visualizer": DockerComposeVisualizerTool,
   "har-waterfall-visualizer": HarWaterfallVisualizerTool,
+  "vector-visualizer": VectorVisualizerTool,
+  "regex-railroad": RegexRailroadTool,
+  "csp-generator": CspGeneratorTool,
+  "svg-optimizer": SvgOptimizerTool,
+
 
 
 

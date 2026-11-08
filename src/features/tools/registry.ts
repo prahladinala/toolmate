@@ -2230,6 +2230,121 @@ export const TOOLS: ToolDef[] = [
       "persistSettings": true,
       "persistOutput": false
     }
+  },
+  {
+    "slug": "vector-visualizer",
+    "name": "Vector Distance & Embedding Visualizer",
+    "shortDescription": "Interactive 2D vector coordinate plane and N-dimensional embedding calculator for Cosine Similarity, Dot Product, and Euclidean Distance.",
+    "category": "Developer",
+    "tags": ["AI", "Embeddings", "Vectors", "Cosine Similarity", "Vector DB", "LLM"],
+    "seo": {
+      "title": "Vector Distance & Embedding Visualizer — ToolMate",
+      "description": "Visual 2D coordinate plane and high-dimensional vector similarity calculator. Compute Cosine Similarity, Euclidean Distance, and Dot Products with pgvector code generation.",
+      "keywords": [
+        "vector similarity calculator",
+        "cosine similarity visualizer",
+        "embedding distance calculator",
+        "euclidean distance online",
+        "pgvector query generator"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "regex-railroad",
+    "name": "Regex Railroad Diagram & Step Debugger",
+    "shortDescription": "Generate visual railroad track diagrams from regular expressions with interactive match group debugging and flag controls.",
+    "category": "Developer",
+    "tags": ["Regex", "Railroad", "Pattern", "Debugger", "Developer"],
+    "seo": {
+      "title": "Regex Railroad Diagram & Step Debugger — ToolMate",
+      "description": "Render interactive railroad sequence tracks for regular expressions. Test strings in real-time, inspect capture groups, and understand complex regex rules visually.",
+      "keywords": [
+        "regex railroad diagram",
+        "regex visualizer",
+        "regex track diagram",
+        "regex explain visually",
+        "regular expression tester"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "csp-generator",
+    "name": "Content Security Policy (CSP) Generator & Evaluator",
+    "shortDescription": "Interactive CSP directive checklist and vulnerability auditor. Generates HTTP headers, Next.js configs, HTML meta tags, and Nginx rules.",
+    "category": "Security",
+    "tags": ["CSP", "Security", "Headers", "XSS", "Clickjacking", "DevOps"],
+    "seo": {
+      "title": "Content Security Policy (CSP) Generator & Evaluator — ToolMate",
+      "description": "Build hardened Content Security Policy headers with live security grading. Protect your web apps from XSS, Clickjacking, and packet injection.",
+      "keywords": [
+        "csp generator",
+        "content security policy builder",
+        "csp evaluator online",
+        "security headers generator",
+        "csp nextjs header"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "svg-optimizer",
+    "name": "SVG Geometry Cleaner & Path Optimizer",
+    "shortDescription": "Minify SVG files, round decimal coordinates, strip XML/editor metadata, and visualize live rendered output in your browser.",
+    "category": "Design",
+    "tags": ["SVG", "Optimizer", "Minify", "Vector", "Design", "Graphics"],
+    "seo": {
+      "title": "SVG Geometry Cleaner & Path Optimizer — ToolMate",
+      "description": "Clean and optimize SVG code directly in your browser. Strip illustrator metadata, round precision coordinates, and preview side-by-side with zero upload latency.",
+      "keywords": [
+        "svg optimizer",
+        "svg minify online",
+        "clean svg code",
+        "svg omg alternative",
+        "compress svg"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
+  },
+  {
+    "slug": "cron-builder",
+    "name": "Cron Schedule Expression Builder & Timeline",
+    "shortDescription": "Visual CRON schedule builder with 5-field time selectors, plain-English translation, and simulated timeline of the next 5 runs.",
+    "category": "Developer",
+    "tags": ["CRON", "Schedule", "Timeline", "Automation", "DevOps"],
+    "seo": {
+      "title": "Cron Schedule Expression Builder & Timeline — ToolMate",
+      "description": "Build and understand CRON schedule expressions visually. Includes next 5 execution timelines, timezone toggles, and common server presets.",
+      "keywords": [
+        "cron builder",
+        "cron schedule generator",
+        "cron expression builder",
+        "cron next runs timeline",
+        "crontab generator"
+      ]
+    },
+    "persistence": {
+      "persistInput": true,
+      "persistSettings": true,
+      "persistOutput": false
+    }
   }
 ];
 
